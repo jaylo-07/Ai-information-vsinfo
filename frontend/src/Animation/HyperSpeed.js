@@ -43,7 +43,7 @@ const Hyperspeed = ({ effectOptions = {
 } }) => {
   const hyperspeed = useRef(null);
   const appRef = useRef(null);
-  
+
   useEffect(() => {
     if (appRef.current) {
       appRef.current.dispose();
@@ -567,7 +567,7 @@ const Hyperspeed = ({ effectOptions = {
 
       dispose() {
         this.disposed = true;
-        
+
         if (this.renderer) {
           this.renderer.dispose();
         }
@@ -577,7 +577,7 @@ const Hyperspeed = ({ effectOptions = {
         if (this.scene) {
           this.scene.clear();
         }
-        
+
         // Remove event listeners
         window.removeEventListener("resize", this.onWindowResize.bind(this));
         if (this.container) {

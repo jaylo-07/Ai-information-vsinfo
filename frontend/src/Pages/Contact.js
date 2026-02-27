@@ -10,6 +10,8 @@ import AOS from "aos";
 import * as Yup from "yup";
 import { useFormik } from 'formik';
 import axios from 'axios';
+import toast from 'react-hot-toast';
+
 const serverUrl = 'http://localhost:4000'
 const Contact = () => {
   useEffect(() => {
@@ -100,8 +102,6 @@ const Contact = () => {
         .required("Message is required"),
     }),
     onSubmit: (values, { resetForm }) => {
-      console.log(values);
-
       axios.post(`${serverUrl}/contactus`, {
         firstName: values.firstname,
         lastName: values.lastname,
@@ -111,11 +111,11 @@ const Contact = () => {
         description: values.message,
       })
         .then((response) => {
-          alert('Our team will contact you soon!');
+          toast.success('Our team will contact you soon!');
           resetForm(); // <-- now works
         })
         .catch((error) => {
-          console.error("Error submitting form:", error);
+          toast.error("Error submitting form");
         });
     }
   })

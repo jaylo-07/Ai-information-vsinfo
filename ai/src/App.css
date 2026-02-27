@@ -1,38 +1,92 @@
-.App {
-  text-align: center;
+:root {
+  width: 100vw;
+  overflow-x: hidden;
 }
 
-.App-logo {
-  height: 40vmin;
-  pointer-events: none;
+.container {
+  margin-right: auto;
+  margin-left: auto;
+  padding-left: 10px;
+  padding-right: 10px;
+  width: 1700px;
 }
 
-@media (prefers-reduced-motion: no-preference) {
-  .App-logo {
-    animation: App-logo-spin infinite 20s linear;
+/* Width of scrollbar */
+::-webkit-scrollbar {
+  width: 2px;
+}
+
+/* Track (background of scrollbar) */
+::-webkit-scrollbar-track {
+  background: transparent;
+  background-size: cover;
+}
+
+/* Thumb (the draggable part) */
+::-webkit-scrollbar-thumb {
+  background-color: blueviolet;
+  background-size: contain;
+  border-radius: 8px;
+  width: 2px;
+}
+
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
+.no-scrollbar {
+  -ms-overflow-style: none;
+  /* IE and Edge */
+  scrollbar-width: none;
+  /* Firefox */
+}
+
+.j_input_field input:-webkit-autofill,
+.j_input_field input:-webkit-autofill:focus,
+.j_input_field input:-webkit-autofill:hover,
+.j_input_field input:-webkit-autofill:active {
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: #fff;
+  -webkit-transition: background-color 5000s ease-in-out 0s;
+  transition: background-color 5000s ease-in-out 0s;
+  box-shadow: inset 0 0 30px 30px #000000;
+}
+
+@media (min-width: 1650px) and (max-width: 1849px) {
+  .container {
+    width: 1550px;
   }
 }
 
-.App-header {
-  background-color: #282c34;
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  font-size: calc(10px + 2vmin);
-  color: white;
-}
-
-.App-link {
-  color: #61dafb;
-}
-
-@keyframes App-logo-spin {
-  from {
-    transform: rotate(0deg);
+@media (min-width: 1200px) and (max-width: 1649px) {
+  .container {
+    width: 1170px;
+    max-width: none;
   }
-  to {
-    transform: rotate(360deg);
+}
+
+@media (min-width: 992px) and (max-width: 1199px) {
+  .container {
+    width: 970px;
+    max-width: none;
+  }
+}
+
+@media (min-width: 768px) and (max-width: 991px) {
+  .container {
+    width: 750px;
+    max-width: none;
+  }
+}
+
+@media (min-width: 480px) and (max-width: 767px) {
+  .container {
+    max-width: 90%;
+  }
+}
+
+@media (max-width: 426px) {
+  .container {
+    max-width: 100%;
   }
 }

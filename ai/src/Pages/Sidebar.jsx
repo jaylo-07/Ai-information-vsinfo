@@ -62,7 +62,7 @@ const Sidebar = () => {
 
       <div className={`
                 fixed lg:relative inset-y-0 left-0 z-50 
-                flex flex-col justify-between bg-[#1e1f20] p-4 
+                flex flex-col justify-between bg-[#f0f4f9] dark:bg-[#1e1f20] p-4 
                 transition-all duration-300 font-sans overflow-visible
                 ${isMobileSidebarOpen ? 'translate-x-0 w-[280px]' : '-translate-x-full lg:translate-x-0'}
                 ${extended ? 'lg:w-[280px]' : 'lg:w-[72px]'}
@@ -71,36 +71,36 @@ const Sidebar = () => {
         {/* Top Section */}
         <div>
           <div className="flex items-center justify-between lg:justify-start">
-            <div onClick={() => setExtended(prev => !prev)} className="hidden lg:flex cursor-pointer hover:bg-white/10 rounded-full w-10 h-10 items-center justify-center transition-colors">
-              <Menu className="w-5 h-5 text-[#c4c7c5]" />
+            <div onClick={() => setExtended(prev => !prev)} className="hidden lg:flex cursor-pointer hover:bg-black/5 dark:hover:bg-white/10 rounded-full w-10 h-10 items-center justify-center transition-colors">
+              <Menu className="w-5 h-5 text-gray-700 dark:text-[#c4c7c5]" />
             </div>
-            <div onClick={() => dispatch(setIsMobileSidebarOpen(false))} className="lg:hidden cursor-pointer hover:bg-white/10 rounded-full w-10 h-10 flex items-center justify-center transition-colors">
-              <X className="w-5 h-5 text-[#c4c7c5]" />
+            <div onClick={() => dispatch(setIsMobileSidebarOpen(false))} className="lg:hidden cursor-pointer hover:bg-black/5 dark:hover:bg-white/10 rounded-full w-10 h-10 flex items-center justify-center transition-colors">
+              <X className="w-5 h-5 text-gray-700 dark:text-[#c4c7c5]" />
             </div>
           </div>
 
-          <div onClick={() => dispatch(newChat())} className={`mt-[40px] inline-flex items-center gap-3 bg-transparent hover:bg-white/5 py-2.5 px-4 rounded-full text-sm cursor-pointer transition-colors border border-[#444746] ${extended ? 'pr-8 max-w-[160px]' : 'px-0 w-10 h-10 justify-center'}`}>
-            <Plus className="w-5 h-5 text-[#c4c7c5] shrink-0" />
-            {extended && <p className="text-[#c4c7c5] font-medium whitespace-nowrap">New chat</p>}
+          <div onClick={() => dispatch(newChat())} className={`mt-[40px] inline-flex items-center gap-3 bg-transparent hover:bg-black/5 dark:hover:bg-white/5 py-2.5 px-4 rounded-full text-sm cursor-pointer transition-colors border border-gray-300 dark:border-[#444746] ${extended ? 'pr-8 max-w-[160px]' : 'px-0 w-10 h-10 justify-center'}`}>
+            <Plus className="w-5 h-5 text-gray-700 dark:text-[#c4c7c5] shrink-0" />
+            {extended && <p className="text-gray-700 dark:text-[#c4c7c5] font-medium whitespace-nowrap">New chat</p>}
           </div>
 
           {extended && (
             <div className="flex flex-col mt-8 animate-fadeIn">
-              <p className="mb-4 text-sm px-1 font-semibold text-white">Recent</p>
+              <p className="mb-4 text-sm px-1 font-semibold text-gray-900 dark:text-white">Recent</p>
               <div className="flex flex-col gap-1 max-h-[50vh] overflow-y-auto scrollbar-hidden">
                 {(!prevPrompts || prevPrompts.length === 0) && (
-                  <p className="px-4 text-[13px] text-[#8e918f] italic">No recent chats</p>
+                  <p className="px-4 text-[13px] text-gray-500 dark:text-[#8e918f] italic">No recent chats</p>
                 )}
                 {prevPrompts && [...prevPrompts].reverse().map((item, index) => {
                   return (
-                    <div key={index} className="relative flex items-center gap-3 p-1 pl-2 rounded-full hover:bg-white/10 hover:text-white cursor-pointer transition-colors text-[#c4c7c5] group">
+                    <div key={index} className="relative flex items-center gap-3 p-1 pl-2 rounded-full hover:bg-black/5 dark:hover:bg-white/10 hover:text-black dark:hover:text-white cursor-pointer transition-colors text-gray-700 dark:text-[#c4c7c5] group">
                       <p onClick={() => loadPrompt(item)} className="text-sm truncate w-full">{item}</p>
                       <div
                         onClick={(e) => {
                           e.stopPropagation();
                           setShowChatMenu(showChatMenu === index ? null : index);
                         }}
-                        className="opacity-0 group-hover:opacity-100 p-1 hover:bg-white/20 rounded-full transition-all relative"
+                        className="opacity-0 group-hover:opacity-100 p-1 hover:bg-black/10 dark:hover:bg-white/20 rounded-full transition-all relative"
                       >
                         <MoreVertical className="w-4 h-4" />
                       </div>
@@ -109,21 +109,21 @@ const Sidebar = () => {
                       {showChatMenu === index && (
                         <div
                           ref={chatMenuRef}
-                          className="absolute right-0 top-8 bg-[#1e1f20] border border-[#444746] rounded-xl py-2 w-[200px] shadow-2xl z-50 animate-fadeIn"
+                          className="absolute right-0 top-8 bg-[#f0f4f9] dark:bg-[#1e1f20] border border-gray-200 dark:border-[#444746] rounded-xl py-2 w-[200px] shadow-lg dark:shadow-2xl z-50 animate-fadeIn"
                         >
-                          <button className="w-full flex items-center gap-3 px-4 py-2.5 hover:bg-white/10 text-white transition-colors text-left">
+                          <button className="w-full flex items-center gap-3 px-4 py-2.5 hover:bg-black/5 dark:hover:bg-white/10 text-gray-800 dark:text-white transition-colors text-left">
                             <Share2 className="w-4 h-4" />
                             <span className="text-sm">Share conversation</span>
                           </button>
-                          <button className="w-full flex items-center gap-3 px-4 py-2.5 hover:bg-white/10 text-white transition-colors text-left">
+                          <button className="w-full flex items-center gap-3 px-4 py-2.5 hover:bg-black/5 dark:hover:bg-white/10 text-gray-800 dark:text-white transition-colors text-left">
                             <Pin className="w-4 h-4" />
                             <span className="text-sm">Pin</span>
                           </button>
-                          <button className="w-full flex items-center gap-3 px-4 py-2.5 hover:bg-white/10 text-white transition-colors text-left">
+                          <button className="w-full flex items-center gap-3 px-4 py-2.5 hover:bg-black/5 dark:hover:bg-white/10 text-gray-800 dark:text-white transition-colors text-left">
                             <Edit2 className="w-4 h-4" />
                             <span className="text-sm">Rename</span>
                           </button>
-                          <button className="w-full flex items-center gap-3 px-4 py-2.5 hover:bg-white/10 text-[#f87171] transition-colors text-left">
+                          <button className="w-full flex items-center gap-3 px-4 py-2.5 hover:bg-red-50 dark:hover:bg-white/10 text-red-600 dark:text-[#f87171] transition-colors text-left">
                             <Trash2 className="w-4 h-4" />
                             <span className="text-sm">Delete</span>
                           </button>
@@ -143,23 +143,15 @@ const Sidebar = () => {
           {/* Settings Dropdown Menu */}
           {showSettings && (
             <div
-              onMouseLeave={() => setShowThemeMenu(false)}
-              className={`absolute bottom-full mb-4 left-0 bg-[#1e1f20] border border-[#444746] rounded-2xl p-2 w-[280px] shadow-2xl z-50 animate-fadeIn`}
+              className={`absolute bottom-full mb-4 left-0 bg-[#f0f4f9] dark:bg-[#1e1f20] border border-gray-200 dark:border-[#444746] rounded-2xl p-2 w-[280px] shadow-lg dark:shadow-2xl z-50 animate-fadeIn`}
             >
               <div className="flex flex-col relative">
-                <DropdownItem icon={<History className="w-5 h-5" />} label="Activity" />
-                <DropdownItem icon={<Sparkles className="w-5 h-5" />} label="Instructions for Nexus" dot />
-                <DropdownItem icon={<Box className="w-5 h-5" />} label="Connected apps" dot />
-                <DropdownItem icon={<Link className="w-5 h-5" />} label="Your public links" />
-
-                <hr className="border-[#444746] my-2" />
-
                 <div
-                  onMouseEnter={() => {
-                    setShowThemeMenu(true);
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setShowThemeMenu(!showThemeMenu);
                     setShowHelpMenu(false);
                   }}
-                  onMouseLeave={() => setShowThemeMenu(false)}
                   className="relative"
                 >
                   <DropdownItem
@@ -171,39 +163,49 @@ const Sidebar = () => {
 
                   {/* Theme Sub-menu */}
                   {showThemeMenu && (
-                    <div className={`absolute left-full top-0 ml-2 bg-[#1e1f20] border border-[#444746] rounded-2xl p-2 w-[180px] shadow-2xl animate-fadeIn ${window.innerWidth < 640 && 'left-0 bottom-full top-auto mb-2'}`}>
+                    <div className={`absolute left-full bottom-0 ml-3 bg-[#f0f4f9] dark:bg-[#1e1f20] border border-gray-200 dark:border-[#444746] rounded-2xl p-2 w-[180px] shadow-lg dark:shadow-2xl animate-fadeIn ${window.innerWidth < 640 && 'left-0 bottom-full top-auto mb-2'}`}>
                       <ThemeOption
                         label="System"
                         selected={theme === 'System'}
-                        onClick={() => dispatch(setTheme('System'))}
+                        onClick={() => {
+                          dispatch(setTheme('System'));
+                          setShowThemeMenu(!showThemeMenu);
+                          setShowSettings(false);
+                          setShowHelpMenu(false);
+                        }}
                       />
                       <ThemeOption
                         label="Light"
                         selected={theme === 'Light'}
-                        onClick={() => dispatch(setTheme('Light'))}
+                        onClick={() => {
+                          dispatch(setTheme('Light'));
+                          setShowThemeMenu(!showThemeMenu);
+                          setShowSettings(false);
+                          setShowHelpMenu(false);
+                        }}
                       />
                       <ThemeOption
                         label="Dark"
                         selected={theme === 'Dark'}
-                        onClick={() => dispatch(setTheme('Dark'))}
+                        onClick={() => {
+                          dispatch(setTheme('Dark'));
+                          setShowThemeMenu(!showThemeMenu);
+                          setShowSettings(false);
+                          setShowHelpMenu(false);
+                        }}
                       />
                     </div>
                   )}
                 </div>
 
-                <DropdownItem icon={<CreditCard className="w-5 h-5" />} label="View subscriptions" />
-                <DropdownItem icon={<BookOpen className="w-5 h-5" />} label="NotebookLM" />
-
-                <hr className="border-[#444746] my-2" />
-
-                <DropdownItem icon={<MessageSquarePlus className="w-5 h-5" />} label="Send feedback" />
+                {/* <hr className="border-[#444746] my-2" /> */}
 
                 <div
-                  onMouseEnter={() => {
-                    setShowHelpMenu(true);
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setShowHelpMenu(!showHelpMenu);
                     setShowThemeMenu(false);
                   }}
-                  onMouseLeave={() => setShowHelpMenu(false)}
                   className="relative"
                 >
                   <DropdownItem
@@ -215,7 +217,7 @@ const Sidebar = () => {
 
                   {/* Help Sub-menu */}
                   {showHelpMenu && (
-                    <div className={`absolute left-full top-0 ml-2 bg-[#1e1f20] border border-[#444746] rounded-2xl p-2 w-[200px] shadow-2xl animate-fadeIn ${window.innerWidth < 640 && 'left-0 bottom-full top-auto mb-2'}`}>
+                    <div className={`absolute left-full bottom-0 ml-3 bg-[#f0f4f9] dark:bg-[#1e1f20] border border-gray-200 dark:border-[#444746] rounded-2xl p-2 w-[200px] shadow-lg dark:shadow-2xl animate-fadeIn ${window.innerWidth < 640 && 'left-0 bottom-full top-auto mb-2'}`}>
                       <div className="flex flex-col">
                         <DropdownItem
                           icon={<HelpCircle className="w-5 h-5" />}
@@ -229,16 +231,6 @@ const Sidebar = () => {
                     </div>
                   )}
                 </div>
-
-                <div className="p-3 mt-1">
-                  <div className="flex items-start gap-3">
-                    <div className="w-2 h-2 rounded-full bg-[#9ca3af] mt-1.5 shrink-0" />
-                    <div>
-                      <p className="text-[13px] text-[#8ab4f8] font-medium leading-tight">Nana Varachha, Surat, Gujarat, India</p>
-                      <p className="text-[11px] text-[#c4c7c5] mt-0.5 whitespace-nowrap">From your IP address • Update location</p>
-                    </div>
-                  </div>
-                </div>
               </div>
             </div>
           )}
@@ -249,10 +241,10 @@ const Sidebar = () => {
               setShowThemeMenu(false);
               setShowHelpMenu(false);
             }}
-            className={`flex items-center gap-3 p-2.5 rounded-full transition-colors group cursor-pointer ${showSettings ? 'bg-white/10' : 'hover:bg-white/5'}`}
+            className={`flex items-center gap-3 p-2.5 rounded-full transition-colors group cursor-pointer ${showSettings ? 'bg-black/5 dark:bg-white/10' : 'hover:bg-black/5 dark:hover:bg-white/5'}`}
           >
-            <Settings className={`w-5 h-5 transition-colors ${showSettings ? 'text-[#e3e3e3]' : 'text-[#c4c7c5] group-hover:text-[#e3e3e3]'}`} />
-            {extended && <p className={`text-sm transition-colors ${showSettings ? 'text-[#8ab4f8]' : 'text-[#8ab4f8] group-hover:text-blue-300'}`}>Settings</p>}
+            <Settings className={`w-5 h-5 transition-colors ${showSettings ? 'text-gray-900 dark:text-[#e3e3e3]' : 'text-gray-600 dark:text-[#c4c7c5] group-hover:text-gray-900 dark:group-hover:text-[#e3e3e3]'}`} />
+            {extended && <p className={`text-sm transition-colors font-medium text-gray-900 dark:text-white`}>Settings</p>}
           </div>
         </div>
       </div>
@@ -261,26 +253,25 @@ const Sidebar = () => {
 };
 
 const DropdownItem = ({ icon, label, dot, hasChevron, isActive }) => (
-  <div className={`flex items-center justify-between p-2.5 rounded-xl cursor-pointer text-white transition-colors group ${isActive ? 'bg-white/10' : 'hover:bg-white/5'}`}>
+  <div className={`flex items-center justify-between p-2.5 rounded-xl cursor-pointer text-gray-800 dark:text-white transition-colors group ${isActive ? 'bg-black/5 dark:bg-white/10' : 'hover:bg-black/5 dark:hover:bg-white/5'}`}>
     <div className="flex items-center gap-4">
-      <span className={`transition-colors ${isActive ? 'text-white' : 'text-[#c4c7c5] group-hover:text-white'}`}>{icon}</span>
-      <span className="text-sm font-light">{label}</span>
+      <span className={`transition-colors ${isActive ? 'text-gray-900 dark:text-white' : 'text-gray-600 dark:text-[#c4c7c5] group-hover:text-gray-900 dark:group-hover:text-white'}`}>{icon}</span>
+      <span className="text-sm font-normal">{label}</span>
     </div>
     <div className="flex items-center gap-2">
-      {dot && <div className="w-2 h-2 rounded-full bg-[#8ab4f8] shadow-[0_0_8px_rgba(138,180,248,0.6)]" />}
-      {hasChevron && <ChevronRight className="w-4 h-4 text-[#c4c7c5]" />}
+      {dot && <div className="w-2 h-2 rounded-full bg-themedark shadow-[0_0_8px_rgba(157,0,255,0.6)]" />}
+      {hasChevron && <ChevronRight className="w-4 h-4 text-gray-500 dark:text-[#c4c7c5]" />}
     </div>
   </div>
 )
 
-
 const ThemeOption = ({ label, selected, onClick }) => (
   <div
     onClick={onClick}
-    className="flex items-center justify-between p-2.5 rounded-xl hover:bg-white/5 cursor-pointer text-white transition-colors group"
+    className={`flex items-center justify-between p-2.5 rounded-xl cursor-pointer transition-colors group ${selected ? 'bg-black/5 dark:bg-white/10 text-gray-900 dark:text-white' : 'hover:bg-black/5 dark:hover:bg-white/5 text-gray-800 dark:text-white'}`}
   >
-    <span className="text-sm font-light">{label}</span>
-    {selected && <Check className="w-4 h-4 text-white" />}
+    <span className={`text-sm ${selected ? 'font-medium' : 'font-normal'}`}>{label}</span>
+    {selected && <Check className="w-4 h-4 text-gray-900 dark:text-white" />}
   </div>
 )
 
