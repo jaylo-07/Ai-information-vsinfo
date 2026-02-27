@@ -20,12 +20,12 @@ const Header = () => {
     <header className="sticky shadow-lg shadow-black py-4 top-0 z-50 border-gray-800 bg-[#060606] text-[#9aa0a6] relative">
       <div className="container mx-auto flex items-center justify-between px-4 sm:px-6">
         <div className="flex items-center space-x-1 text-lg font-medium gap-10">
-          <div className='flex items-center space-x-1 text-[#f1f3f4]'>
+          <Link to="/" className='flex items-center space-x-1 text-[#f1f3f4]'>
             {/* <span className="text-sm sm:text-base">Google</span>
             <span className="text-base sm:text-lg">DeepMind</span>
             <button className="text-xs sm:text-sm"><IoIosArrowDown /></button> */}
             <img src={logo} alt="" className="w-18 h-12 cursor-pointer self-center" />
-          </div>
+          </Link>
           <nav className="hidden sm:flex space-x-4 text-sm">
             <Link to="/" className={`${path === '/' ? "text-white" : ""} hover:bg-[rgba(241,243,244,0.08)] hover:rounded-full py-2 px-4 font-medium transition`} onClick={()=> setPath("/")}>Home</Link>
             <Link to="/about" className={`${path === '/about' ? "text-white" : ""} hover:bg-[rgba(241,243,244,0.08)] hover:rounded-full py-2 px-4 font-medium transition`} onClick={()=> setPath("/about")}>About Us</Link>
