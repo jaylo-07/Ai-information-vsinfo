@@ -1,0 +1,77 @@
+:root {
+  width: 100vw;
+  overflow-x: hidden;
+}
+
+.container {
+  margin-right: auto;
+  margin-left: auto;
+  padding-left: 10px; 
+  padding-right: 10px;
+  width: 1700px;
+}
+
+/* Width of scrollbar */
+::-webkit-scrollbar {
+  width: 2px;
+}
+
+/* Track (background of scrollbar) */
+::-webkit-scrollbar-track {
+  background: transparent;
+  background-size: cover;
+}
+
+/* Thumb (the draggable part) */
+::-webkit-scrollbar-thumb {
+  /* background: url("./Asset/Home/robot1.png") no-repeat center; */
+  background-color: blueviolet;
+  background-size: contain;
+  border-radius: 8px;
+  width: 2px;
+}
+
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
+.no-scrollbar {
+  -ms-overflow-style: none; /* IE and Edge */
+  scrollbar-width: none; /* Firefox */
+}
+
+
+@media (min-width: 1650px) and (max-width: 1849px){
+  .container {
+      width: 1550px;
+  }
+}
+@media (min-width: 1200px) and (max-width: 1649px) {
+  .container {
+      width: 1170px;
+      max-width: none;
+  }
+}
+@media (min-width: 992px) and (max-width: 1199px) {
+  .container {
+      width: 970px;
+      max-width: none;
+  }
+}
+@media (min-width: 768px) and (max-width: 991px) {
+  .container {
+      width: 750px;
+      max-width: none;
+  }
+}
+@media (min-width: 480px) and (max-width: 767px) {
+  .container {
+      max-width: 90%;
+  }
+}
+
+@media (max-width: 426px){
+  .container {
+      max-width: 100%;
+  }
+}
