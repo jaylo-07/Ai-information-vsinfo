@@ -1,10 +1,7 @@
 import React, { useEffect } from 'react'
 import { FaRegComment } from "react-icons/fa6";
 import { GiSelfLove } from "react-icons/gi";
-import { BsTwitterX } from "react-icons/bs";
-import xAi from '../Asset/Contact/XAi.svg'
-import grok from '../Asset/Contact/Grok.svg'
-import joinGrok from '../Asset/Contact/JoinGrok.svg'
+import { FaBook, FaUsers, FaMapMarkerAlt } from "react-icons/fa";
 import contact from "../Asset/Contact/contact.jpg";
 import AOS from "aos";
 import * as Yup from "yup";
@@ -13,6 +10,8 @@ import axios from 'axios';
 import toast from 'react-hot-toast';
 
 const serverUrl = 'http://localhost:4000'
+import { BASE_URL } from '../Utils/baseUrl';
+
 const Contact = () => {
   useEffect(() => {
     function generateStars(count, size, duration) {
@@ -79,6 +78,18 @@ const Contact = () => {
     message: ""
   }
 
+  const handleScrollToForm = (subjectText) => {
+    ContactFormik.setFieldValue("subject", subjectText);
+    const formElement = document.getElementById("contactForm");
+    if (formElement) {
+      formElement.scrollIntoView({ behavior: "smooth" });
+    }
+  };
+
+  const handleComingSoon = () => {
+    // alert("This feature is coming soon! Our team is working on it.");
+  };
+
   const ContactFormik = useFormik({
     initialValues: contVal,
     validationSchema: Yup.object({
@@ -102,17 +113,24 @@ const Contact = () => {
         .required("Message is required"),
     }),
     onSubmit: (values, { resetForm }) => {
-      axios.post(`${serverUrl}/contactus`, {
-        firstName: values.firstname,
-        lastName: values.lastname,
-        workEmail: values.email,
-        subject: values.subject,
-        phoneNumber: values.num,
-        description: values.message,
+      // console.log(values);
+
+      const formData = new FormData();
+      formData.append("first_name", values.firstname);
+      formData.append("last_name", values.lastname);
+      formData.append("subject", values.subject);
+      formData.append("work_email", values.email);
+      formData.append("phone_number", values.num);
+      formData.append("description", values.message);
+
+      axios.post(`${BASE_URL}/contact`, formData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
       })
         .then((response) => {
           toast.success('Our team will contact you soon!');
-          resetForm(); // <-- now works
+          resetForm();
         })
         .catch((error) => {
           toast.error("Error submitting form");
@@ -134,11 +152,11 @@ const Contact = () => {
               <div className='flex flex-col gap-12 md:border-r border-gray-800 pr-8 flex-1'>
                 <div className="text-2xl"><FaRegComment className="text-4xl" /></div>
                 <div>
-                  <h2 className="text-xl font-normal mb-4">Get in touch to product support</h2>
-                  <p className="text-[#7D8187] text-md mb-4">For all of your questions concerning Grok and our products, get in touch with Product Support.</p>
+                  <h2 className="text-xl font-normal mb-4">Find Answers Quickly</h2>
+                  <p className="text-[#7D8187] text-md mb-4">Explore our resources or visit the Help Center to find immediate solutions.</p>
                   <div className="flex gap-3 mt-2 flex-wrap">
-                    <button className="px-4 py-2 border border-gray-700 rounded-full text-md hover:bg-gray-800">EMAIL SUPPORT</button>
-                    <button className="px-4 py-2 border border-gray-700 rounded-full text-md hover:bg-gray-800">CALL SUPPORT</button>
+                    <button onClick={handleComingSoon} className="px-4 py-2 border border-gray-700 rounded-full text-md hover:bg-gray-800">HELP CENTER</button>
+                    <button onClick={handleComingSoon} className="px-4 py-2 border border-gray-700 rounded-full text-md hover:bg-gray-800">COMMUNITY FORUM</button>
                   </div>
                 </div>
               </div>
@@ -147,9 +165,12 @@ const Contact = () => {
             <div className="flex sm:w-1/2 w-full flex-col gap-12 md:pl-8 flex-1" data-aos="fade-up" data-aos-duration="3000">
               <div className="text-2xl"><GiSelfLove className="text-4xl" /></div>
               <div>
-                <h2 className="text-xl font-normal mb-4">Speak with Sales</h2>
-                <p className="text-[#7D8187] text-md mb-4">Find out how we can work together to build.</p>
-                <button className="px-4 py-2 border border-gray-700 rounded-full text-sm mt-2 hover:bg-gray-800">EMAIL SALES</button>
+                <h2 className="text-xl font-normal mb-4">Partner with Us</h2>
+                <p className="text-[#7D8187] text-md mb-4">Discover how our AI platforms can accelerate your business growth.</p>
+                <div className="flex gap-3 mt-2 flex-wrap">
+                  <button onClick={() => handleScrollToForm("Request Demo")} className="px-4 py-2 border border-gray-700 rounded-full text-sm hover:bg-gray-800">REQUEST DEMO</button>
+                  <button onClick={() => handleScrollToForm("Partner Program")} className="px-4 py-2 border border-gray-700 rounded-full text-sm hover:bg-gray-800">PARTNER PROGRAM</button>
+                </div>
               </div>
             </div>
           </div>
@@ -157,27 +178,27 @@ const Contact = () => {
             {/* Card 1 */}
             <div>
               <div className="h-full" data-aos="flip-left" data-aos-easing="ease-out-cubic" data-aos-duration="2000">
-                <div><img src={xAi} alt="" className="w-10 mb-4" /></div>
-                <h3 className="text-xl mt-2">Visit our official account on xAI.</h3>
-                <p className="text-[#7D8187] text-md pt-4">View news and analysis straight from our xAI page.</p>
+                <div className="text-4xl mb-4"><FaBook /></div>
+                <h3 className="text-xl mt-2">Read the Documentation</h3>
+                <p className="text-[#7D8187] text-md pt-4">Explore comprehensive guides, tutorials, and API documentation.</p>
               </div>
             </div>
 
             {/* Card 2 */}
             <div>
               <div className="h-full" data-aos="flip-left" data-aos-easing="ease-out-cubic" data-aos-duration="2000">
-                <div><img src={grok} alt="" className="w-10 mb-4" /></div>
-                <h3 className="text-xl mt-2">Investigate Grok on</h3>
-                <p className="text-[#7D8187] text-md pt-4">To see the most recent information, visit our official Grok account.</p>
+                <div className="text-4xl mb-4"><FaUsers /></div>
+                <h3 className="text-xl mt-2">Join our Community</h3>
+                <p className="text-[#7D8187] text-md pt-4">Connect with fellow developers, share insights, and get inspired.</p>
               </div>
             </div>
 
             {/* Card 3 */}
             <div>
               <div className="h-full" data-aos="flip-left" data-aos-easing="ease-out-cubic" data-aos-duration="2000">
-                <div><img src={joinGrok} alt="" className="w-10 h-10 mb-4" /></div>
-                <h3 className="text-xl mt-2">Get in touch with Grok via Discord</h3>
-                <p className="text-[#7D8187] text-md pt-4">To keep involved, join our official Grok Discord community.</p>
+                <div className="text-4xl mb-4"><FaMapMarkerAlt /></div>
+                <h3 className="text-xl mt-2">Global Operations</h3>
+                <p className="text-[#7D8187] text-md pt-4">Headquartered in Canada, we support an international client base.</p>
               </div>
             </div>
 
@@ -186,11 +207,11 @@ const Contact = () => {
               <div className="flex flex-col sm:flex-row gap-8 pt-6 text-sm">
                 <div data-aos="fade-up" data-aos-duration="3000">
                   <p className="uppercase font-medium text-[#7D8187]">Media</p>
-                  <p className="mt-1">media@x.ai</p>
+                  <p className="mt-1">media@vsinfotech.ca</p>
                 </div>
                 <div data-aos="fade-up" data-aos-duration="3000">
-                  <p className="uppercase font-medium text-[#7D8187]">Safety</p>
-                  <p className="mt-1">safety@x.ai</p>
+                  <p className="uppercase font-medium text-[#7D8187]">General Inquiry</p>
+                  <p className="mt-1">info@vsinfotech.ca</p>
                 </div>
               </div>
             </div>
@@ -204,7 +225,7 @@ const Contact = () => {
                 <img src={contact} alt="Contact" className="w-full h-full object-cover rounded-lg" />
               </div>
             </div>
-            <form onSubmit={ContactFormik.handleSubmit} className="j_input_field w-full md:w-1/2 space-y-6 h-full" data-aos="fade-left" data-aos-offset="300" data-aos-easing="ease-in-sine">
+            <form id="contactForm" onSubmit={ContactFormik.handleSubmit} className="j_input_field w-full md:w-1/2 space-y-6 h-full" data-aos="fade-left" data-aos-offset="300" data-aos-easing="ease-in-sine">
               {/* <div>
                 <label className="block mb-2 text-sm font-medium">Company size</label>
                 <select name='comsize' value={ContactFormik.values.comsize} onChange={ContactFormik.handleChange} onBlur={ContactFormik.handleBlur} className="w-full bg-black border border-gray-700 rounded-md px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gray-500">
