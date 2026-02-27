@@ -1,12 +1,13 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import axios from 'axios';
-
+const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000/api';
 // Async thunk for Google Login
 export const googleLoginUser = createAsyncThunk(
     'auth/googleLogin',
     async (token, { rejectWithValue }) => {
         try {
-            const response = await axios.post('http://localhost:5000/api/google-login', {
+
+            const response = await axios.post(`${API_URL}/google-login`, {
                 token: token
             });
             return response.data;
