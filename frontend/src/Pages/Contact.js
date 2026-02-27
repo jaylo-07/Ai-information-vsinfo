@@ -241,36 +241,36 @@ const Contact = () => {
                 <div>
                   <label className="block mb-2 text-sm font-medium">First name</label>
                   <input type="text" name='firstname' value={ContactFormik.values.firstname} onChange={ContactFormik.handleChange} onBlur={ContactFormik.handleBlur} className="w-full bg-black border border-gray-700 rounded-md px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gray-500" />
-                  {ContactFormik.touched.firstname && ContactFormik.errors.firstname && (<p className="text-red-500 text-xs">{ContactFormik.errors.firstname}</p>)}
+                  {ContactFormik.touched.firstname && ContactFormik.errors.firstname && (<p className="text-red-500 text-xs mt-1">{ContactFormik.errors.firstname}</p>)}
                 </div>
                 <div>
                   <label className="block mb-2 text-sm font-medium">Last name</label>
                   <input type="text" name='lastname' value={ContactFormik.values.lastname} onChange={ContactFormik.handleChange} onBlur={ContactFormik.handleBlur} className="w-full bg-black border border-gray-700 rounded-md px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gray-500" />
-                  {ContactFormik.touched.lastname && ContactFormik.errors.lastname && (<p className="text-red-500 text-xs">{ContactFormik.errors.lastname}</p>)}
+                  {ContactFormik.touched.lastname && ContactFormik.errors.lastname && (<p className="text-red-500 text-xs mt-1">{ContactFormik.errors.lastname}</p>)}
                 </div>
               </div>
               <div>
                 <label className="block mb-2 text-sm font-medium">Subject</label>
                 <input type="text" name='subject' value={ContactFormik.values.subject} onChange={ContactFormik.handleChange} onBlur={ContactFormik.handleBlur} className="w-full bg-black border border-gray-700 rounded-md px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gray-500" />
-                {ContactFormik.touched.subject && ContactFormik.errors.subject && (<p className="text-red-500 text-xs">{ContactFormik.errors.subject}</p>)}
+                {ContactFormik.touched.subject && ContactFormik.errors.subject && (<p className="text-red-500 text-xs mt-1">{ContactFormik.errors.subject}</p>)}
               </div>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
                 <div>
                   <label className="block mb-2 text-sm font-medium">Work email</label>
                   <input type="email" name='email' value={ContactFormik.values.email} onChange={ContactFormik.handleChange} onBlur={ContactFormik.handleBlur} className="w-full bg-black border border-gray-700 rounded-md px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gray-500" />
-                  {ContactFormik.touched.email && ContactFormik.errors.email && (<p className="text-red-500 text-xs">{ContactFormik.errors.email}</p>)}
+                  {ContactFormik.touched.email && ContactFormik.errors.email && (<p className="text-red-500 text-xs mt-1">{ContactFormik.errors.email}</p>)}
                 </div>
                 <div>
                   <label className="block mb-2 text-sm font-medium">Phone number</label>
                   <input type="tel" name='num' value={ContactFormik.values.num} onChange={ContactFormik.handleChange} onBlur={ContactFormik.handleBlur} className="w-full bg-black border border-gray-700 rounded-md px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gray-500" />
-                  {ContactFormik.touched.num && ContactFormik.errors.num && (<p className="text-red-500 text-xs">{ContactFormik.errors.num}</p>)}
+                  {ContactFormik.touched.num && ContactFormik.errors.num && (<p className="text-red-500 text-xs mt-1">{ContactFormik.errors.num}</p>)}
                 </div>
               </div>
               <div>
                 <label className="block mb-2 text-sm font-medium">Description
                 </label>
                 <textarea rows="5" name="message" value={ContactFormik.values.message} onChange={ContactFormik.handleChange} onBlur={ContactFormik.handleBlur} className="w-full bg-black border border-gray-700 rounded-md px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gray-500"></textarea>
-                {ContactFormik.touched.message && ContactFormik.errors.message && (<p className="text-red-500 text-xs">{ContactFormik.errors.message}</p>)}
+                {ContactFormik.touched.message && ContactFormik.errors.message && (<p className="text-red-500 text-xs mt-1">{ContactFormik.errors.message}</p>)}
               </div>
               <button type="submit" className="bg-gray-800 hover:bg-gray-700 px-6 py-2 rounded-full text-sm">Submit</button>
             </form>
