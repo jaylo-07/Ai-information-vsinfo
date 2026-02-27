@@ -1,4 +1,5 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
+import { runChat } from '../../config/gemini';
 
 // Async thunk to simulate receiving a response for a prompt
 export const sendPrompt = createAsyncThunk(
@@ -6,15 +7,10 @@ export const sendPrompt = createAsyncThunk(
     async (prompt, { rejectWithValue }) => {
         try {
             if (!prompt) return;
-            // Placeholder: Typically you would make an axios call to your backend AI service here
-            console.log("Sending prompt to AI:", prompt);
-
-            // Simulating API wait time
-            await new Promise(resolve => setTimeout(resolve, 1000));
-
+            const responseText = await runChat(prompt);
             return {
                 prompt: prompt,
-                response: `This is a sample AI response to: "${prompt}"` // Sample text to simulate AI
+                response: responseText
             };
         } catch (error) {
             return rejectWithValue(error.message);
