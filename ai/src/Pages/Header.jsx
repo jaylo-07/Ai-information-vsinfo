@@ -69,7 +69,7 @@ const Header = () => {
                   theme="filled_black"
                   shape="pill"
                   text="signin"
-                  useOneTap
+                  prompt="select_account"
                 />
               </div>
             )}
