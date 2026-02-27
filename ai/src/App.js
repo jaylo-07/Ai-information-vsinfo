@@ -158,7 +158,13 @@ function App() {
 
             <div className="mt-6 md:mt-8">
               <div ref={menuRootRef} className="bg-[#1f1f20] rounded-3xl px-4 py-3 md:px-6 md:py-4 border border-white/10 shadow-[0_0_0_1px_rgba(255,255,255,0.04)] flex flex-col gap-3">
-                <input type="text" placeholder="Ask Gemini 3" className="w-full bg-transparent border-none outline-none text-sm md:text-base placeholder:text-[#9ba0a6] text-white" />
+                <input
+                  type="text"
+                  placeholder="Ask Gemini 3"
+                  value={inputValue}
+                  onChange={(e) => setInputValue(e.target.value)}
+                  className="w-full bg-transparent border-none outline-none text-sm md:text-base placeholder:text-[#9ba0a6] text-white"
+                />
 
                 <div className="flex items-center justify-between text-xs md:text-sm text-gray-600 dark:text-[#c4c7c5]">
                   <div className="flex items-center gap-1.5">
@@ -174,7 +180,7 @@ function App() {
                       </button>
 
                       {openMenu === 'plus' && (
-                        <div role="menu" aria-label="Add menu" className="absolute top-full left-0 mt-2 z-50 bg-white dark:bg-[#1e1f20] border border-gray-200 dark:border-white/10 rounded-2xl py-2 w-[220px] shadow-lg dark:shadow-2xl">
+                        <div role="menu" aria-label="Add menu" className="absolute bottom-full left-0 mb-2 z-50 bg-white dark:bg-[#1e1f20] border border-gray-200 dark:border-white/10 rounded-2xl py-2 w-[220px] shadow-lg dark:shadow-2xl">
                           {plusMenuItems.map((item) => (
                             <button key={item.label} type="button" role="menuitem" className="w-full flex items-center gap-3 px-4 py-2.5 hover:bg-black/5 dark:hover:bg-white/10 text-gray-700 dark:text-white/90 hover:text-black dark:hover:text-white transition-colors text-left" onClick={() => setOpenMenu(null)}>
                               <span className="text-gray-500 dark:text-white/80">{item.icon}</span>
@@ -199,7 +205,7 @@ function App() {
                       </button>
 
                       {openMenu === 'tools' && (
-                        <div role="menu" aria-label="Tools menu" className="absolute top-full left-0 mt-2 z-50 bg-white dark:bg-[#1e1f20] border border-gray-200 dark:border-white/10 rounded-2xl py-2 w-[240px] shadow-lg dark:shadow-2xl">
+                        <div role="menu" aria-label="Tools menu" className="absolute bottom-full right-0 mb-2 z-50 bg-white dark:bg-[#1e1f20] border border-gray-200 dark:border-white/10 rounded-2xl py-2 w-[240px] shadow-lg dark:shadow-2xl">
                           {toolsMenuItems.map((item) => (
                             <button key={item.label} type="button" role="menuitem" className="w-full flex items-center gap-3 px-4 py-2.5 hover:bg-black/5 dark:hover:bg-white/10 text-gray-700 dark:text-white/90 hover:text-black dark:hover:text-white transition-colors text-left" onClick={() => setOpenMenu(null)}>
                               <span className="text-gray-500 dark:text-white/80">{item.icon}</span>
@@ -216,7 +222,35 @@ function App() {
                       <span>Thinking</span>
                       <ChevronDown className="w-3 h-3" />
                     </button>
-                    <button className="flex items-center justify-center w-8 h-8 md:w-9 md:h-9 rounded-full bg-black dark:bg-white text-white dark:text-black hover:bg-gray-800 dark:hover:bg-zinc-200 transition-colors">
+                    <button
+                      type="button"
+                      onClick={() => {
+                        const recognition = recognitionRef.current;
+                        if (!recognition) {
+                          alert('Speech recognition is not supported in this browser.');
+                          return;
+                        }
+
+                        if (isListening) {
+                          recognition.stop();
+                          setIsListening(false);
+                        } else {
+                          try {
+                            recognition.start();
+                            setIsListening(true);
+                          } catch {
+                            setIsListening(false);
+                          }
+                        }
+                      }}
+                      className={`flex items-center justify-center w-8 h-8 md:w-9 md:h-9 rounded-full transition-colors ${
+                        isListening
+                          ? 'bg-red-600 text-white hover:bg-red-700'
+                          : 'bg-black dark:bg-white text-white dark:text-black hover:bg-gray-800 dark:hover:bg-zinc-200'
+                      }`}
+                      aria-pressed={isListening}
+                      title={isListening ? 'Stop voice input' : 'Start voice input'}
+                    >
                       <Mic className="w-4 h-4 md:w-5 md:h-5" />
                     </button>
                   </div>
