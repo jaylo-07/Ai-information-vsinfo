@@ -1,11 +1,12 @@
-import React, { useState, useContext, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import {
   Menu, Plus, MessageSquare, HelpCircle, History, Settings,
   Link, Sun, CreditCard, BookOpen, MessageSquarePlus,
   ChevronRight, MapPin, Check, Sparkles, Box, X, Shield, MoreVertical,
   Share2, Pin, Edit2, Trash2
 } from 'lucide-react';
-import { Context } from '../context/Context';
+import { useDispatch, useSelector } from 'react-redux';
+import { sendPrompt, setRecentPromptSafe, newChat, setTheme, setIsMobileSidebarOpen } from '../redux/slice/chat.slice';
 
 const Sidebar = () => {
   const [extended, setExtended] = useState(true);
@@ -17,7 +18,8 @@ const Sidebar = () => {
   const settingsRef = useRef(null);
   const chatMenuRef = useRef(null);
 
-  const { onSent, prevPrompts, setRecentPrompt, newChat, theme, setTheme, isMobileSidebarOpen, setIsMobileSidebarOpen } = useContext(Context);
+  const dispatch = useDispatch();
+  const { prevPrompts, theme, isMobileSidebarOpen } = useSelector((state) => state.chat);
 
   // Close dropdown when clicking outside
   useEffect(() => {
@@ -44,8 +46,8 @@ const Sidebar = () => {
   }, [showSettings, showChatMenu]);
 
   const loadPrompt = async (prompt) => {
-    setRecentPrompt(prompt);
-    await onSent(prompt);
+    dispatch(setRecentPromptSafe(prompt));
+    await dispatch(sendPrompt(prompt));
   }
 
   return (
@@ -53,7 +55,7 @@ const Sidebar = () => {
       {/* Mobile Overlay */}
       {isMobileSidebarOpen && (
         <div
-          onClick={() => setIsMobileSidebarOpen(false)}
+          onClick={() => dispatch(setIsMobileSidebarOpen(false))}
           className="fixed inset-0 bg-black/50 z-40 lg:hidden backdrop-blur-sm transition-opacity"
         />
       )}
@@ -72,12 +74,12 @@ const Sidebar = () => {
             <div onClick={() => setExtended(prev => !prev)} className="hidden lg:flex cursor-pointer hover:bg-white/10 rounded-full w-10 h-10 items-center justify-center transition-colors">
               <Menu className="w-5 h-5 text-[#c4c7c5]" />
             </div>
-            <div onClick={() => setIsMobileSidebarOpen(false)} className="lg:hidden cursor-pointer hover:bg-white/10 rounded-full w-10 h-10 flex items-center justify-center transition-colors">
+            <div onClick={() => dispatch(setIsMobileSidebarOpen(false))} className="lg:hidden cursor-pointer hover:bg-white/10 rounded-full w-10 h-10 flex items-center justify-center transition-colors">
               <X className="w-5 h-5 text-[#c4c7c5]" />
             </div>
           </div>
 
-          <div onClick={() => newChat()} className={`mt-[40px] inline-flex items-center gap-3 bg-transparent hover:bg-white/5 py-2.5 px-4 rounded-full text-sm cursor-pointer transition-colors border border-[#444746] ${extended ? 'pr-8 max-w-[160px]' : 'px-0 w-10 h-10 justify-center'}`}>
+          <div onClick={() => dispatch(newChat())} className={`mt-[40px] inline-flex items-center gap-3 bg-transparent hover:bg-white/5 py-2.5 px-4 rounded-full text-sm cursor-pointer transition-colors border border-[#444746] ${extended ? 'pr-8 max-w-[160px]' : 'px-0 w-10 h-10 justify-center'}`}>
             <Plus className="w-5 h-5 text-[#c4c7c5] shrink-0" />
             {extended && <p className="text-[#c4c7c5] font-medium whitespace-nowrap">New chat</p>}
           </div>
@@ -173,17 +175,17 @@ const Sidebar = () => {
                       <ThemeOption
                         label="System"
                         selected={theme === 'System'}
-                        onClick={() => setTheme('System')}
+                        onClick={() => dispatch(setTheme('System'))}
                       />
                       <ThemeOption
                         label="Light"
                         selected={theme === 'Light'}
-                        onClick={() => setTheme('Light')}
+                        onClick={() => dispatch(setTheme('Light'))}
                       />
                       <ThemeOption
                         label="Dark"
                         selected={theme === 'Dark'}
-                        onClick={() => setTheme('Dark')}
+                        onClick={() => dispatch(setTheme('Dark'))}
                       />
                     </div>
                   )}
