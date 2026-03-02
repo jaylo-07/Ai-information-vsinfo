@@ -1,15 +1,92 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
-import { openRouter_runChat } from '../../config/openRoute';
 import { toast } from 'react-hot-toast';
 import { gemini_runChat } from '../../config/gemini';
+import axios from 'axios';
+import { BASE_URL } from '../../Utils/baseUrl';
+
+// Get token helper
+const getConfig = () => ({
+    headers: {
+        Authorization: `Bearer ${localStorage.getItem('token') || localStorage.getItem('Token')}`,
+    }
+});
+
+export const fetchThreads = createAsyncThunk(
+    'chat/fetchThreads', async (_, { rejectWithValue }) => {
+        try {
+            const response = await axios.get(`${BASE_URL}/threads`, getConfig());
+            // Depending on pagination or direct array return format in Laravel:
+            return response.data?.data || response.data;
+        } catch (error) {
+            return rejectWithValue(error.response?.data || error.message);
+        }
+    });
+
+export const fetchThreadMessages = createAsyncThunk(
+    'chat/fetchThreadMessages', async (threadId, { rejectWithValue }) => {
+        try {
+            const response = await axios.get(`${BASE_URL}/threads/${threadId}`, getConfig());
+            return response.data;
+        } catch (error) {
+            return rejectWithValue(error.response?.data || error.message);
+        }
+    });
+
+export const createThread = createAsyncThunk(
+    'chat/createThread', async (title, { rejectWithValue }) => {
+        try {
+            const response = await axios.post(`${BASE_URL}/threads`, { title }, getConfig());
+            return response.data;
+        } catch (error) {
+            return rejectWithValue(error.response?.data || error.message);
+        }
+    });
+
+export const deleteThread = createAsyncThunk(
+    'chat/deleteThread', async (threadId, { rejectWithValue }) => {
+        try {
+            await axios.delete(`${BASE_URL}/threads/${threadId}`, getConfig());
+            return threadId;
+        } catch (error) {
+            return rejectWithValue(error.response?.data || error.message);
+        }
+    });
+
+export const renameThread = createAsyncThunk(
+    'chat/renameThread', async ({ threadId, title }, { rejectWithValue }) => {
+        try {
+            const response = await axios.put(`${BASE_URL}/threads/${threadId}`, { title }, getConfig());
+            return response.data;
+        } catch (error) {
+            return rejectWithValue(error.response?.data || error.message);
+        }
+    });
 
 // Async thunk to simulate receiving a response for a prompt
 export const sendPrompt = createAsyncThunk(
     'chat/sendPrompt',
-    async ({ prompt, imageUrl }, { rejectWithValue, getState }) => {
+    async ({ prompt, imageUrl }, { rejectWithValue, getState, dispatch }) => {
         try {
             if (!prompt && !imageUrl) return;
             const state = getState();
+
+            let threadId = state.chat.currentThreadId;
+            let formattedTitle = prompt ? prompt.substring(0, 30) + (prompt.length > 30 ? "..." : "") : "Image chat";
+
+            // If no active thread, create one
+            if (!threadId) {
+                const threadResponse = await axios.post(`${BASE_URL}/threads`, { title: formattedTitle }, getConfig());
+                threadId = threadResponse.data.id;
+                dispatch(setCurrentThreadId(threadId));
+                dispatch(fetchThreads());
+            }
+
+            // Save user message to database
+            await axios.post(`${BASE_URL}/messages`, {
+                thread_id: threadId,
+                role: 'user',
+                message: prompt || ""
+            }, getConfig());
 
             // Get previous messages to maintain history
             const previousMessages = state.chat.messages;
@@ -23,7 +100,15 @@ export const sendPrompt = createAsyncThunk(
                 formattedHistory.pop();
             }
 
-            const responseText = await gemini_runChat(prompt || "", imageUrl);
+            const responseText = await gemini_runChat(prompt || "", formattedHistory);
+
+            // Save model message to database
+            await axios.post(`${BASE_URL}/messages`, {
+                thread_id: threadId,
+                role: 'model',
+                message: responseText
+            }, getConfig());
+
             return {
                 prompt: prompt,
                 response: responseText
@@ -45,7 +130,9 @@ const getInitialTheme = () => {
 };
 
 const initialState = {
-    prevPrompts: [],
+    threads: [],
+    currentThreadId: null,
+    prevPrompts: [],    // kept for safe fallbacks
     recentPrompt: '',
     theme: getInitialTheme(),
     isMobileSidebarOpen: false,
@@ -70,10 +157,16 @@ const chatSlice = createSlice({
         setRecentPromptSafe: (state, action) => {
             state.recentPrompt = action.payload;
         },
+        setCurrentThreadId: (state, action) => {
+            state.currentThreadId = action.payload;
+        },
         newChat: (state) => {
-            state.recentPrompt = '';
-            state.currentResponse = '';
-            state.messages = [];
+            if (!state.isLoading) {
+                state.recentPrompt = '';
+                state.currentResponse = '';
+                state.messages = [];
+                state.currentThreadId = null;
+            }
         }
     },
     extraReducers: (builder) => {
@@ -83,15 +176,6 @@ const chatSlice = createSlice({
                 // We add the user prompt optimistically if it's available in meta.arg
                 if (action.meta && action.meta.arg) {
                     const { prompt, imageUrl } = action.meta.arg;
-
-                    // Only save to recent chats if it's the first message of a new chat
-                    if (state.messages.length === 0 && prompt) {
-                        if (!state.prevPrompts.includes(prompt)) {
-                            state.prevPrompts.push(prompt);
-                        }
-                        state.recentPrompt = prompt;
-                    }
-
                     state.messages.push({ role: 'user', text: prompt || '', imageUrl });
                 }
             })
@@ -105,10 +189,56 @@ const chatSlice = createSlice({
             .addCase(sendPrompt.rejected, (state, action) => {
                 state.isLoading = false;
                 toast.error(action.payload || "Failed to get response");
-                // Remove the optimistically added user prompt on failure, or could leave it and add an error message.
+            })
+            .addCase(fetchThreads.fulfilled, (state, action) => {
+                state.threads = action.payload || [];
+            })
+            .addCase(fetchThreadMessages.pending, (state) => {
+                state.isLoading = true;
+                state.messages = [];
+            })
+            .addCase(fetchThreadMessages.fulfilled, (state, action) => {
+                state.isLoading = false;
+                if (action.payload) {
+                    state.currentThreadId = action.payload.id;
+                    state.recentPrompt = action.payload.title;
+                    if (action.payload.messages) {
+                        state.messages = action.payload.messages.map(msg => ({
+                            id: msg.id,
+                            role: msg.role,
+                            text: msg.message,
+                            created_at: msg.created_at
+                        }));
+                    } else {
+                        state.messages = [];
+                    }
+                }
+            })
+            .addCase(fetchThreadMessages.rejected, (state, action) => {
+                state.isLoading = false;
+                toast.error("Failed to load thread messages");
+            })
+            .addCase(deleteThread.fulfilled, (state, action) => {
+                state.threads = state.threads.filter(t => t.id !== action.payload);
+                if (state.currentThreadId === action.payload) {
+                    state.currentThreadId = null;
+                    state.messages = [];
+                    state.recentPrompt = '';
+                }
+                toast.success("Chat deleted");
+            })
+            .addCase(renameThread.fulfilled, (state, action) => {
+                const index = state.threads.findIndex(t => t.id === action.payload.id);
+                if (index !== -1) {
+                    state.threads[index] = action.payload;
+                }
+                if (state.currentThreadId === action.payload.id) {
+                    state.recentPrompt = action.payload.title;
+                }
+                toast.success("Chat renamed");
             });
     }
 });
 
-export const { setTheme, setIsMobileSidebarOpen, setRecentPromptSafe, newChat } = chatSlice.actions;
+export const { setTheme, setIsMobileSidebarOpen, setRecentPromptSafe, setCurrentThreadId, newChat } = chatSlice.actions;
 export default chatSlice.reducer;

@@ -7,7 +7,7 @@ import {
   Share2, Pin, Edit2, Trash2, Search, AlertCircle, ArrowLeft
 } from 'lucide-react';
 import { useDispatch, useSelector } from 'react-redux';
-import { sendPrompt, setRecentPromptSafe, newChat, setTheme, setIsMobileSidebarOpen } from '../redux/slice/chat.slice';
+import { sendPrompt, setRecentPromptSafe, newChat, setTheme, setIsMobileSidebarOpen, fetchThreads, fetchThreadMessages, deleteThread, renameThread } from '../redux/slice/chat.slice';
 
 const Sidebar = () => {
   const [extended, setExtended] = useState(true);
@@ -20,6 +20,8 @@ const Sidebar = () => {
   const [showPrivacyModal, setShowPrivacyModal] = useState(false);
   const [selectedHelpItem, setSelectedHelpItem] = useState(null);
   const [searchQuery, setSearchQuery] = useState('');
+  const [editingId, setEditingId] = useState(null);
+  const [editingTitle, setEditingTitle] = useState('');
 
   const helpItemsData = [
     {
@@ -48,7 +50,15 @@ const Sidebar = () => {
   const chatMenuRef = useRef(null);
 
   const dispatch = useDispatch();
-  const { prevPrompts, recentPrompt, theme, isMobileSidebarOpen } = useSelector((state) => state.chat);
+  const { threads, recentPrompt, theme, isMobileSidebarOpen, currentThreadId } = useSelector((state) => state.chat);
+  const authState = useSelector((state) => state.auth);
+
+  useEffect(() => {
+    // Fetch threads when Sidebar mounts if user is generally logged in (or just try to fetch)
+    if (authState?.token || localStorage.getItem('token') || localStorage.getItem('Token')) {
+      dispatch(fetchThreads());
+    }
+  }, [dispatch, authState?.token]);
 
   // Close dropdown when clicking outside
   useEffect(() => {
@@ -74,10 +84,8 @@ const Sidebar = () => {
     };
   }, [showSettings, showChatMenu]);
 
-  const loadPrompt = async (prompt) => {
-    dispatch(newChat());
-    dispatch(setRecentPromptSafe(prompt));
-    await dispatch(sendPrompt({ prompt: prompt, imageUrl: null }));
+  const loadPrompt = async (threadId) => {
+    dispatch(fetchThreadMessages(threadId));
   }
 
   return (
@@ -292,14 +300,41 @@ const Sidebar = () => {
             <div className="flex flex-col mt-8 animate-fadeIn">
               <p className="mb-4 text-sm px-1 font-semibold text-gray-900 dark:text-white">Recent</p>
               <div className="flex flex-col gap-1 max-h-[50vh] overflow-y-auto scrollbar-hidden">
-                {(!prevPrompts || prevPrompts.length === 0) && (
+                {(!threads || threads.length === 0) && (
                   <p className="px-4 text-[13px] text-gray-500 dark:text-[#8e918f] italic">No recent chats</p>
                 )}
-                {prevPrompts && [...prevPrompts].reverse().map((item, index) => {
-                  const isActive = recentPrompt === item;
+                {threads && threads.map((item, index) => {
+                  const isActive = currentThreadId === item.id;
                   return (
-                    <div key={index} className={`relative flex items-center justify-between gap-2 p-2 pl-4 mb-[2px] rounded-full cursor-pointer transition-colors group ${showChatMenu === index || isActive ? 'bg-purple-100 dark:bg-purple-900/30 text-purple-700 dark:text-purple-300' : 'bg-black/5 dark:bg-[#1e1e1e] text-gray-700 dark:text-[#a0a09e] hover:bg-black/10 dark:hover:bg-[#252525] hover:text-gray-900 dark:hover:text-white'}`}>
-                      <p onClick={() => loadPrompt(item)} className={`text-[13px] font-medium truncate w-full transition-colors ${showChatMenu === index || isActive ? 'text-purple-700 dark:text-purple-300' : ''}`}>{item}</p>
+                    <div key={item.id} className={`relative flex items-center justify-between gap-2 p-2 pl-4 mb-[2px] rounded-full cursor-pointer transition-colors group ${showChatMenu === index || isActive ? 'bg-purple-100 dark:bg-purple-900/30 text-purple-700 dark:text-purple-300' : 'bg-black/5 dark:bg-[#1e1e1e] text-gray-700 dark:text-[#a0a09e] hover:bg-black/10 dark:hover:bg-[#252525] hover:text-gray-900 dark:hover:text-white'}`}>
+                      <div onClick={() => loadPrompt(item.id)} className="flex-1 min-w-0 pr-2">
+                        {editingId === item.id ? (
+                          <input
+                            value={editingTitle}
+                            onChange={e => setEditingTitle(e.target.value)}
+                            onBlur={() => {
+                              if (editingTitle.trim() && editingTitle !== item.title) {
+                                dispatch(renameThread({ threadId: item.id, title: editingTitle.trim() }));
+                              }
+                              setEditingId(null);
+                            }}
+                            onKeyDown={e => {
+                              if (e.key === 'Enter') {
+                                if (editingTitle.trim() && editingTitle !== item.title) {
+                                  dispatch(renameThread({ threadId: item.id, title: editingTitle.trim() }));
+                                }
+                                setEditingId(null);
+                              }
+                            }}
+                            autoFocus
+                            onClick={e => e.stopPropagation()}
+                            className="bg-transparent outline-none w-full text-[13px] font-medium"
+                          />
+                        ) : (
+                          <p className={`text-[13px] font-medium truncate w-full transition-colors ${showChatMenu === index || isActive ? 'text-purple-700 dark:text-purple-300' : ''}`}>{item.title}</p>
+                        )}
+                      </div>
+
                       <div
                         onClick={(e) => {
                           e.stopPropagation();
@@ -326,15 +361,24 @@ const Sidebar = () => {
                           }}
                           className="fixed bg-white dark:bg-[#171717] border border-gray-200 dark:border-gray-800 rounded-xl py-1.5 w-[220px] shadow-xl dark:shadow-[0_10px_40px_rgba(0,0,0,0.5)] z-[9999] animate-scaleIn"
                         >
-                          <button className="w-full flex items-center gap-3 px-4 py-2 hover:bg-gray-100 dark:hover:bg-[#252525] text-gray-800 dark:text-[#e3e3e3] transition-colors text-left">
+                          <button onClick={(e) => { e.stopPropagation(); setShowChatMenu(null); }} className="w-full flex items-center gap-3 px-4 py-2 hover:bg-gray-100 dark:hover:bg-[#252525] text-gray-800 dark:text-[#e3e3e3] transition-colors text-left">
                             <Pin className="w-[18px] h-[18px]" />
                             <span className="text-sm font-medium">Pin</span>
                           </button>
-                          <button className="w-full flex items-center gap-3 px-4 py-2 hover:bg-gray-100 dark:hover:bg-[#252525] text-gray-800 dark:text-[#e3e3e3] transition-colors text-left">
+                          <button onClick={(e) => {
+                            e.stopPropagation();
+                            setEditingId(item.id);
+                            setEditingTitle(item.title);
+                            setShowChatMenu(null);
+                          }} className="w-full flex items-center gap-3 px-4 py-2 hover:bg-gray-100 dark:hover:bg-[#252525] text-gray-800 dark:text-[#e3e3e3] transition-colors text-left">
                             <Edit2 className="w-[18px] h-[18px]" />
                             <span className="text-sm font-medium">Rename</span>
                           </button>
-                          <button className="w-full flex items-center gap-3 px-4 py-2 hover:bg-red-50 dark:hover:bg-[#252525] text-red-600 dark:text-[#e3e3e3] transition-colors text-left">
+                          <button onClick={(e) => {
+                            e.stopPropagation();
+                            dispatch(deleteThread(item.id));
+                            setShowChatMenu(null);
+                          }} className="w-full flex items-center gap-3 px-4 py-2 hover:bg-red-50 dark:hover:bg-[#252525] text-red-600 dark:text-[#e3e3e3] transition-colors text-left">
                             <Trash2 className="w-[18px] h-[18px] dark:text-[#ff6b6b]" />
                             <span className="text-sm font-medium dark:text-[#e3e3e3]">Delete</span>
                           </button>

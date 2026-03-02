@@ -55,7 +55,7 @@ const Header = () => {
       const { name, email, sub, picture } = userInfo;
       const formattedUserName = name.replace(/\s+/g, '_');
 
-      dispatch(googleLogin({ uid: sub, username: formattedUserName, fullName: name, email, photo: picture }))
+      dispatch(googleLogin({ uid: sub, username: formattedUserName, fullName: name, email, image: picture }))
     },
   });
 
@@ -80,11 +80,11 @@ const Header = () => {
             {user ? (
               <div className="relative flex items-center gap-3" ref={dropdownRef}>
                 <div onClick={() => setIsDropdownOpen(!isDropdownOpen)} className="cursor-pointer">
-                  {user.picture ? (
-                    <img src={user.picture} alt="Profile" className="w-9 h-9 lg:w-10 lg:h-10 rounded-full border border-gray-300 dark:border-[#444746] shadow-lg hover:scale-105 transition-transform" referrerPolicy="no-referrer" />
+                  {user.image ? (
+                    <img src={user.image} alt="Profile" className="w-9 h-9 lg:w-10 lg:h-10 rounded-full border border-gray-300 dark:border-[#444746] shadow-lg hover:scale-105 transition-transform" referrerPolicy="no-referrer" />
                   ) : (
                     <div className="w-9 h-9 lg:w-10 lg:h-10 rounded-full bg-blue-600 flex items-center justify-center text-white font-bold border border-gray-300 dark:border-[#444746] shadow-lg hover:scale-105 transition-transform">
-                      {user.name?.charAt(0) || 'U'}
+                      {user.fullName?.charAt(0) || 'U'}
                     </div>
                   )}
                 </div>
@@ -95,23 +95,23 @@ const Header = () => {
                     <div className="absolute top-0 left-0 right-0 h-28 bg-gradient-to-br from-[#9D00FF]/20 via-purple-500/20 to-fuchsia-500/20 dark:from-[#9D00FF]/30 dark:to-fuchsia-500/30 blur-2xl z-0 rounded-t-3xl"></div>
 
                     <div className="relative z-10 flex flex-col items-center pt-3 mb-5">
-                      {user.picture ? (
+                      {user.image ? (
                         <div className="relative mb-4 group">
                           <div className="absolute inset-0 bg-gradient-to-tr from-[#9D00FF] to-fuchsia-500 rounded-full blur-lg opacity-40 group-hover:opacity-70 transition-opacity duration-500"></div>
-                          <img src={user.picture} alt="Profile" className="relative w-20 h-20 rounded-full object-cover border-[3px] border-white/80 dark:border-[#121212]/80 shadow-xl transform group-hover:scale-105 transition-all duration-500" referrerPolicy="no-referrer" />
+                          <img src={user.image} alt="Profile" className="relative w-20 h-20 rounded-full object-cover border-[3px] border-white/80 dark:border-[#121212]/80 shadow-xl transform group-hover:scale-105 transition-all duration-500" referrerPolicy="no-referrer" />
                         </div>
                       ) : (
                         <div className="relative mb-4 group">
                           <div className="absolute inset-0 bg-gradient-to-tr from-[#9D00FF] to-fuchsia-500 rounded-full blur-lg opacity-40 group-hover:opacity-70 transition-opacity duration-500"></div>
                           <div className="relative w-20 h-20 rounded-full bg-gradient-to-tr from-[#9D00FF] to-fuchsia-500 flex items-center justify-center text-white text-3xl font-bold shadow-xl border-[3px] border-white/80 dark:border-[#121212]/80 transform group-hover:scale-105 transition-all duration-500">
-                            {user.name?.charAt(0).toUpperCase() || 'U'}
+                            {user.fullName?.charAt(0).toUpperCase() || 'U'}
                           </div>
                         </div>
                       )}
 
                       <div className="text-center bg-white/50 dark:bg-black/20 backdrop-blur-md px-6 py-4 rounded-2xl border border-white/60 dark:border-white/5 w-full shadow-sm hover:shadow-md transition-shadow duration-300">
                         <p className="text-xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-gray-900 to-gray-600 dark:from-white dark:to-gray-300 tracking-tight">
-                          {user.name || 'User'}
+                          {user.fullName || 'User'}
                         </p>
                         <p className="text-[13px] font-medium text-gray-500 dark:text-gray-400 mt-1 truncate w-full">
                           {user.email || 'Google Account'}

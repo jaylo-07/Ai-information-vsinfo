@@ -20,10 +20,10 @@ export const googleLoginUser = createAsyncThunk(
 
 export const googleLogin = createAsyncThunk(
   "auth/google-login",
-  async ({ uid, username, fullName, email, photo }, { dispatch, rejectWithValue }) => {
+  async ({ uid, username, fullName, email, image }, { dispatch, rejectWithValue }) => {
     // console.log(uid, userName, fullName, email, photo);
     try {
-      const response = await axios.post(`${BASE_URL}/auth/login`, {  username, fullName, email, image: photo }, { withCredentials: true });
+      const response = await axios.post(`${BASE_URL}/auth/login`, {  username, fullName, email, image });
      
       const userData = response?.data?.user;
      
