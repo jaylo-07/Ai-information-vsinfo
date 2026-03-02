@@ -1,5 +1,6 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import { runChat } from '../../config/gemini';
+import { toast } from 'react-hot-toast';
 
 // Async thunk to simulate receiving a response for a prompt
 export const sendPrompt = createAsyncThunk(
@@ -75,8 +76,10 @@ const chatSlice = createSlice({
                     state.currentResponse = action.payload.response;
                 }
             })
-            .addCase(sendPrompt.rejected, (state) => {
+            .addCase(sendPrompt.rejected, (state, action) => {
+                state.isLoading = true; // Still true? No, should be false
                 state.isLoading = false;
+                toast.error(action.payload || "Failed to get response");
             });
     }
 });
