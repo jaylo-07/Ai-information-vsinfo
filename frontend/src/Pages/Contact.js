@@ -8,8 +8,6 @@ import * as Yup from "yup";
 import { useFormik } from 'formik';
 import axios from 'axios';
 import toast from 'react-hot-toast';
-
-const serverUrl = 'http://localhost:4000'
 import { BASE_URL } from '../Utils/baseUrl';
 
 const Contact = () => {

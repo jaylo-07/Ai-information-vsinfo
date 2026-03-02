@@ -1,13 +1,14 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
-import { runChat } from '../../config/gemini';
+import { openRouter_runChat } from '../../config/openRoute';
+// import { gemini_runChat } from '../../config/gemini';
 import { toast } from 'react-hot-toast';
 
 // Async thunk to simulate receiving a response for a prompt
 export const sendPrompt = createAsyncThunk(
     'chat/sendPrompt',
-    async (prompt, { rejectWithValue, getState }) => {
+    async ({ prompt, imageUrl }, { rejectWithValue, getState }) => {
         try {
-            if (!prompt) return;
+            if (!prompt && !imageUrl) return;
             const state = getState();
 
             // Get previous messages to maintain history
@@ -17,13 +18,12 @@ export const sendPrompt = createAsyncThunk(
                 parts: [{ text: msg.text }]
             }));
 
-            // The pending reducer adds the current prompt to state.messages before this async callback executes.
             // We need to exclude the current prompt from the history passed to startChat.
-            if (formattedHistory.length > 0 && formattedHistory[formattedHistory.length - 1].role === 'user' && formattedHistory[formattedHistory.length - 1].parts[0].text === prompt) {
+            if (formattedHistory.length > 0 && formattedHistory[formattedHistory.length - 1].role === 'user' && formattedHistory[formattedHistory.length - 1].parts[0].text === (prompt || "")) {
                 formattedHistory.pop();
             }
 
-            const responseText = await runChat(prompt, formattedHistory);
+            const responseText = await openRouter_runChat(prompt || "", imageUrl);
             return {
                 prompt: prompt,
                 response: responseText
@@ -85,7 +85,8 @@ const chatSlice = createSlice({
                 state.isLoading = true;
                 // We add the user prompt optimistically if it's available in meta.arg
                 if (action.meta && action.meta.arg) {
-                    state.messages.push({ role: 'user', text: action.meta.arg });
+                    const { prompt, imageUrl } = action.meta.arg;
+                    state.messages.push({ role: 'user', text: prompt || '', imageUrl });
                 }
             })
             .addCase(sendPrompt.fulfilled, (state, action) => {

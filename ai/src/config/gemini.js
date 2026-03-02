@@ -4,7 +4,7 @@ import { GoogleGenerativeAI } from "@google/generative-ai";
 const apiKey = process.env.REACT_APP_GEMINI_API_KEY;
 const genAI = new GoogleGenerativeAI(apiKey);
 
-export async function runChat(prompt, history = []) {
+export async function gemini_runChat(prompt, history = []) {
     // Updated to the new gemini-3-flash-preview model as mentioned in your URL
     const model = genAI.getGenerativeModel({ model: "gemini-3-flash-preview" });
 
