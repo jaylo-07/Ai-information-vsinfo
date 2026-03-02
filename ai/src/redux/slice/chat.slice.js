@@ -1,7 +1,7 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import { openRouter_runChat } from '../../config/openRoute';
-// import { gemini_runChat } from '../../config/gemini';
 import { toast } from 'react-hot-toast';
+import { gemini_runChat } from '../../config/gemini';
 
 // Async thunk to simulate receiving a response for a prompt
 export const sendPrompt = createAsyncThunk(
@@ -23,7 +23,7 @@ export const sendPrompt = createAsyncThunk(
                 formattedHistory.pop();
             }
 
-            const responseText = await openRouter_runChat(prompt || "", imageUrl);
+            const responseText = await gemini_runChat(prompt || "", imageUrl);
             return {
                 prompt: prompt,
                 response: responseText
