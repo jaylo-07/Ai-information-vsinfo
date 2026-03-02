@@ -303,7 +303,7 @@ function App() {
           <main className="flex-1 flex flex-col px-4 lg:px-12 pb-10 transition-colors duration-300 overflow-hidden">
             <div className="w-full max-w-3xl mx-auto flex flex-col h-full pt-2 sm:pt-6">
               {messages && messages.length > 0 ? (
-                <div className="flex-1 overflow-y-auto mb-6 bg-transparent scrollbar-thin scrollbar-thumb-gray-300 dark:scrollbar-thumb-gray-600 flex flex-col gap-6 pr-2 mt-4 sm:mt-0">
+                <div className="flex-1 overflow-y-auto mb-6 bg-transparent scrollbar-hide flex flex-col gap-6 pr-2 mt-4 sm:mt-0">
                   {messages.map((msg, idx) => (
                     <div
                       key={idx}
