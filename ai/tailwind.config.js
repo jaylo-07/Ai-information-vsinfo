@@ -9,6 +9,26 @@ module.exports = {
         themelight: "#FFFFFF80",
         themeblack: "#141414",
       },
+      keyframes: {
+        slideUpFade: {
+          '0%': { opacity: '0', transform: 'translateY(20px)' },
+          '100%': { opacity: '1', transform: 'translateY(0)' },
+        },
+        scaleIn: {
+          '0%': { opacity: '0', transform: 'scale(0.95)' },
+          '100%': { opacity: '1', transform: 'scale(1)' },
+        },
+        popIn: {
+          '0%': { opacity: '0', transform: 'scale(0.8)' },
+          '40%': { opacity: '1', transform: 'scale(1.1)' },
+          '100%': { opacity: '1', transform: 'scale(1)' },
+        },
+      },
+      animation: {
+        slideUpFade: 'slideUpFade 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards',
+        scaleIn: 'scaleIn 0.2s ease-out forwards',
+        popIn: 'popIn 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards',
+      },
       screens: {
         'sx': "424px",
         sm: "575px",
