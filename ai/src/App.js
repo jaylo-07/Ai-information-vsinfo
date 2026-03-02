@@ -44,9 +44,9 @@ function App() {
   return (
     <>
       <Toaster position="top-center" reverseOrder={false} />
-      <div className="min-h-screen flex bg-white dark:bg-[#131314] text-black dark:text-white transition-colors duration-300">
+      <div className="h-[100dvh] overflow-hidden flex bg-white dark:bg-[#09090b] text-black dark:text-white transition-colors duration-300">
         <Sidebar />
-        <div className="flex-1 flex flex-col bg-white dark:bg-[#131314] transition-colors duration-300">
+        <div className="flex-1 flex flex-col overflow-hidden bg-white dark:bg-[#09090b] transition-colors duration-300">
           <Header />
           <Home />
         </div>

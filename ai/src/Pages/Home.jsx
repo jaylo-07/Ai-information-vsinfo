@@ -1,7 +1,7 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { sendPrompt } from '../redux/slice/chat.slice';
-import { Plus, SlidersHorizontal, Search, Image as ImageIcon, LayoutPanelTop, GraduationCap, Upload, Images, File as FileIcon, X, SendHorizontal, Sparkles } from 'lucide-react';
+import { Plus, SlidersHorizontal, Search, Image as ImageIcon, LayoutPanelTop, GraduationCap, Upload, Images, File as FileIcon, X, SendHorizontal, Sparkles, Paintbrush, BarChart3, Code2, Lightbulb } from 'lucide-react';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
@@ -138,10 +138,10 @@ const Home = () => {
     }, []);
 
     const quickActions = [
-        { label: 'Create an Image', desc: 'Generate vivid art', emoji: '🎨', color: 'from-pink-500 to-rose-400' },
-        { label: 'Analyze Data', desc: 'Find insights fast', emoji: '📊', color: 'from-blue-500 to-cyan-400' },
-        { label: 'Write Code', desc: 'Build your app', emoji: '💻', color: 'from-purple-500 to-indigo-500' },
-        { label: 'Explain Concepts', desc: 'Learn something new', emoji: '💡', color: 'from-amber-400 to-orange-500' },
+        { label: 'Create an Image', desc: 'Generate vivid art', icon: <Paintbrush className="w-6 h-6" />, color: 'from-pink-500 to-rose-400' },
+        { label: 'Analyze Data', desc: 'Find insights fast', icon: <BarChart3 className="w-6 h-6" />, color: 'from-blue-500 to-cyan-400' },
+        { label: 'Write Code', desc: 'Build your app', icon: <Code2 className="w-6 h-6" />, color: 'from-purple-500 to-indigo-500' },
+        { label: 'Explain Concepts', desc: 'Learn something new', icon: <Lightbulb className="w-6 h-6" />, color: 'from-amber-400 to-orange-500' },
     ];
 
     const handlePlusMenuItemClick = (label) => {
@@ -232,7 +232,7 @@ const Home = () => {
 
                 {/* Chat Area / Hero */}
                 {messages && messages.length > 0 ? (
-                    <div className="flex-1 overflow-y-auto mb-4 scrollbar-hide flex flex-col gap-8 pb-4">
+                    <div className="flex-1 overflow-y-auto scrollbar-hide flex flex-col gap-8">
                         {messages.map((msg, idx) => (
                             <div key={idx} className={`flex w-full ${msg.role === 'user' ? 'justify-end' : 'justify-start'} animate-slideUpFade`}>
                                 {msg.role !== 'user' && (
@@ -330,8 +330,8 @@ const Home = () => {
                                     className="group relative overflow-hidden flex flex-col items-start p-5 rounded-3xl bg-white/50 dark:bg-[#121212]/50 backdrop-blur-md border border-gray-200 dark:border-white/10 hover:border-purple-500/50 dark:hover:border-purple-400/50 cursor-pointer transition-all duration-300 hover:-translate-y-1 hover:shadow-xl dark:hover:shadow-[0_0_30px_rgba(157,0,255,0.1)]"
                                 >
                                     <div className={`absolute top-0 left-0 w-full h-1 bg-gradient-to-r ${action.color} opacity-0 group-hover:opacity-100 transition-opacity`}></div>
-                                    <div className="w-12 h-12 rounded-2xl bg-gray-100 dark:bg-white/5 flex items-center justify-center text-2xl mb-4 group-hover:scale-110 transition-transform duration-300 shadow-sm">
-                                        {action.emoji}
+                                    <div className="w-12 h-12 rounded-2xl bg-gray-100 dark:bg-white/5 flex items-center justify-center text-gray-700 dark:text-gray-300 mb-4 group-hover:scale-110 group-hover:text-purple-600 dark:group-hover:text-purple-400 transition-all duration-300 shadow-sm relative z-10">
+                                        {action.icon}
                                     </div>
                                     <span className="text-base font-semibold text-gray-900 dark:text-white mb-1 group-hover:text-purple-600 dark:group-hover:text-purple-400 transition-colors">{action.label}</span>
                                     <span className="text-sm font-medium text-gray-500 dark:text-gray-400">{action.desc}</span>

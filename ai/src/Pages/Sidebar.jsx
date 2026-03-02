@@ -265,7 +265,7 @@ const Sidebar = () => {
 
       <div className={`
         fixed lg:relative inset-y-0 left-0 z-50
-        flex flex-col justify-between bg-white/90 dark:bg-black/80 lg:bg-transparent lg:border-r border-black/5 dark:border-white/5 p-4
+        flex flex-col justify-between bg-white/80 dark:bg-[#09090b]/80 lg:bg-transparent lg:border-r border-gray-200/50 dark:border-white/5 p-4
         transition-all duration-300 font-sans overflow-visible backdrop-blur-3xl lg:backdrop-blur-none
         ${isMobileSidebarOpen ? 'translate-x-0 w-[280px]' : '-translate-x-full lg:translate-x-0'}
         ${extended ? 'lg:w-[280px]' : 'lg:w-[72px]'}
@@ -273,31 +273,36 @@ const Sidebar = () => {
 
         {/* Top Section */}
         <div>
-          <div className="flex items-center justify-between lg:justify-start">
-            <div onClick={() => setExtended(prev => !prev)} className="hidden lg:flex cursor-pointer hover:bg-black/5 dark:hover:bg-white/10 rounded-full w-10 h-10 items-center justify-center transition-colors">
-              <Menu className="w-5 h-5 text-gray-900 dark:text-white/80" />
+          <div className="flex items-center justify-between lg:justify-start px-1">
+            <div onClick={() => setExtended(prev => !prev)} className="hidden lg:flex cursor-pointer hover:bg-gray-100 dark:hover:bg-white/5 rounded-xl w-10 h-10 items-center justify-center transition-all duration-300 group">
+              <Menu className="w-5 h-5 text-gray-700 dark:text-gray-400 group-hover:text-[#9D00FF] dark:group-hover:text-purple-400 transition-colors" />
             </div>
-            <div onClick={() => dispatch(setIsMobileSidebarOpen(false))} className="lg:hidden cursor-pointer hover:bg-black/5 dark:hover:bg-white/10 rounded-full w-10 h-10 flex items-center justify-center transition-colors">
-              <X className="w-5 h-5 text-gray-900 dark:text-white/80" />
+            <div onClick={() => dispatch(setIsMobileSidebarOpen(false))} className="lg:hidden cursor-pointer hover:bg-gray-100 dark:hover:bg-white/5 rounded-xl w-10 h-10 flex items-center justify-center transition-colors">
+              <X className="w-5 h-5 text-gray-700 dark:text-gray-400" />
             </div>
           </div>
 
-          <div onClick={() => dispatch(newChat())} className={`mt-[40px] rounded-full cursor-pointer transition-colors group bg-black/5 dark:bg-[#1e1e1e] text-gray-700 dark:text-[#a0a09e] hover:bg-black/10 dark:hover:bg-[#252525] dark:hover:text-white ${extended ? 'w-full flex items-center gap-3 p-2.5 pl-4' : 'flex items-center justify-center w-10 h-10 px-0'}`}>
-            <Plus className="w-5 h-5 shrink-0 text-gray-900 dark:text-white/80" />
-            {extended && <p className="font-medium whitespace-nowrap text-[14px] text-gray-900 dark:text-white/80">New chat</p>}
+          <div onClick={() => dispatch(newChat())} className={`mt-8 rounded-2xl cursor-pointer transition-all duration-300 group relative overflow-hidden bg-white dark:bg-[#121212] border border-gray-200/80 dark:border-white/5 hover:border-purple-500/30 dark:hover:border-purple-400/30 hover:shadow-[0_4px_20px_rgba(157,0,255,0.1)] ${extended ? 'w-full flex items-center gap-3 p-3 pl-3' : 'flex items-center justify-center w-11 h-11 px-0 mx-auto'}`}>
+            <div className={`flex items-center justify-center rounded-xl bg-purple-50 dark:bg-[#9D00FF]/10 group-hover:bg-[#9D00FF] group-hover:scale-110 transition-all duration-300 shadow-sm shrink-0 ${extended ? 'w-8 h-8' : 'w-full h-full bg-transparent dark:bg-transparent'}`}>
+              <Plus className={`transition-colors ${extended ? 'w-4 h-4 text-purple-600 dark:text-purple-400 group-hover:text-white' : 'w-5 h-5 text-gray-700 dark:text-gray-400 group-hover:text-[#9D00FF] dark:group-hover:text-purple-400'}`} />
+            </div>
+            {extended && <p className="font-semibold whitespace-nowrap text-[14px] text-gray-800 dark:text-gray-200 group-hover:text-[#9D00FF] dark:group-hover:text-purple-400 transition-colors relative z-10 tracking-wide">New chat</p>}
           </div>
 
           {extended && (
             <div className="flex flex-col mt-8 animate-fadeIn">
-              <p className="mb-4 text-sm px-1 font-semibold text-gray-900 dark:text-white">Recent</p>
+              <p className="mb-4 text-xs tracking-wider uppercase px-1 font-semibold text-gray-500 dark:text-gray-500">Recent</p>
               <div className="flex flex-col gap-1 max-h-[50vh] overflow-y-auto scrollbar-hidden">
                 {(!prevPrompts || prevPrompts.length === 0) && (
                   <p className="px-4 text-[13px] text-gray-500 dark:text-[#8e918f] italic">No recent chats</p>
                 )}
                 {prevPrompts && [...prevPrompts].reverse().map((item, index) => {
                   return (
-                    <div key={index} className={`relative flex items-center justify-between gap-2 p-2 pl-4 mb-[2px] rounded-full cursor-pointer transition-colors group ${showChatMenu === index ? 'bg-gray-200 dark:bg-[#1c2f4d] text-gray-900 dark:text-white' : 'bg-black/5 dark:bg-[#1e1e1e] text-gray-700 dark:text-[#a0a09e] hover:bg-black/10 dark:hover:bg-[#252525] dark:hover:text-white'}`}>
-                      <p onClick={() => loadPrompt(item)} className="text-[13px] font-medium truncate w-full">{item}</p>
+                    <div key={index} className={`relative flex items-center justify-between gap-2 p-2.5 pl-3 mb-1 rounded-xl cursor-pointer transition-all duration-300 group ${showChatMenu === index ? 'bg-purple-50 dark:bg-[#9D00FF]/10 text-purple-700 dark:text-purple-300' : 'bg-transparent text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-white/5'}`}>
+                      <div onClick={() => loadPrompt(item)} className="flex items-center gap-3 overflow-hidden w-full">
+                        <MessageSquare className={`w-4 h-4 shrink-0 transition-colors ${showChatMenu === index ? 'text-purple-600 dark:text-purple-400' : 'text-gray-400 dark:text-gray-500 group-hover:text-[#9D00FF] dark:group-hover:text-purple-400'}`} />
+                        <p className={`text-[13px] font-medium truncate w-full transition-colors ${showChatMenu === index ? 'text-purple-700 dark:text-purple-300' : 'group-hover:text-gray-900 dark:group-hover:text-gray-200'}`}>{item}</p>
+                      </div>
                       <div
                         onClick={(e) => {
                           e.stopPropagation();
@@ -309,7 +314,7 @@ const Sidebar = () => {
                             setShowChatMenu(index);
                           }
                         }}
-                        className={`chat-menu-btn p-1.5 rounded-full transition-all relative shrink-0 flex items-center justify-center ${showChatMenu === index ? 'opacity-100 bg-gray-300 dark:bg-[#0f1d33] text-gray-800 dark:text-white' : 'opacity-0 group-hover:opacity-100 hover:bg-black/10 dark:hover:bg-white/10 text-gray-500 dark:text-white/70'}`}
+                        className={`chat-menu-btn p-1.5 rounded-lg transition-all relative shrink-0 flex items-center justify-center ${showChatMenu === index ? 'opacity-100 bg-purple-100 dark:bg-purple-500/20 text-purple-700 dark:text-purple-300' : 'opacity-0 group-hover:opacity-100 hover:bg-gray-200 dark:hover:bg-white/10 text-gray-500 dark:text-gray-400'}`}
                       >
                         <MoreVertical className="w-4 h-4" />
                       </div>
@@ -462,10 +467,12 @@ const Sidebar = () => {
               setShowThemeMenu(false);
               setShowHelpMenu(false);
             }}
-            className={`flex items-center gap-3 p-2.5 rounded-full transition-colors group cursor-pointer ${showSettings ? 'bg-white/10' : 'hover:bg-white/10'}`}
+            className={`flex items-center gap-3 p-3 rounded-xl transition-all duration-300 group cursor-pointer ${showSettings ? 'bg-purple-50 dark:bg-purple-500/10 text-purple-600 dark:text-[#9D00FF]' : 'bg-transparent text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-white/5 hover:text-gray-900 dark:hover:text-gray-200'} ${!extended && 'justify-center w-11 h-11 px-0 mx-auto'}`}
           >
-            <Settings className={`w-5 h-5 transition-colors text-gray-900 dark:text-white/70 group-hover:text-gray-900 dark:group-hover:text-white`} />
-            {extended && <p className={`text-sm transition-colors font-medium text-gray-900 dark:text-white`}>Settings</p>}
+            <div className={`flex items-center justify-center rounded-lg transition-all duration-300 shrink-0 ${extended ? 'w-7 h-7' : 'w-full h-full bg-transparent'}`}>
+              <Settings className={`w-5 h-5 transition-all duration-300 group-hover:rotate-45 ${showSettings ? 'text-[#9D00FF] dark:text-[#9D00FF]' : 'text-gray-700 dark:text-gray-400 group-hover:text-[#9D00FF] dark:group-hover:text-[#9D00FF]'}`} />
+            </div>
+            {extended && <p className={`text-[13px] tracking-wide transition-colors font-semibold ${showSettings ? 'text-[#9D00FF] dark:text-[#9D00FF]' : 'group-hover:text-[#9D00FF] dark:group-hover:text-[#9D00FF]'}`}>Settings</p>}
           </div>
         </div>
       </div >
