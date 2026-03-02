@@ -298,8 +298,8 @@ const Sidebar = () => {
                 {prevPrompts && [...prevPrompts].reverse().map((item, index) => {
                   const isActive = recentPrompt === item;
                   return (
-                    <div key={index} className={`relative flex items-center justify-between gap-2 p-2 pl-4 mb-[2px] rounded-full cursor-pointer transition-colors group ${showChatMenu === index ? 'bg-gray-200 dark:bg-[#1c2f4d] text-gray-900 dark:text-white' : 'bg-black/5 dark:bg-[#1e1e1e] text-gray-700 dark:text-[#a0a09e] hover:bg-black/10 dark:hover:bg-[#252525] dark:hover:text-white'}`}>
-                      <p onClick={() => loadPrompt(item)} className="text-[13px] font-medium truncate w-full">{item}</p>
+                    <div key={index} className={`relative flex items-center justify-between gap-2 p-2 pl-4 mb-[2px] rounded-full cursor-pointer transition-colors group ${showChatMenu === index || isActive ? 'bg-purple-100 dark:bg-purple-900/30 text-purple-700 dark:text-purple-300' : 'bg-black/5 dark:bg-[#1e1e1e] text-gray-700 dark:text-[#a0a09e] hover:bg-black/10 dark:hover:bg-[#252525] hover:text-gray-900 dark:hover:text-white'}`}>
+                      <p onClick={() => loadPrompt(item)} className={`text-[13px] font-medium truncate w-full transition-colors ${showChatMenu === index || isActive ? 'text-purple-700 dark:text-purple-300' : ''}`}>{item}</p>
                       <div
                         onClick={(e) => {
                           e.stopPropagation();
