@@ -69,9 +69,6 @@ const chatSlice = createSlice({
         },
         setRecentPromptSafe: (state, action) => {
             state.recentPrompt = action.payload;
-            if (action.payload && !state.prevPrompts.includes(action.payload)) {
-                state.prevPrompts.push(action.payload);
-            }
         },
         newChat: (state) => {
             state.recentPrompt = '';
@@ -86,15 +83,21 @@ const chatSlice = createSlice({
                 // We add the user prompt optimistically if it's available in meta.arg
                 if (action.meta && action.meta.arg) {
                     const { prompt, imageUrl } = action.meta.arg;
+
+                    // Only save to recent chats if it's the first message of a new chat
+                    if (state.messages.length === 0 && prompt) {
+                        if (!state.prevPrompts.includes(prompt)) {
+                            state.prevPrompts.push(prompt);
+                        }
+                        state.recentPrompt = prompt;
+                    }
+
                     state.messages.push({ role: 'user', text: prompt || '', imageUrl });
                 }
             })
             .addCase(sendPrompt.fulfilled, (state, action) => {
                 state.isLoading = false;
                 if (action.payload && action.payload.prompt) {
-                    if (!state.prevPrompts.includes(action.payload.prompt)) {
-                        state.prevPrompts.push(action.payload.prompt);
-                    }
                     state.currentResponse = action.payload.response;
                     state.messages.push({ role: 'model', text: action.payload.response });
                 }

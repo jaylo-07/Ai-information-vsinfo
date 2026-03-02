@@ -48,7 +48,7 @@ const Sidebar = () => {
   const chatMenuRef = useRef(null);
 
   const dispatch = useDispatch();
-  const { prevPrompts, theme, isMobileSidebarOpen } = useSelector((state) => state.chat);
+  const { prevPrompts, recentPrompt, theme, isMobileSidebarOpen } = useSelector((state) => state.chat);
 
   // Close dropdown when clicking outside
   useEffect(() => {
@@ -75,8 +75,9 @@ const Sidebar = () => {
   }, [showSettings, showChatMenu]);
 
   const loadPrompt = async (prompt) => {
+    dispatch(newChat());
     dispatch(setRecentPromptSafe(prompt));
-    await dispatch(sendPrompt(prompt));
+    await dispatch(sendPrompt({ prompt: prompt, imageUrl: null }));
   }
 
   return (
@@ -297,11 +298,12 @@ const Sidebar = () => {
                   <p className="px-4 text-[13px] text-gray-500 dark:text-[#8e918f] italic">No recent chats</p>
                 )}
                 {prevPrompts && [...prevPrompts].reverse().map((item, index) => {
+                  const isActive = recentPrompt === item;
                   return (
-                    <div key={index} className={`relative flex items-center justify-between gap-2 p-2.5 pl-3 mb-1 rounded-xl cursor-pointer transition-all duration-300 group ${showChatMenu === index ? 'bg-purple-50 dark:bg-[#9D00FF]/10 text-purple-700 dark:text-purple-300' : 'bg-transparent text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-white/5'}`}>
+                    <div key={index} className={`relative flex items-center justify-between gap-2 p-2.5 pl-3 mb-1 rounded-xl cursor-pointer transition-all duration-300 group ${showChatMenu === index || isActive ? 'bg-purple-50 dark:bg-[#9D00FF]/10 text-purple-700 dark:text-purple-300' : 'bg-transparent text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-white/5'}`}>
                       <div onClick={() => loadPrompt(item)} className="flex items-center gap-3 overflow-hidden w-full">
-                        <MessageSquare className={`w-4 h-4 shrink-0 transition-colors ${showChatMenu === index ? 'text-purple-600 dark:text-purple-400' : 'text-gray-400 dark:text-gray-500 group-hover:text-[#9D00FF] dark:group-hover:text-purple-400'}`} />
-                        <p className={`text-[13px] font-medium truncate w-full transition-colors ${showChatMenu === index ? 'text-purple-700 dark:text-purple-300' : 'group-hover:text-gray-900 dark:group-hover:text-gray-200'}`}>{item}</p>
+                        <MessageSquare className={`w-4 h-4 shrink-0 transition-colors ${showChatMenu === index || isActive ? 'text-purple-600 dark:text-purple-400' : 'text-gray-400 dark:text-gray-500 group-hover:text-[#9D00FF] dark:group-hover:text-purple-400'}`} />
+                        <p className={`text-[13px] font-medium truncate w-full transition-colors ${showChatMenu === index || isActive ? 'text-purple-700 dark:text-purple-300' : 'group-hover:text-gray-900 dark:group-hover:text-gray-200'}`}>{item}</p>
                       </div>
                       <div
                         onClick={(e) => {
