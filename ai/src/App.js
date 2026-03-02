@@ -54,6 +54,7 @@ function App() {
   const fileInputRef = useRef(null);
   const photoInputRef = useRef(null);
   const [attachments, setAttachments] = useState([]);
+  const [isDragOver, setIsDragOver] = useState(false);
   const dispatch = useDispatch();
   const modelButtonRef = useRef(null);
 
@@ -172,23 +173,50 @@ function App() {
     setOpenMenu(null);
   };
 
-  const handleFileChange = (event, type) => {
-    const files = Array.from(event.target.files || []);
-    if (!files.length) return;
-
+  const addFilesToAttachments = (files) => {
+    if (!files?.length) return;
     const newAttachments = files.map((file) => {
       const isImage = file.type.startsWith('image/');
       return {
         id: `${Date.now()}-${file.name}-${Math.random().toString(36).slice(2, 8)}`,
         file,
-        kind: type === 'photos' || isImage ? 'photo' : 'file',
+        kind: isImage ? 'photo' : 'file',
         previewUrl: isImage ? URL.createObjectURL(file) : null,
       };
     });
 
     setAttachments((prev) => [...prev, ...newAttachments]);
+  };
 
+  const handleFileChange = (event, type) => {
+    const files = Array.from(event.target.files || []);
+    addFilesToAttachments(files);
     event.target.value = '';
+  };
+
+  const handleDragEnter = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    if (e.dataTransfer.types.includes('Files')) setIsDragOver(true);
+  };
+
+  const handleDragOver = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+  };
+
+  const handleDragLeave = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    if (!e.currentTarget.contains(e.relatedTarget)) setIsDragOver(false);
+  };
+
+  const handleDrop = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsDragOver(false);
+    const files = Array.from(e.dataTransfer.files || []);
+    addFilesToAttachments(files);
   };
 
   const handleRemoveAttachment = (id) => {
@@ -234,7 +262,23 @@ function App() {
               <h1 className="text-[1.8rem] md:text-3xl lg:text-4xl font-semibold tracking-tight bg-gradient-to-r from-themedark via-black to-gray-500 dark:from-white dark:via-white dark:to-[#9ca3af] bg-clip-text text-transparent transition-colors animate-slideUpFade">Where should we start?</h1>
 
               <div className="mt-6 md:mt-8 animate-slideUpFade" style={{ animationDelay: '0.1s' }}>
-                <div ref={menuRootRef} className="bg-gray-100 dark:bg-[#1f1f20] rounded-3xl px-4 py-3 md:px-6 md:py-4 border border-gray-200 dark:border-white/10 shadow-[0_4px_12px_rgba(0,0,0,0.05)] dark:shadow-[0_0_0_1px_rgba(255,255,255,0.04)] flex flex-col gap-3 transition-colors hover:shadow-lg dark:hover:shadow-[0_0_0_1px_rgba(255,255,255,0.08)]">
+                <div
+                  ref={menuRootRef}
+                  onDragEnter={handleDragEnter}
+                  onDragOver={handleDragOver}
+                  onDragLeave={handleDragLeave}
+                  onDrop={handleDrop}
+                  className={`relative bg-gray-100 dark:bg-[#1f1f20] rounded-3xl px-4 py-3 md:px-6 md:py-4 border shadow-[0_4px_12px_rgba(0,0,0,0.05)] dark:shadow-[0_0_0_1px_rgba(255,255,255,0.04)] flex flex-col gap-3 transition-all duration-200 hover:shadow-lg dark:hover:shadow-[0_0_0_1px_rgba(255,255,255,0.08)] ${
+                    isDragOver
+                      ? 'border-blue-500 dark:border-blue-400 border-2 border-dashed ring-2 ring-blue-500/20 dark:ring-blue-400/20'
+                      : 'border-gray-200 dark:border-white/10'
+                  }`}
+                >
+                  {isDragOver && (
+                    <div className="absolute inset-0 rounded-3xl bg-blue-500/10 dark:bg-blue-500/20 flex items-center justify-center z-10 pointer-events-none">
+                      <p className="text-sm font-medium text-blue-600 dark:text-blue-400">Drop files or images here</p>
+                    </div>
+                  )}
                   {attachments.length > 0 && (
                     <div className="flex gap-3 overflow-x-auto pb-1 scrollbar-thin scrollbar-thumb-white/10 scrollbar-track-transparent">
                       {attachments.map((att) => (
