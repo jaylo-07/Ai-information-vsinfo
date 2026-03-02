@@ -19,6 +19,9 @@ const openRouter = apiKey ? new OpenRouter({
 export async function openRouter_runChat(prompt, imageFile = null) {
     if (!openRouter) throw new Error("SDK not initialized. Check your API Key.");
 
+    console.log(prompt,"prompt");
+    
+
     let finalImageUrl = null;
     // Handle binary files (images)
     if (imageFile instanceof File || imageFile instanceof Blob) {
