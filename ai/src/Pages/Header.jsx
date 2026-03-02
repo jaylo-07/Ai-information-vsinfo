@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { Menu, LogOut } from 'lucide-react';
 import { useDispatch, useSelector } from 'react-redux';
 import { setIsMobileSidebarOpen } from '../redux/slice/chat.slice';
@@ -9,6 +9,20 @@ import toast from 'react-hot-toast';
 const Header = () => {
   const dispatch = useDispatch();
   const { user } = useSelector((state) => state.auth);
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const dropdownRef = useRef(null);
+
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+        setIsDropdownOpen(false);
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, []);
 
   const handleGoogleSuccess = async (credentialResponse) => {
     try {
@@ -49,17 +63,35 @@ const Header = () => {
           </div>
           <div className="flex items-center gap-3">
             {user ? (
-              <div className="flex items-center gap-3">
-                {user.picture ? (
-                  <img src={user.picture} alt="Profile" className="w-9 h-9 lg:w-10 lg:h-10 rounded-full border border-gray-300 dark:border-[#444746] shadow-lg hover:scale-105 transition-transform cursor-pointer" referrerPolicy="no-referrer" />
-                ) : (
-                  <div className="w-9 h-9 lg:w-10 lg:h-10 rounded-full bg-blue-600 flex items-center justify-center text-white font-bold border border-gray-300 dark:border-[#444746] shadow-lg hover:scale-105 transition-transform cursor-pointer">
-                    {user.name?.charAt(0) || 'U'}
+              <div className="relative flex items-center gap-3" ref={dropdownRef}>
+                <div onClick={() => setIsDropdownOpen(!isDropdownOpen)} className="cursor-pointer">
+                  {user.picture ? (
+                    <img src={user.picture} alt="Profile" className="w-9 h-9 lg:w-10 lg:h-10 rounded-full border border-gray-300 dark:border-[#444746] shadow-lg hover:scale-105 transition-transform" referrerPolicy="no-referrer" />
+                  ) : (
+                    <div className="w-9 h-9 lg:w-10 lg:h-10 rounded-full bg-blue-600 flex items-center justify-center text-white font-bold border border-gray-300 dark:border-[#444746] shadow-lg hover:scale-105 transition-transform">
+                      {user.name?.charAt(0) || 'U'}
+                    </div>
+                  )}
+                </div>
+
+                {isDropdownOpen && (
+                  <div className="absolute right-0 top-12 mt-1 w-48 bg-white dark:bg-[#1e1f20] rounded-xl shadow-lg border border-gray-200 dark:border-white/10 z-50 overflow-hidden py-1">
+                    <div className="px-4 py-2 border-b border-gray-100 dark:border-white/10 mb-1">
+                      <p className="text-sm font-medium text-gray-900 dark:text-white truncate">{user.name || 'User'}</p>
+                      {user.email && <p className="text-xs text-gray-500 dark:text-gray-400 truncate mt-0.5">{user.email}</p>}
+                    </div>
+                    <button
+                      onClick={() => {
+                        dispatch(logout());
+                        setIsDropdownOpen(false);
+                      }}
+                      className="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-gray-700 dark:text-[#c4c7c5] hover:bg-gray-50 dark:hover:bg-white/5 transition-colors text-left"
+                    >
+                      <LogOut className="w-4 h-4" />
+                      Logout
+                    </button>
                   </div>
                 )}
-                <button onClick={() => dispatch(logout())} className="p-2 bg-black/5 dark:bg-white/5 hover:bg-black/10 dark:hover:bg-white/10 border border-gray-200 dark:border-white/10 rounded-full transition-colors flex items-center justify-center" title="Logout">
-                  <LogOut className="w-4 h-4 text-gray-600 dark:text-[#c4c7c5]" />
-                </button>
               </div>
             ) : (
               <div className="scale-90 lg:scale-100 origin-right">
