@@ -251,243 +251,250 @@ function App() {
   };
 
   const getInputPlaceholder = () => {
-    if (!activeTool) return 'Ask Gemini 3';
+    if (!activeTool) return 'Ask vsinfotech AI';
 
     switch (activeTool.label) {
       case 'Deep Research':
-        return 'Ask Gemini 3 to do deep research on anything';
+        return 'Ask vsinfotech AI to do deep research on anything';
       case 'Create images':
-        return 'Ask Gemini 3 to create an image';
+        return 'Ask vsinfotech AI to create an image';
       case 'Canvas':
-        return 'Ask Gemini 3 to brainstorm on a canvas';
+        return 'Ask vsinfotech AI to brainstorm on a canvas';
       case 'Guided Learning':
-        return 'Ask Gemini 3 to create a guided learning plan';
+        return 'Ask vsinfotech AI to create a guided learning plan';
       default:
-        return 'Ask Gemini 3';
+        return 'Ask vsinfotech AI';
     }
   };
 
   return (
     <>
       <Toaster position="top-center" reverseOrder={false} />
-      <div className="min-h-screen flex bg-white dark:bg-[#131314] text-black dark:text-white transition-colors duration-300">
-        <Sidebar />
-        <div className="flex-1 flex flex-col bg-white dark:bg-[#131314] transition-colors duration-300">
-          <Header />
-          <main className="flex-1 flex flex-col px-4 lg:px-12 pb-10 transition-colors duration-300 overflow-hidden">
-            <div className="w-full max-w-3xl mx-auto flex flex-col h-full pt-2 sm:pt-6">
-              {messages && messages.length > 0 ? (
-                <div className="flex-1 overflow-y-auto mb-6 bg-transparent scrollbar-thin scrollbar-thumb-gray-300 dark:scrollbar-thumb-gray-600 flex flex-col gap-6 pr-2 mt-4 sm:mt-0">
-                  {messages.map((msg, idx) => (
-                    <div key={idx} className={`flex w-full ${msg.role === 'user' ? 'justify-center mb-6' : 'justify-start'}`}>
-                      {msg.role !== 'user' && (
-                        <div className="w-8 h-8 rounded-full bg-gradient-to-tr from-blue-500 to-purple-500 flex items-center justify-center text-white mr-3 shrink-0 mt-1">
-                          <span className="text-sm">✨</span>
-                        </div>
-                      )}
-                      <div className={`${msg.role === 'user' ? 'w-full bg-gray-100 dark:bg-[#1f1f20] rounded-3xl p-4 md:p-6 text-black dark:text-white border border-gray-200 dark:border-white/10 shadow-[0_4px_12px_rgba(0,0,0,0.02)] dark:shadow-[0_0_0_1px_rgba(255,255,255,0.04)]' : 'max-w-[90%] sm:max-w-[85%] rounded-2xl px-5 py-3 text-black dark:text-[#e3e3e3] bg-transparent'}`}>
-                        {msg.role === 'user' ? (
-                          <div className="whitespace-pre-wrap text-[15px] leading-relaxed font-sans">{msg.text}</div>
-                        ) : (
-                          <div className="markdown-body prose dark:prose-invert max-w-none break-words text-[15px] leading-7">
-                            <ReactMarkdown
-                              remarkPlugins={[remarkGfm]}
-                              components={{
-                                code({ node, inline, className, children, ...props }) {
-                                  const match = /language-(\w+)/.exec(className || '')
-                                  return !inline && match ? (
-                                    <SyntaxHighlighter
-                                      {...props}
-                                      children={String(children).replace(/\n$/, '')}
-                                      style={dracula}
-                                      language={match[1]}
-                                      PreTag="div"
-                                      className="rounded-lg !my-4 !bg-[#121212] text-sm md:text-[15px]"
-                                    />
-                                  ) : (
-                                    <code {...props} className={`${className} bg-gray-100 dark:bg-gray-800 rounded px-1.5 py-0.5 text-[13px] md:text-sm font-mono text-pink-600 dark:text-pink-400`}>
-                                      {children}
-                                    </code>
-                                  )
-                                }
-                              }}
-                            >
-                              {msg.text}
-                            </ReactMarkdown>
+      <div className="app-container text-gray-900 dark:text-white">
+        <div className="app-layout flex relative z-10 overflow-hidden bg-gray-50 dark:bg-[#060606]">
+          <Sidebar />
+          <div className="flex-1 flex flex-col bg-transparent overflow-hidden relative border-l border-gray-200 dark:border-gray-800">
+            <Header />
+            <main className="flex-1 flex flex-col px-4 lg:px-12 pb-8 transition-colors duration-300 overflow-hidden relative z-10">
+              <div className="w-full max-w-3xl mx-auto flex flex-col h-full pt-2 sm:pt-6">
+                {messages && messages.length > 0 ? (
+                  <div className="flex-1 overflow-y-auto mb-6 bg-transparent scrollbar-thin scrollbar-thumb-gray-300 dark:scrollbar-thumb-gray-600 flex flex-col gap-6 pr-2 mt-4 sm:mt-0">
+                    {messages.map((msg, idx) => (
+                      <div key={idx} className={`flex w-full ${msg.role === 'user' ? 'justify-end md:justify-end mb-6' : 'justify-start mb-6'}`}>
+                        {msg.role !== 'user' && (
+                          <div className="w-8 h-8 rounded-full bg-[#9D00FF] flex items-center justify-center text-white mr-4 shrink-0 mt-1">
+                            <span className="text-sm">✨</span>
                           </div>
                         )}
-                      </div>
-                    </div>
-                  ))}
-                  {isLoading && (
-                    <div className="flex w-full justify-start items-center">
-                      <div className="w-8 h-8 rounded-full bg-gradient-to-tr from-blue-500 to-purple-500 flex items-center justify-center text-white mr-3 shrink-0">
-                        <span className="text-sm">✨</span>
-                      </div>
-                      <div className="px-5 py-3 flex gap-1.5">
-                        <div className="w-2 h-2 rounded-full bg-blue-500/80 animate-bounce" style={{ animationDelay: '0ms' }} />
-                        <div className="w-2 h-2 rounded-full bg-purple-500/80 animate-bounce" style={{ animationDelay: '150ms' }} />
-                        <div className="w-2 h-2 rounded-full bg-blue-500/80 animate-bounce" style={{ animationDelay: '300ms' }} />
-                      </div>
-                    </div>
-                  )}
-                  {/* Invisible div to scroll to bottom */}
-                  <div ref={messagesEndRef} />
-                </div>
-              ) : (
-                <div className="flex-1 flex flex-col justify-end">
-                  <div className="flex items-center gap-2 text-sm md:text-base text-[#c4c7c5] mb-1">
-                    <span className="text-lg">✨</span>
-                    <p>Hi {user?.name || 'Guest'}</p>
-                  </div>
-                  <h1 className="text-[1.8rem] md:text-3xl lg:text-4xl font-semibold tracking-tight bg-gradient-to-r from-themedark via-black to-gray-500 dark:from-white dark:via-white dark:to-[#9ca3af] bg-clip-text text-transparent transition-colors animate-slideUpFade">Where should we start?</h1>
-                </div>
-              )}
-
-              <div className="mt-6 md:mt-8 animate-slideUpFade" style={{ animationDelay: '0.1s' }}>
-                <div
-                  ref={menuRootRef}
-                  onDragEnter={handleDragEnter}
-                  onDragOver={handleDragOver}
-                  onDragLeave={handleDragLeave}
-                  onDrop={handleDrop}
-                  className={`relative bg-gray-100 dark:bg-[#1f1f20] rounded-3xl px-4 py-3 md:px-6 md:py-4 border shadow-[0_4px_12px_rgba(0,0,0,0.05)] dark:shadow-[0_0_0_1px_rgba(255,255,255,0.04)] flex flex-col gap-3 transition-all duration-200 hover:shadow-lg dark:hover:shadow-[0_0_0_1px_rgba(255,255,255,0.08)] ${isDragOver
-                    ? 'border-blue-500 dark:border-blue-400 border-2 border-dashed ring-2 ring-blue-500/20 dark:ring-blue-400/20'
-                    : 'border-gray-200 dark:border-white/10'
-                    }`}
-                >
-                  {isDragOver && (
-                    <div className="absolute inset-0 rounded-3xl bg-blue-500/10 dark:bg-blue-500/20 flex items-center justify-center z-10 pointer-events-none">
-                      <p className="text-sm font-medium text-blue-600 dark:text-blue-400">Drop files or images here</p>
-                    </div>
-                  )}
-                  {attachments.length > 0 && (
-                    <div className="flex gap-3 overflow-x-auto pb-1 scrollbar-thin scrollbar-thumb-white/10 scrollbar-track-transparent">
-                      {attachments.map((att) => (
-                        <div key={att.id} className="relative flex items-center gap-3 bg-[#171819] border border-white/10 rounded-2xl px-3 py-2 min-w-[220px]">
-                          <div className="w-9 h-9 rounded-xl bg-black/40 overflow-hidden flex items-center justify-center shrink-0">
-                            {att.previewUrl ? (
-                              <img src={att.previewUrl} alt="Attachment preview" className="w-full h-full object-cover" />
-                            ) : (
-                              <FileIcon className="w-4 h-4 text-white/80" />
-                            )}
-                          </div>
-                          <div className="flex-1 min-w-0">
-                            <p className="text-xs font-medium text-white truncate">{att.file.name}</p>
-                            <p className="text-[10px] text-white/60 capitalize">{att.kind === 'photo' ? 'Photo' : 'File'}</p>
-                          </div>
-                          <button
-                            type="button"
-                            onClick={() => handleRemoveAttachment(att.id)}
-                            className="ml-2 inline-flex items-center justify-center w-5 h-5 rounded-full hover:bg-white/10 text-white/70 hover:text-white transition-colors shrink-0"
-                            aria-label="Remove attachment"
-                          >
-                            <X className="w-3 h-3" />
-                          </button>
-                        </div>
-                      ))}
-                    </div>
-                  )}
-
-                  <textarea
-                    ref={textareaRef}
-                    rows="1"
-                    placeholder={getInputPlaceholder()}
-                    value={inputValue}
-                    onChange={(e) => {
-                      setInputValue(e.target.value);
-                      e.target.style.height = 'auto';
-                      e.target.style.height = `${Math.min(e.target.scrollHeight, 250)}px`;
-                    }}
-                    onKeyDown={(e) => {
-                      if (e.key === 'Enter' && !e.shiftKey) {
-                        e.preventDefault();
-                        handleSend();
-                      }
-                    }}
-                    className="w-full bg-transparent border-none outline-none text-sm md:text-base placeholder:text-gray-400 dark:placeholder:text-[#9ba0a6] text-gray-900 dark:text-white transition-colors resize-none overflow-y-auto"
-                    style={{ minHeight: '24px', maxHeight: '250px' }}
-                  />
-
-                  <div className="flex items-center justify-between text-xs md:text-sm text-gray-600 dark:text-[#c4c7c5]">
-                    <div className="flex items-center gap-1.5">
-                      <div className="relative">
-                        <button ref={plusButtonRef} type="button"
-                          onClick={() => setOpenMenu((v) => (v === 'plus' ? null : 'plus'))}
-                          aria-haspopup="menu"
-                          aria-expanded={openMenu === 'plus'}
-                          className={`inline-flex items-center justify-center w-8 h-8 md:w-9 md:h-9 rounded-full hover:bg-black/5 dark:hover:bg-white/10 transition-colors ${openMenu === 'plus' ? 'bg-black/5 dark:bg-white/10 text-gray-900 dark:text-white' : ''}`}
-                          title="Add"
-                        >
-                          <Plus className="w-4 h-4 md:w-5 md:h-5" />
-                        </button>
-
-                        {openMenu === 'plus' && (
-                          <div role="menu" aria-label="Add menu" className="absolute bottom-full left-0 mb-2 z-50 bg-white dark:bg-[#1e1f20] border border-gray-200 dark:border-white/10 rounded-2xl py-2 w-[220px] shadow-lg dark:shadow-2xl">
-                            {plusMenuItems.map((item) => (
-                              <button
-                                key={item.label}
-                                type="button"
-                                role="menuitem"
-                                className="w-full flex items-center gap-3 px-4 py-2.5 hover:bg-black/5 dark:hover:bg-white/10 text-gray-700 dark:text-white/90 hover:text-black dark:hover:text-white transition-colors text-left"
-                                onClick={() => handlePlusMenuItemClick(item.label)}
+                        <div className={`${msg.role === 'user' ? 'w-fit max-w-[90%] sm:max-w-[75%] bg-white dark:bg-[#121212] rounded-[1.5rem] rounded-tr-md p-4 md:p-5 text-gray-900 dark:text-white border border-gray-200 dark:border-gray-800' : 'max-w-[95%] sm:max-w-[85%] rounded-[1.5rem] p-4 text-gray-800 dark:text-gray-200 bg-transparent border-l-[3px] border-[#9D00FF]'}`}>
+                          {msg.role === 'user' ? (
+                            <div className="whitespace-pre-wrap text-[15px] leading-relaxed font-sans">{msg.text}</div>
+                          ) : (
+                            <div className="markdown-body prose dark:prose-invert max-w-none break-words text-[15px] leading-7">
+                              <ReactMarkdown
+                                remarkPlugins={[remarkGfm]}
+                                components={{
+                                  code({ node, inline, className, children, ...props }) {
+                                    const match = /language-(\w+)/.exec(className || '')
+                                    return !inline && match ? (
+                                      <SyntaxHighlighter
+                                        {...props}
+                                        children={String(children).replace(/\n$/, '')}
+                                        style={dracula}
+                                        language={match[1]}
+                                        PreTag="div"
+                                        className="rounded-xl !my-4 !bg-gray-100 dark:!bg-[#0a0a0c]/80 border border-gray-200 dark:border-white/10 text-sm md:text-[14px]"
+                                      />
+                                    ) : (
+                                      <code {...props} className={`${className} bg-gray-100 dark:bg-gray-800 rounded px-1.5 py-0.5 text-[13px] md:text-sm font-mono text-pink-600 dark:text-pink-400`}>
+                                        {children}
+                                      </code>
+                                    )
+                                  }
+                                }}
                               >
-                                <span className="text-gray-500 dark:text-white/80">{item.icon}</span>
-                                <span className="text-sm">{item.label}</span>
-                              </button>
-                            ))}
-                          </div>
-                        )}
+                                {msg.text}
+                              </ReactMarkdown>
+                            </div>
+                          )}
+                        </div>
                       </div>
+                    ))}
+                    {isLoading && (
+                      <div className="flex w-full justify-start items-center">
+                        <div className="w-8 h-8 rounded-full bg-[#9D00FF] flex items-center justify-center text-white mr-3 shrink-0">
+                          {user?.picture ? (
+                            <img src={user.picture} alt="Profile" className="w-full h-full object-cover" referrerPolicy="no-referrer" />
+                          ) : user?.name ? (
+                            <span className="text-sm uppercase">{user.name.charAt(0)}</span>
+                          ) : (
+                            <span className="text-sm">✨</span>
+                          )}
+                        </div>
+                        <div className="px-5 py-3 flex gap-1.5">
+                          <div className="w-2 h-2 rounded-full bg-[#9D00FF]/80 animate-bounce" style={{ animationDelay: '0ms' }} />
+                          <div className="w-2 h-2 rounded-full bg-[#9D00FF]/60 animate-bounce" style={{ animationDelay: '150ms' }} />
+                          <div className="w-2 h-2 rounded-full bg-[#9D00FF]/80 animate-bounce" style={{ animationDelay: '300ms' }} />
+                        </div>
+                      </div>
+                    )}
+                    {/* Invisible div to scroll to bottom */}
+                    <div ref={messagesEndRef} />
+                  </div>
+                ) : (
+                  <div className="flex-1 flex flex-col justify-end">
+                    <div className="flex items-center gap-2 text-sm md:text-base text-gray-500 dark:text-[#c4c7c5] mb-2">
+                      <span className="text-xl">✨</span>
+                      <p className="font-medium text-lg uppercase tracking-widest text-gray-600 dark:text-white/70">Welcome back, {user?.name?.split(' ')[0] || 'Guest'}</p>
+                    </div>
+                    <h1 className="text-[2.5rem] md:text-5xl lg:text-6xl font-extrabold tracking-tight text-[#9D00FF] transition-colors animate-slideUpFade pb-2" style={{ lineHeight: '1.2' }}>Where should we start?</h1>
+                  </div>
+                )}
 
-                      <div className="relative">
-                        <button ref={toolsButtonRef} type="button"
-                          onClick={() => setOpenMenu((v) => (v === 'tools' ? null : 'tools'))}
-                          aria-haspopup="menu"
-                          aria-expanded={openMenu === 'tools'}
-                          className={`inline-flex items-center gap-2 text-[11px] md:text-xs hover:text-black dark:hover:text-white transition-colors rounded-full px-2 py-1.5 ${openMenu === 'tools' || activeTool ? 'bg-black/5 dark:bg-white/10 text-gray-900 dark:text-white' : ''}`}
-                        >
-                          <span className="flex items-center justify-center w-6 h-6">
-                            {activeTool ? (
-                              React.cloneElement(activeTool.icon, { className: 'w-3.5 h-3.5' })
-                            ) : (
-                              <SlidersHorizontal className="w-3.5 h-3.5" />
-                            )}
-                          </span>
-                          <span>{activeTool ? activeTool.label : 'Tools'}</span>
-                        </button>
+                <div className="mt-6 md:mt-8 animate-slideUpFade" style={{ animationDelay: '0.1s' }}>
+                  <div
+                    ref={menuRootRef}
+                    onDragEnter={handleDragEnter}
+                    onDragOver={handleDragOver}
+                    onDragLeave={handleDragLeave}
+                    onDrop={handleDrop}
+                    className={`relative bg-white dark:bg-[#121212] rounded-[2rem] px-5 py-4 md:px-7 md:py-5 border flex flex-col gap-3 transition-colors ${isDragOver
+                      ? 'border-[#9D00FF] border-2 border-dashed bg-[#9D00FF]/5 dark:bg-[#9D00FF]/10'
+                      : 'border-gray-200 dark:border-gray-800 hover:border-gray-300 dark:hover:border-gray-700'
+                      }`}
+                  >
+                    {isDragOver && (
+                      <div className="absolute inset-0 rounded-3xl bg-blue-500/10 dark:bg-blue-500/20 flex items-center justify-center z-10 pointer-events-none">
+                        <p className="text-sm font-medium text-blue-600 dark:text-blue-400">Drop files or images here</p>
+                      </div>
+                    )}
+                    {attachments.length > 0 && (
+                      <div className="flex gap-3 overflow-x-auto pb-1 scrollbar-thin scrollbar-thumb-white/10 scrollbar-track-transparent">
+                        {attachments.map((att) => (
+                          <div key={att.id} className="relative flex items-center gap-3 bg-[#171819] border border-white/10 rounded-2xl px-3 py-2 min-w-[220px]">
+                            <div className="w-9 h-9 rounded-xl bg-black/40 overflow-hidden flex items-center justify-center shrink-0">
+                              {att.previewUrl ? (
+                                <img src={att.previewUrl} alt="Attachment preview" className="w-full h-full object-cover" />
+                              ) : (
+                                <FileIcon className="w-4 h-4 text-white/80" />
+                              )}
+                            </div>
+                            <div className="flex-1 min-w-0">
+                              <p className="text-xs font-medium text-gray-900 dark:text-white truncate">{att.file.name}</p>
+                              <p className="text-[10px] text-gray-600 dark:text-white/60 capitalize">{att.kind === 'photo' ? 'Photo' : 'File'}</p>
+                            </div>
+                            <button
+                              type="button"
+                              onClick={() => handleRemoveAttachment(att.id)}
+                              className="ml-2 inline-flex items-center justify-center w-5 h-5 rounded-full hover:bg-black/10 dark:hover:bg-white/10 text-gray-600 dark:text-white/70 hover:text-black dark:hover:text-white transition-colors shrink-0"
+                              aria-label="Remove attachment"
+                            >
+                              <X className="w-3 h-3" />
+                            </button>
+                          </div>
+                        ))}
+                      </div>
+                    )}
 
-                        {openMenu === 'tools' && (
-                          <div role="menu" aria-label="Tools menu" className="absolute bottom-full right-0 mb-2 z-50 bg-white dark:bg-[#1e1f20] border border-gray-200 dark:border-white/10 rounded-2xl py-2 w-[240px] shadow-lg dark:shadow-2xl">
-                            {toolsMenuItems.map((item) => {
-                              const isActive = activeTool?.label === item.label;
-                              return (
+                    <textarea
+                      ref={textareaRef}
+                      rows="1"
+                      placeholder={getInputPlaceholder()}
+                      value={inputValue}
+                      onChange={(e) => {
+                        setInputValue(e.target.value);
+                        e.target.style.height = 'auto';
+                        e.target.style.height = `${Math.min(e.target.scrollHeight, 250)}px`;
+                      }}
+                      onKeyDown={(e) => {
+                        if (e.key === 'Enter' && !e.shiftKey) {
+                          e.preventDefault();
+                          handleSend();
+                        }
+                      }}
+                      className="w-full bg-transparent border-none outline-none text-[15px] md:text-lg placeholder:text-gray-500 dark:placeholder:text-white/40 text-gray-900 dark:text-white transition-colors resize-none overflow-y-auto leading-relaxed custom-scrollbar font-medium"
+                      style={{ minHeight: '28px', maxHeight: '250px' }}
+                    />
+
+                    <div className="flex items-center justify-between mt-2 text-xs md:text-sm text-gray-400">
+                      <div className="flex items-center gap-1.5">
+                        <div className="relative">
+                          <button ref={plusButtonRef} type="button"
+                            onClick={() => setOpenMenu((v) => (v === 'plus' ? null : 'plus'))}
+                            aria-haspopup="menu"
+                            aria-expanded={openMenu === 'plus'}
+                            className={`inline-flex items-center justify-center w-10 h-10 rounded-full hover:bg-black/5 dark:hover:bg-white/10 transition-colors ${openMenu === 'plus' ? 'bg-black/10 dark:bg-white/20 text-gray-900 dark:text-white' : 'text-gray-600 dark:text-white/70 hover:text-gray-900 dark:hover:text-white'}`}
+                            title="Add"
+                          >
+                            <Plus className="w-5 h-5" />
+                          </button>
+
+                          {openMenu === 'plus' && (
+                            <div role="menu" aria-label="Add menu" className="absolute bottom-[120%] left-0 mb-2 z-50 glass-card rounded-2xl py-2 w-[220px] shadow-2xl animate-scaleIn border border-gray-200 dark:border-white/10">
+                              {plusMenuItems.map((item) => (
                                 <button
                                   key={item.label}
                                   type="button"
                                   role="menuitem"
-                                  className={`w-full flex items-center gap-3 px-4 py-2.5 hover:bg-black/5 dark:hover:bg-white/10 transition-colors text-left ${isActive ? 'bg-black/5 dark:bg-white/10 text-gray-900 dark:text-white' : 'text-gray-700 dark:text-white/90 hover:text-black dark:hover:text-white'}`}
-                                  onClick={() => {
-                                    if (isActive) {
-                                      setActiveTool(null);
-                                    } else {
-                                      setActiveTool(item);
-                                    }
-                                    setOpenMenu(null);
-                                  }}
+                                  className="w-full flex items-center gap-3 px-4 py-2.5 hover:bg-black/5 dark:hover:bg-white/10 text-gray-700 dark:text-white/90 hover:text-black dark:hover:text-white transition-colors text-left"
+                                  onClick={() => handlePlusMenuItemClick(item.label)}
                                 >
-                                  <span className={isActive ? 'text-gray-900 dark:text-white' : 'text-gray-500 dark:text-white/80'}>{item.icon}</span>
-                                  <span className="text-sm font-medium">{item.label}</span>
+                                  <span className="text-gray-500 dark:text-white/80">{item.icon}</span>
+                                  <span className="text-sm">{item.label}</span>
                                 </button>
-                              );
-                            })}
-                          </div>
-                        )}
-                      </div>
-                    </div>
+                              ))}
+                            </div>
+                          )}
+                        </div>
 
-                    <div className="flex items-center gap-3">
-                      {/* <div className="relative">
+                        <div className="relative">
+                          <button ref={toolsButtonRef} type="button"
+                            onClick={() => setOpenMenu((v) => (v === 'tools' ? null : 'tools'))}
+                            aria-haspopup="menu"
+                            aria-expanded={openMenu === 'tools'}
+                            className={`inline-flex items-center gap-2 text-[12px] md:text-sm transition-colors rounded-full px-4 py-2 font-medium border ${openMenu === 'tools' || activeTool ? 'bg-black/5 dark:bg-white/10 text-gray-900 dark:text-white border-gray-300 dark:border-white/10' : 'text-gray-600 dark:text-white/70 border-transparent hover:bg-black/5 dark:hover:bg-white/5 hover:text-gray-900 dark:hover:text-white'}`}
+                          >
+                            <span className="flex items-center justify-center w-6 h-6">
+                              {activeTool ? (
+                                React.cloneElement(activeTool.icon, { className: 'w-3.5 h-3.5' })
+                              ) : (
+                                <SlidersHorizontal className="w-3.5 h-3.5" />
+                              )}
+                            </span>
+                            <span>{activeTool ? activeTool.label : 'Tools'}</span>
+                          </button>
+
+                          {openMenu === 'tools' && (
+                            <div role="menu" aria-label="Tools menu" className="absolute bottom-[120%] right-0 mb-2 z-50 glass-card border border-gray-200 dark:border-white/10 rounded-2xl py-2 w-[240px] shadow-2xl animate-scaleIn">
+                              {toolsMenuItems.map((item) => {
+                                const isActive = activeTool?.label === item.label;
+                                return (
+                                  <button
+                                    key={item.label}
+                                    type="button"
+                                    role="menuitem"
+                                    className={`w-full flex items-center gap-3 px-4 py-2.5 hover:bg-black/5 dark:hover:bg-white/10 transition-colors text-left ${isActive ? 'bg-black/5 dark:bg-white/10 text-gray-900 dark:text-white' : 'text-gray-700 dark:text-white/90 hover:text-black dark:hover:text-white'}`}
+                                    onClick={() => {
+                                      if (isActive) {
+                                        setActiveTool(null);
+                                      } else {
+                                        setActiveTool(item);
+                                      }
+                                      setOpenMenu(null);
+                                    }}
+                                  >
+                                    <span className={isActive ? 'text-gray-900 dark:text-white' : 'text-gray-500 dark:text-white/80'}>{item.icon}</span>
+                                    <span className="text-sm font-medium">{item.label}</span>
+                                  </button>
+                                );
+                              })}
+                            </div>
+                          )}
+                        </div>
+                      </div>
+
+                      <div className="flex items-center gap-3">
+                        {/* <div className="relative">
                         <button
                           ref={modelButtonRef}
                           type="button"
@@ -500,7 +507,7 @@ function App() {
 
                         {openMenu === 'model' && (
                           <div role="menu" aria-label="Model menu" className="absolute bottom-full right-0 mb-2 z-50 bg-white dark:bg-[#1e1f20] border border-gray-200 dark:border-white/10 rounded-2xl py-3 w-[280px] shadow-lg dark:shadow-2xl animate-scaleIn">
-                            <p className="px-4 text-[13px] font-medium text-gray-900 dark:text-white mb-2">Gemini 3</p>
+                            <p className="px-4 text-[13px] font-medium text-gray-900 dark:text-white mb-2">vsinfotech AI</p>
                             {modelOptions.map((item) => (
                               <button
                                 key={item.name}
@@ -529,58 +536,59 @@ function App() {
                         )}
                       </div> */}
 
-                      {inputValue.trim() ? (
-                        <button
-                          type="button"
-                          onClick={handleSend}
-                          className="flex items-center justify-center w-8 h-8 md:w-9 md:h-9 rounded-full bg-black dark:bg-white text-white dark:text-black hover:bg-gray-800 dark:hover:bg-zinc-200 transition-colors animate-popIn"
-                          title="Send message"
-                        >
-                          <SendHorizontal className="w-4 h-4 md:w-5 md:h-5" />
-                        </button>
-                      ) : (
-                        // <button
-                        //   type="button"
-                        //   onClick={() => {
-                        //     const recognition = recognitionRef.current;
-                        //     if (!recognition) {
-                        //       toast.error('Speech recognition is not supported in this browser.');
-                        //       return;
-                        //     }
+                        {inputValue.trim() ? (
+                          <button
+                            type="button"
+                            onClick={handleSend}
+                            className="flex items-center justify-center w-10 h-10 md:w-11 md:h-11 rounded-full bg-[#9D00FF] text-white transition-opacity hover:opacity-90 animate-popIn"
+                            title="Send message"
+                          >
+                            <SendHorizontal className="w-5 h-5 md:w-5 md:h-5 ml-0.5" />
+                          </button>
+                        ) : (
+                          // <button
+                          //   type="button"
+                          //   onClick={() => {
+                          //     const recognition = recognitionRef.current;
+                          //     if (!recognition) {
+                          //       toast.error('Speech recognition is not supported in this browser.');
+                          //       return;
+                          //     }
 
-                        //     if (isListening) {
-                        //       recognition.stop();
-                        //       setIsListening(false);
-                        //     } else {
-                        //       try {
-                        //         recognition.start();
-                        //         setIsListening(true);
-                        //       } catch {
-                        //         setIsListening(false);
-                        //       }
-                        //     }
-                        //   }}
-                        //   className={`flex items-center justify-center w-8 h-8 md:w-9 md:h-9 rounded-full transition-colors animate-popIn ${isListening
-                        //     ? 'bg-red-600 text-white hover:bg-red-700 animate-pulse'
-                        //     : 'bg-black dark:bg-white text-white dark:text-black hover:bg-gray-800 dark:hover:bg-zinc-200'
-                        //     }`}
-                        //   aria-pressed={isListening}
-                        //   title={isListening ? 'Stop voice input' : 'Start voice input'}
-                        // >
-                        //   <Mic className="w-4 h-4 md:w-5 md:h-5" />
-                        // </button>
-                        <>
-                        </>
-                      )}
+                          //     if (isListening) {
+                          //       recognition.stop();
+                          //       setIsListening(false);
+                          //     } else {
+                          //       try {
+                          //         recognition.start();
+                          //         setIsListening(true);
+                          //       } catch {
+                          //         setIsListening(false);
+                          //       }
+                          //     }
+                          //   }}
+                          //   className={`flex items-center justify-center w-8 h-8 md:w-9 md:h-9 rounded-full transition-colors animate-popIn ${isListening
+                          //     ? 'bg-red-600 text-white hover:bg-red-700 animate-pulse'
+                          //     : 'bg-black dark:bg-white text-white dark:text-black hover:bg-gray-800 dark:hover:bg-zinc-200'
+                          //     }`}
+                          //   aria-pressed={isListening}
+                          //   title={isListening ? 'Stop voice input' : 'Start voice input'}
+                          // >
+                          //   <Mic className="w-4 h-4 md:w-5 md:h-5" />
+                          // </button>
+                          <>
+                          </>
+                        )}
+                      </div>
                     </div>
-                  </div>
 
-                  <input ref={fileInputRef} type="file" multiple className="hidden" onChange={(e) => handleFileChange(e, 'files')} />
-                  <input ref={photoInputRef} type="file" accept="image/*" multiple className="hidden" onChange={(e) => handleFileChange(e, 'photos')} />
+                    <input ref={fileInputRef} type="file" multiple className="hidden" onChange={(e) => handleFileChange(e, 'files')} />
+                    <input ref={photoInputRef} type="file" accept="image/*" multiple className="hidden" onChange={(e) => handleFileChange(e, 'photos')} />
+                  </div>
                 </div>
               </div>
-            </div>
-          </main>
+            </main>
+          </div>
         </div>
       </div>
     </>

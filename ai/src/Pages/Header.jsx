@@ -5,6 +5,7 @@ import { setIsMobileSidebarOpen } from '../redux/slice/chat.slice';
 import { googleLoginUser, logout } from '../redux/slice/auth.slice';
 import { GoogleLogin } from '@react-oauth/google';
 import toast from 'react-hot-toast';
+import logo from '../logo.svg';
 
 const Header = () => {
   const dispatch = useDispatch();
@@ -44,16 +45,17 @@ const Header = () => {
 
   return (
     <>
-      <div className="flex items-center justify-between p-4 lg:p-6 text-xl text-gray-800 dark:text-[#c4c7c5] sticky top-0 bg-white/80 dark:bg-[#131314]/80 backdrop-blur-md z-20 transition-colors">
+      <div className="flex items-center justify-between p-4 lg:py-6 lg:px-8 text-xl text-gray-900 dark:text-white sticky top-0 bg-transparent z-20 transition-colors">
         <div className="flex items-center gap-4">
           <button
             onClick={() => dispatch(setIsMobileSidebarOpen(true))}
             className="lg:hidden p-2 hover:bg-black/5 dark:hover:bg-white/10 rounded-full transition-colors"
           >
-            <Menu className="w-6 h-6 text-gray-900 dark:text-[#c4c7c5]" />
+            <Menu className="w-6 h-6 text-gray-900 dark:text-white" />
           </button>
+          {/* <img src={logo} alt="vsinfotech AI" className="h-10 cursor-pointer self-center" /> */}
           <p className="font-bold tracking-tight text-gray-900 dark:text-white">
-            Vsinfo AI
+            vsinfotech AI
           </p>
         </div>
         <div className="flex items-center gap-3">
@@ -71,8 +73,8 @@ const Header = () => {
                 </div>
 
                 {isDropdownOpen && (
-                  <div className="absolute right-0 top-14 mt-2 w-[280px] bg-[#e9eef6] dark:bg-[#1e1f20] rounded-[24px] shadow-xl border border-transparent dark:border-white/10 z-50 p-2 animate-fadeIn">
-                    <div className="bg-white dark:bg-[#131314] rounded-[20px] p-5 flex flex-col items-center mb-2 shadow-sm">
+                  <div className="absolute right-0 top-14 mt-2 w-[280px] bg-white dark:bg-[#121212] shadow-xl border border-gray-200 dark:border-gray-800 z-50 p-2 animate-fadeIn rounded-3xl">
+                    <div className="bg-black/5 dark:bg-white/5 rounded-[20px] p-5 flex flex-col items-center mb-2 shadow-sm border border-black/5 dark:border-white/5">
                       <p className="text-xs font-medium text-gray-500 dark:text-[#c4c7c5] mb-4 truncate w-full text-center">
                         {user.email || 'Google Account'}
                       </p>
@@ -92,7 +94,7 @@ const Header = () => {
                         dispatch(logout());
                         setIsDropdownOpen(false);
                       }}
-                      className="w-full flex items-center justify-center gap-2 p-3 text-sm font-semibold text-gray-700 dark:text-[#c4c7c5] bg-[#e9eef6] dark:bg-[#1e1f20] hover:bg-[#dce3f0] dark:hover:bg-[#282a2c] rounded-[16px] transition-colors"
+                      className="w-full flex items-center justify-center gap-2 p-3 text-sm font-semibold text-gray-700 dark:text-white/80 hover:text-black dark:hover:text-white bg-black/5 dark:bg-white/5 hover:bg-black/10 dark:hover:bg-white/10 rounded-[16px] transition-colors border border-transparent dark:hover:border-white/10"
                     >
                       <LogOut className="w-[18px] h-[18px]" />
                       Sign out
