@@ -369,6 +369,7 @@ const Sidebar = () => {
                   <DropdownItem
                     icon={<Sun className="w-5 h-5" />}
                     label="Theme"
+                    className='mb-1'
                     hasChevron
                     isActive={showThemeMenu}
                   />
@@ -379,6 +380,7 @@ const Sidebar = () => {
                       <ThemeOption
                         label="System"
                         selected={theme === 'System'}
+                        className='mb-1'
                         onClick={() => {
                           dispatch(setTheme('System'));
                           setShowThemeMenu(!showThemeMenu);
@@ -389,6 +391,7 @@ const Sidebar = () => {
                       <ThemeOption
                         label="Light"
                         selected={theme === 'Light'}
+                        className='mb-1'
                         onClick={() => {
                           dispatch(setTheme('Light'));
                           setShowThemeMenu(!showThemeMenu);
@@ -434,6 +437,7 @@ const Sidebar = () => {
                         <DropdownItem
                           icon={<HelpCircle className="w-5 h-5" />}
                           label="Help Center"
+                          className='mb-1'
                           onClick={() => {
                             setShowHelpModal(true);
                             setShowSettings(false);
@@ -475,8 +479,8 @@ const Sidebar = () => {
   );
 };
 
-const DropdownItem = ({ icon, label, dot, hasChevron, isActive, onClick }) => (
-  <div onClick={onClick} className={`flex items-center justify-between p-2.5 rounded-2xl cursor-pointer text-gray-900 dark:text-white transition-colors group ${isActive ? 'bg-black/5 dark:bg-white/10' : 'hover:bg-black/5 dark:hover:bg-white/10'}`}>
+const DropdownItem = ({ icon, label, dot, hasChevron, isActive, onClick, className }) => (
+  <div onClick={onClick} className={`flex items-center justify-between p-2.5 rounded-2xl cursor-pointer text-gray-900 dark:text-white transition-colors group ${className} ${isActive ? 'bg-black/5 dark:bg-white/10' : 'hover:bg-black/5 dark:hover:bg-white/10'}`}>
     <div className="flex items-center gap-4">
       <span className={`transition-colors ${isActive ? 'text-gray-900 dark:text-white' : 'text-gray-600 dark:text-white/70 group-hover:text-gray-900 dark:group-hover:text-white'}`}>{icon}</span>
       <span className="text-sm font-normal">{label}</span>
@@ -488,10 +492,10 @@ const DropdownItem = ({ icon, label, dot, hasChevron, isActive, onClick }) => (
   </div>
 )
 
-const ThemeOption = ({ label, selected, onClick }) => (
+const ThemeOption = ({ label, selected, onClick, className }) => (
   <div
     onClick={onClick}
-    className={`flex items-center justify-between p-2.5 rounded-2xl cursor-pointer transition-colors group ${selected ? 'bg-black/5 dark:bg-white/10 text-gray-900 dark:text-white' : 'hover:bg-black/5 dark:hover:bg-white/10 text-gray-600 dark:text-white/80'}`}
+    className={`flex items-center justify-between p-2.5 rounded-2xl cursor-pointer transition-colors group ${className} ${selected ? 'bg-black/5 dark:bg-white/10 text-gray-900 dark:text-white' : 'hover:bg-black/5 dark:hover:bg-white/10 text-gray-600 dark:text-white/80'}`}
   >
     <span className={`text-sm ${selected ? 'font-medium' : 'font-normal'}`}>{label}</span>
     {selected && <Check className="w-4 h-4 text-gray-900 dark:text-white" />}

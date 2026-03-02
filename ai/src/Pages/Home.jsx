@@ -138,10 +138,10 @@ const Home = () => {
     }, []);
 
     const quickActions = [
-        { label: 'Create an Image', desc: 'Generate vivid art', icon: <Paintbrush className="w-6 h-6" />, color: 'from-pink-500 to-rose-400' },
-        { label: 'Analyze Data', desc: 'Find insights fast', icon: <BarChart3 className="w-6 h-6" />, color: 'from-blue-500 to-cyan-400' },
-        { label: 'Write Code', desc: 'Build your app', icon: <Code2 className="w-6 h-6" />, color: 'from-purple-500 to-indigo-500' },
-        { label: 'Explain Concepts', desc: 'Learn something new', icon: <Lightbulb className="w-6 h-6" />, color: 'from-amber-400 to-orange-500' },
+        { label: 'Create an Image', desc: 'Generate vivid art', icon: <Paintbrush className="w-6 h-6" /> },
+        { label: 'Analyze Data', desc: 'Find insights fast', icon: <BarChart3 className="w-6 h-6" /> },
+        { label: 'Write Code', desc: 'Build your app', icon: <Code2 className="w-6 h-6" /> },
+        { label: 'Explain Concepts', desc: 'Learn something new', icon: <Lightbulb className="w-6 h-6" /> },
     ];
 
     const handlePlusMenuItemClick = (label) => {
@@ -216,7 +216,7 @@ const Home = () => {
     };
 
     const getInputPlaceholder = () => {
-        if (!activeTool) return 'Send a message to VSInfo AI...';
+        if (!activeTool) return 'Send a message to vsinfotech AI...';
         return `Using ${activeTool.label}...`;
     };
 
@@ -329,7 +329,7 @@ const Home = () => {
                                     onClick={() => { setInputValue(action.label); textareaRef.current?.focus(); }}
                                     className="group relative overflow-hidden flex flex-col items-start p-5 rounded-3xl bg-white/50 dark:bg-[#121212]/50 backdrop-blur-md border border-gray-200 dark:border-white/10 hover:border-purple-500/50 dark:hover:border-purple-400/50 cursor-pointer transition-all duration-300 hover:-translate-y-1 hover:shadow-xl dark:hover:shadow-[0_0_30px_rgba(157,0,255,0.1)]"
                                 >
-                                    <div className={`absolute top-0 left-0 w-full h-1 bg-gradient-to-r ${action.color} opacity-0 group-hover:opacity-100 transition-opacity`}></div>
+                                    <div className={`absolute top-0 left-0 w-full transition-opacity`}></div>
                                     <div className="w-12 h-12 rounded-2xl bg-gray-100 dark:bg-white/5 flex items-center justify-center text-gray-700 dark:text-gray-300 mb-4 group-hover:scale-110 group-hover:text-purple-600 dark:group-hover:text-purple-400 transition-all duration-300 shadow-sm relative z-10">
                                         {action.icon}
                                     </div>
