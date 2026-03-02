@@ -16,6 +16,14 @@ const Home = () => {
     const [activeTool, setActiveTool] = useState(null);
     const menuRootRef = useRef(null);
     const [inputValue, setInputValue] = useState('');
+    const [isMdScreen, setIsMdScreen] = useState(window.innerWidth >= 768);
+
+    useEffect(() => {
+        const handleResize = () => setIsMdScreen(window.innerWidth >= 768);
+        window.addEventListener('resize', handleResize);
+        return () => window.removeEventListener('resize', handleResize);
+    }, []);
+
     const recognitionRef = useRef(null);
     const fileInputRef = useRef(null);
     const photoInputRef = useRef(null);
@@ -216,7 +224,7 @@ const Home = () => {
     };
 
     const getInputPlaceholder = () => {
-        if (!activeTool) return 'Send a message to vsinfotech AI...';
+        if (!activeTool) return isMdScreen ? 'Ask to vsinfotech AI...' : 'Ask anything...';
         return `Using ${activeTool.label}...`;
     };
 
@@ -322,7 +330,7 @@ const Home = () => {
                             Unlock your creativity, solve complex problems, or just chat. Let's make something amazing together.
                         </p>
 
-                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 w-full max-w-4xl mx-auto animate-slideUpFade" style={{ animationDelay: '0.1s' }}>
+                        <div className="hidden md:grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4 w-full max-w-4xl mx-auto animate-slideUpFade" style={{ animationDelay: '0.1s' }}>
                             {quickActions.map((action, idx) => (
                                 <div
                                     key={idx}
