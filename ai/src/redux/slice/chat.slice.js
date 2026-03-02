@@ -5,10 +5,25 @@ import { toast } from 'react-hot-toast';
 // Async thunk to simulate receiving a response for a prompt
 export const sendPrompt = createAsyncThunk(
     'chat/sendPrompt',
-    async (prompt, { rejectWithValue }) => {
+    async (prompt, { rejectWithValue, getState }) => {
         try {
             if (!prompt) return;
-            const responseText = await runChat(prompt);
+            const state = getState();
+
+            // Get previous messages to maintain history
+            const previousMessages = state.chat.messages;
+            let formattedHistory = previousMessages.map(msg => ({
+                role: msg.role === 'model' ? 'model' : 'user',
+                parts: [{ text: msg.text }]
+            }));
+
+            // The pending reducer adds the current prompt to state.messages before this async callback executes.
+            // We need to exclude the current prompt from the history passed to startChat.
+            if (formattedHistory.length > 0 && formattedHistory[formattedHistory.length - 1].role === 'user' && formattedHistory[formattedHistory.length - 1].parts[0].text === prompt) {
+                formattedHistory.pop();
+            }
+
+            const responseText = await runChat(prompt, formattedHistory);
             return {
                 prompt: prompt,
                 response: responseText
@@ -35,7 +50,8 @@ const initialState = {
     theme: getInitialTheme(),
     isMobileSidebarOpen: false,
     isLoading: false,
-    currentResponse: ''
+    currentResponse: '',
+    messages: [] // Store the chat history for the current session
 };
 
 const chatSlice = createSlice({
@@ -60,12 +76,17 @@ const chatSlice = createSlice({
         newChat: (state) => {
             state.recentPrompt = '';
             state.currentResponse = '';
+            state.messages = [];
         }
     },
     extraReducers: (builder) => {
         builder
-            .addCase(sendPrompt.pending, (state) => {
+            .addCase(sendPrompt.pending, (state, action) => {
                 state.isLoading = true;
+                // We add the user prompt optimistically if it's available in meta.arg
+                if (action.meta && action.meta.arg) {
+                    state.messages.push({ role: 'user', text: action.meta.arg });
+                }
             })
             .addCase(sendPrompt.fulfilled, (state, action) => {
                 state.isLoading = false;
@@ -74,12 +95,13 @@ const chatSlice = createSlice({
                         state.prevPrompts.push(action.payload.prompt);
                     }
                     state.currentResponse = action.payload.response;
+                    state.messages.push({ role: 'model', text: action.payload.response });
                 }
             })
             .addCase(sendPrompt.rejected, (state, action) => {
-                state.isLoading = true; // Still true? No, should be false
                 state.isLoading = false;
                 toast.error(action.payload || "Failed to get response");
+                // Remove the optimistically added user prompt on failure, or could leave it and add an error message.
             });
     }
 });

@@ -6,9 +6,15 @@ import Sidebar from './Pages/Sidebar';
 import Header from './Pages/Header';
 import { Mic, Plus, SlidersHorizontal, ChevronDown, Search, Image as ImageIcon, LayoutPanelTop, GraduationCap, Upload, FolderOpen, Images, File as FileIcon, X, SendHorizontal } from 'lucide-react';
 import { Toaster, toast } from 'react-hot-toast';
+import ReactMarkdown from 'react-markdown';
+import remarkGfm from 'remark-gfm';
+import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
+import { dracula } from 'react-syntax-highlighter/dist/esm/styles/prism';
 
 function App() {
   const theme = useSelector((state) => state.chat.theme);
+  const messages = useSelector((state) => state.chat.messages);
+  const isLoading = useSelector((state) => state.chat.isLoading);
 
   useEffect(() => {
     const root = document.documentElement;
@@ -58,11 +64,26 @@ function App() {
   const dispatch = useDispatch();
   const modelButtonRef = useRef(null);
 
+  const textareaRef = useRef(null);
+
   const handleSend = () => {
     if (!inputValue.trim()) return;
     dispatch(sendPrompt(inputValue));
     setInputValue('');
+    if (textareaRef.current) {
+      textareaRef.current.style.height = 'auto';
+    }
   };
+
+  const messagesEndRef = useRef(null);
+
+  const scrollToBottom = () => {
+    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+  };
+
+  useEffect(() => {
+    scrollToBottom();
+  }, [messages, isLoading]);
 
   const user = useSelector((state) => state.auth.user);
 
@@ -253,13 +274,75 @@ function App() {
         <Sidebar />
         <div className="flex-1 flex flex-col bg-white dark:bg-[#131314] transition-colors duration-300">
           <Header />
-          <main className="flex-1 flex items-end justify-center px-4 lg:px-12 pb-10 transition-colors duration-300">
-            <div className="w-full max-w-3xl mx-auto">
-              <div className="flex items-center gap-2 text-sm md:text-base text-[#c4c7c5] mb-1">
-                <span className="text-lg">✨</span>
-                <p>Hi {user?.name || 'Guest'}</p>
-              </div>
-              <h1 className="text-[1.8rem] md:text-3xl lg:text-4xl font-semibold tracking-tight bg-gradient-to-r from-themedark via-black to-gray-500 dark:from-white dark:via-white dark:to-[#9ca3af] bg-clip-text text-transparent transition-colors animate-slideUpFade">Where should we start?</h1>
+          <main className="flex-1 flex flex-col px-4 lg:px-12 pb-10 transition-colors duration-300 overflow-hidden">
+            <div className="w-full max-w-3xl mx-auto flex flex-col h-full pt-2 sm:pt-6">
+              {messages && messages.length > 0 ? (
+                <div className="flex-1 overflow-y-auto mb-6 bg-transparent scrollbar-thin scrollbar-thumb-gray-300 dark:scrollbar-thumb-gray-600 flex flex-col gap-6 pr-2 mt-4 sm:mt-0">
+                  {messages.map((msg, idx) => (
+                    <div key={idx} className={`flex w-full ${msg.role === 'user' ? 'justify-center mb-6' : 'justify-start'}`}>
+                      {msg.role !== 'user' && (
+                        <div className="w-8 h-8 rounded-full bg-gradient-to-tr from-blue-500 to-purple-500 flex items-center justify-center text-white mr-3 shrink-0 mt-1">
+                          <span className="text-sm">✨</span>
+                        </div>
+                      )}
+                      <div className={`${msg.role === 'user' ? 'w-full bg-gray-100 dark:bg-[#1f1f20] rounded-3xl p-4 md:p-6 text-black dark:text-white border border-gray-200 dark:border-white/10 shadow-[0_4px_12px_rgba(0,0,0,0.02)] dark:shadow-[0_0_0_1px_rgba(255,255,255,0.04)]' : 'max-w-[90%] sm:max-w-[85%] rounded-2xl px-5 py-3 text-black dark:text-[#e3e3e3] bg-transparent'}`}>
+                        {msg.role === 'user' ? (
+                          <div className="whitespace-pre-wrap text-[15px] leading-relaxed font-sans">{msg.text}</div>
+                        ) : (
+                          <div className="markdown-body prose dark:prose-invert max-w-none break-words text-[15px] leading-7">
+                            <ReactMarkdown
+                              remarkPlugins={[remarkGfm]}
+                              components={{
+                                code({ node, inline, className, children, ...props }) {
+                                  const match = /language-(\w+)/.exec(className || '')
+                                  return !inline && match ? (
+                                    <SyntaxHighlighter
+                                      {...props}
+                                      children={String(children).replace(/\n$/, '')}
+                                      style={dracula}
+                                      language={match[1]}
+                                      PreTag="div"
+                                      className="rounded-lg !my-4 !bg-[#121212] text-sm md:text-[15px]"
+                                    />
+                                  ) : (
+                                    <code {...props} className={`${className} bg-gray-100 dark:bg-gray-800 rounded px-1.5 py-0.5 text-[13px] md:text-sm font-mono text-pink-600 dark:text-pink-400`}>
+                                      {children}
+                                    </code>
+                                  )
+                                }
+                              }}
+                            >
+                              {msg.text}
+                            </ReactMarkdown>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  ))}
+                  {isLoading && (
+                    <div className="flex w-full justify-start items-center">
+                      <div className="w-8 h-8 rounded-full bg-gradient-to-tr from-blue-500 to-purple-500 flex items-center justify-center text-white mr-3 shrink-0">
+                        <span className="text-sm">✨</span>
+                      </div>
+                      <div className="px-5 py-3 flex gap-1.5">
+                        <div className="w-2 h-2 rounded-full bg-blue-500/80 animate-bounce" style={{ animationDelay: '0ms' }} />
+                        <div className="w-2 h-2 rounded-full bg-purple-500/80 animate-bounce" style={{ animationDelay: '150ms' }} />
+                        <div className="w-2 h-2 rounded-full bg-blue-500/80 animate-bounce" style={{ animationDelay: '300ms' }} />
+                      </div>
+                    </div>
+                  )}
+                  {/* Invisible div to scroll to bottom */}
+                  <div ref={messagesEndRef} />
+                </div>
+              ) : (
+                <div className="flex-1 flex flex-col justify-end">
+                  <div className="flex items-center gap-2 text-sm md:text-base text-[#c4c7c5] mb-1">
+                    <span className="text-lg">✨</span>
+                    <p>Hi {user?.name || 'Guest'}</p>
+                  </div>
+                  <h1 className="text-[1.8rem] md:text-3xl lg:text-4xl font-semibold tracking-tight bg-gradient-to-r from-themedark via-black to-gray-500 dark:from-white dark:via-white dark:to-[#9ca3af] bg-clip-text text-transparent transition-colors animate-slideUpFade">Where should we start?</h1>
+                </div>
+              )}
 
               <div className="mt-6 md:mt-8 animate-slideUpFade" style={{ animationDelay: '0.1s' }}>
                 <div
@@ -268,11 +351,10 @@ function App() {
                   onDragOver={handleDragOver}
                   onDragLeave={handleDragLeave}
                   onDrop={handleDrop}
-                  className={`relative bg-gray-100 dark:bg-[#1f1f20] rounded-3xl px-4 py-3 md:px-6 md:py-4 border shadow-[0_4px_12px_rgba(0,0,0,0.05)] dark:shadow-[0_0_0_1px_rgba(255,255,255,0.04)] flex flex-col gap-3 transition-all duration-200 hover:shadow-lg dark:hover:shadow-[0_0_0_1px_rgba(255,255,255,0.08)] ${
-                    isDragOver
-                      ? 'border-blue-500 dark:border-blue-400 border-2 border-dashed ring-2 ring-blue-500/20 dark:ring-blue-400/20'
-                      : 'border-gray-200 dark:border-white/10'
-                  }`}
+                  className={`relative bg-gray-100 dark:bg-[#1f1f20] rounded-3xl px-4 py-3 md:px-6 md:py-4 border shadow-[0_4px_12px_rgba(0,0,0,0.05)] dark:shadow-[0_0_0_1px_rgba(255,255,255,0.04)] flex flex-col gap-3 transition-all duration-200 hover:shadow-lg dark:hover:shadow-[0_0_0_1px_rgba(255,255,255,0.08)] ${isDragOver
+                    ? 'border-blue-500 dark:border-blue-400 border-2 border-dashed ring-2 ring-blue-500/20 dark:ring-blue-400/20'
+                    : 'border-gray-200 dark:border-white/10'
+                    }`}
                 >
                   {isDragOver && (
                     <div className="absolute inset-0 rounded-3xl bg-blue-500/10 dark:bg-blue-500/20 flex items-center justify-center z-10 pointer-events-none">
@@ -307,13 +389,24 @@ function App() {
                     </div>
                   )}
 
-                  <input
-                    type="text"
+                  <textarea
+                    ref={textareaRef}
+                    rows="1"
                     placeholder={getInputPlaceholder()}
                     value={inputValue}
-                    onChange={(e) => setInputValue(e.target.value)}
-                    onKeyDown={(e) => e.key === 'Enter' && handleSend()}
-                    className="w-full bg-transparent border-none outline-none text-sm md:text-base placeholder:text-gray-400 dark:placeholder:text-[#9ba0a6] text-gray-900 dark:text-white transition-colors"
+                    onChange={(e) => {
+                      setInputValue(e.target.value);
+                      e.target.style.height = 'auto';
+                      e.target.style.height = `${Math.min(e.target.scrollHeight, 250)}px`;
+                    }}
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter' && !e.shiftKey) {
+                        e.preventDefault();
+                        handleSend();
+                      }
+                    }}
+                    className="w-full bg-transparent border-none outline-none text-sm md:text-base placeholder:text-gray-400 dark:placeholder:text-[#9ba0a6] text-gray-900 dark:text-white transition-colors resize-none overflow-y-auto"
+                    style={{ minHeight: '24px', maxHeight: '250px' }}
                   />
 
                   <div className="flex items-center justify-between text-xs md:text-sm text-gray-600 dark:text-[#c4c7c5]">
@@ -394,7 +487,7 @@ function App() {
                     </div>
 
                     <div className="flex items-center gap-3">
-                      <div className="relative">
+                      {/* <div className="relative">
                         <button
                           ref={modelButtonRef}
                           type="button"
@@ -434,7 +527,7 @@ function App() {
                             ))}
                           </div>
                         )}
-                      </div>
+                      </div> */}
 
                       {inputValue.trim() ? (
                         <button
@@ -446,36 +539,38 @@ function App() {
                           <SendHorizontal className="w-4 h-4 md:w-5 md:h-5" />
                         </button>
                       ) : (
-                        <button
-                          type="button"
-                          onClick={() => {
-                            const recognition = recognitionRef.current;
-                            if (!recognition) {
-                              toast.error('Speech recognition is not supported in this browser.');
-                              return;
-                            }
+                        // <button
+                        //   type="button"
+                        //   onClick={() => {
+                        //     const recognition = recognitionRef.current;
+                        //     if (!recognition) {
+                        //       toast.error('Speech recognition is not supported in this browser.');
+                        //       return;
+                        //     }
 
-                            if (isListening) {
-                              recognition.stop();
-                              setIsListening(false);
-                            } else {
-                              try {
-                                recognition.start();
-                                setIsListening(true);
-                              } catch {
-                                setIsListening(false);
-                              }
-                            }
-                          }}
-                          className={`flex items-center justify-center w-8 h-8 md:w-9 md:h-9 rounded-full transition-colors animate-popIn ${isListening
-                            ? 'bg-red-600 text-white hover:bg-red-700 animate-pulse'
-                            : 'bg-black dark:bg-white text-white dark:text-black hover:bg-gray-800 dark:hover:bg-zinc-200'
-                            }`}
-                          aria-pressed={isListening}
-                          title={isListening ? 'Stop voice input' : 'Start voice input'}
-                        >
-                          <Mic className="w-4 h-4 md:w-5 md:h-5" />
-                        </button>
+                        //     if (isListening) {
+                        //       recognition.stop();
+                        //       setIsListening(false);
+                        //     } else {
+                        //       try {
+                        //         recognition.start();
+                        //         setIsListening(true);
+                        //       } catch {
+                        //         setIsListening(false);
+                        //       }
+                        //     }
+                        //   }}
+                        //   className={`flex items-center justify-center w-8 h-8 md:w-9 md:h-9 rounded-full transition-colors animate-popIn ${isListening
+                        //     ? 'bg-red-600 text-white hover:bg-red-700 animate-pulse'
+                        //     : 'bg-black dark:bg-white text-white dark:text-black hover:bg-gray-800 dark:hover:bg-zinc-200'
+                        //     }`}
+                        //   aria-pressed={isListening}
+                        //   title={isListening ? 'Stop voice input' : 'Start voice input'}
+                        // >
+                        //   <Mic className="w-4 h-4 md:w-5 md:h-5" />
+                        // </button>
+                        <>
+                        </>
                       )}
                     </div>
                   </div>
