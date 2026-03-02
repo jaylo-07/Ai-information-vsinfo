@@ -266,8 +266,8 @@ const Sidebar = () => {
 
       <div className={`
         fixed lg:relative inset-y-0 left-0 z-50
-        flex flex-col justify-between bg-white/90 dark:bg-black/80 lg:bg-transparent lg:border-r border-black/5 dark:border-white/5 p-4
-        transition-all duration-300 font-sans overflow-visible backdrop-blur-3xl lg:backdrop-blur-none
+        flex flex-col justify-between bg-transparent lg:border-r border-black/5 dark:border-white/5 p-4
+        transition-all duration-300 font-sans overflow-visible
         ${isMobileSidebarOpen ? 'translate-x-0 w-[280px]' : '-translate-x-full lg:translate-x-0'}
         ${extended ? 'lg:w-[280px]' : 'lg:w-[72px]'}
       `}>

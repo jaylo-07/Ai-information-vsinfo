@@ -229,12 +229,8 @@ const Home = () => {
     };
 
     return (
-        <main className="flex-1 flex flex-col w-full h-full relative overflow-hidden bg-white dark:bg-[#09090b] transition-colors duration-300">
-            {/* Background Aesthetic */}
-            <div className="absolute inset-0 z-0 pointer-events-none overflow-hidden">
-                <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-purple-500/20 dark:bg-[#9D00FF]/10 blur-[120px] rounded-full mix-blend-multiply dark:mix-blend-screen opacity-70 animate-pulse"></div>
-                <div className="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] bg-blue-500/20 dark:bg-blue-600/10 blur-[120px] rounded-full mix-blend-multiply dark:mix-blend-screen opacity-70 animate-pulse delay-700"></div>
-            </div>
+        <main className="flex-1 flex flex-col w-full h-full relative overflow-hidden bg-transparent transition-colors duration-300">
+
 
             <div className="z-10 w-full max-w-4xl mx-auto flex flex-col h-full pt-4 md:pt-8 px-4 sm:px-6 lg:px-8 pb-6">
 
