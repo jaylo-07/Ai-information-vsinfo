@@ -120,6 +120,56 @@ export const renameThread = createAsyncThunk(
         }
     });
 
+// ─── Deep Research Thunk ───────────────────────────────────────────────────
+export const sendDeepResearch = createAsyncThunk(
+    'chat/sendDeepResearch',
+    async ({ query, depth, sources }, { rejectWithValue, getState, dispatch }) => {
+        try {
+            const state = getState();
+            let threadId = state.chat.currentThreadId;
+            const title = query.substring(0, 30) + (query.length > 30 ? '...' : '');
+
+            if (!threadId) {
+                const threadResponse = await axios.post(`${BASE_URL}/threads`, { title: `[Deep Research] ${title}` }, getConfig());
+                threadId = threadResponse.data.id;
+                dispatch(setCurrentThreadId(threadId));
+                dispatch(fetchThreads());
+            }
+
+            // Save user message
+            await axios.post(`${BASE_URL}/messages`, {
+                thread_id: threadId,
+                role: 'user',
+                message: query
+            }, getConfig());
+
+            // Call backend deep-research endpoint
+            const { data } = await axios.post(`${BASE_URL}/deep-research`, {
+                query,
+                depth,
+                sources
+            }, { ...getConfig(), timeout: 120000 });
+
+            // Save model response
+            await axios.post(`${BASE_URL}/messages`, {
+                thread_id: threadId,
+                role: 'model',
+                message: data.report
+            }, getConfig());
+
+            return {
+                query,
+                subQuestions: data.subQuestions,
+                sources: data.sources,
+                report: data.report,
+                sourcesCount: data.sourcesCount,
+            };
+        } catch (error) {
+            return rejectWithValue(error?.response?.data?.error || error.message);
+        }
+    }
+);
+
 // Async thunk to simulate receiving a response for a prompt
 export const sendPrompt = createAsyncThunk(
     'chat/sendPrompt',
@@ -229,7 +279,11 @@ const initialState = {
     isLoading: false,
     currentResponse: '',
     messages: [], // Store the chat history for the current session
-    isTemporaryChat: false
+    isTemporaryChat: false,
+    // Deep Research
+    isResearching: false,
+    researchSteps: [],    // live step-by-step progress
+    researchResult: null, // { subQuestions, sources, report, sourcesCount }
 };
 
 const chatSlice = createSlice({
@@ -272,7 +326,6 @@ const chatSlice = createSlice({
         builder
             .addCase(sendPrompt.pending, (state, action) => {
                 state.isLoading = true;
-                // We add the user prompt optimistically if it's available in meta.arg
                 if (action.meta && action.meta.arg) {
                     const { prompt, imageUrl } = action.meta.arg;
                     state.messages.push({ role: 'user', text: prompt || '', imageUrl });
@@ -288,6 +341,43 @@ const chatSlice = createSlice({
             .addCase(sendPrompt.rejected, (state, action) => {
                 state.isLoading = false;
                 toast.error(action.payload || "Failed to get response");
+            })
+            // ── Deep Research ──────────────────────────────────────────
+            .addCase(sendDeepResearch.pending, (state, action) => {
+                state.isResearching = true;
+                state.researchResult = null;
+                state.researchSteps = [
+                    { id: 1, label: 'Breaking query into sub-questions...', done: false },
+                    { id: 2, label: 'Searching the web for sources...', done: false },
+                    { id: 3, label: 'Reading & extracting content...', done: false },
+                    { id: 4, label: 'Synthesizing research report...', done: false },
+                ];
+                if (action.meta?.arg?.query) {
+                    state.messages.push({ role: 'user', text: action.meta.arg.query, isDeepResearch: true });
+                }
+            })
+            .addCase(sendDeepResearch.fulfilled, (state, action) => {
+                state.isResearching = false;
+                state.researchSteps = state.researchSteps.map(s => ({ ...s, done: true }));
+                state.researchResult = action.payload;
+                state.messages.push({
+                    role: 'model',
+                    text: action.payload.report,
+                    isDeepResearch: true,
+                    sources: action.payload.sources,
+                    subQuestions: action.payload.subQuestions,
+                    sourcesCount: action.payload.sourcesCount,
+                });
+                state.researchSteps = [];
+            })
+            .addCase(sendDeepResearch.rejected, (state, action) => {
+                state.isResearching = false;
+                state.researchSteps = [];
+                toast.error(action.payload || 'Deep Research failed. Check API keys.');
+                // Remove the optimistic user message
+                if (state.messages.length && state.messages[state.messages.length - 1].role === 'user') {
+                    state.messages.pop();
+                }
             })
             .addCase(fetchThreads.fulfilled, (state, action) => {
                 state.threads = action.payload || [];

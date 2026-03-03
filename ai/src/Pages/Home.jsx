@@ -2,15 +2,110 @@ import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { sendPrompt } from '../redux/slice/chat.slice';
 import { Plus, SlidersHorizontal, Search, Image as ImageIcon, LayoutPanelTop, GraduationCap, Upload, Images, File as FileIcon, X, SendHorizontal, Sparkles, Paintbrush, BarChart3, Code2, Lightbulb, MessageSquareDashed } from 'lucide-react';
+import { sendPrompt, sendDeepResearch } from '../redux/slice/chat.slice';
+import { Plus, SlidersHorizontal, Search, Image as ImageIcon, LayoutPanelTop, GraduationCap, Upload, Images, File as FileIcon, X, SendHorizontal, Sparkles, Paintbrush, BarChart3, Code2, Lightbulb, Globe, BookOpen, Newspaper, Zap, Scale, Layers, ChevronDown, ChevronUp, ExternalLink, HelpCircle } from 'lucide-react';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
 import { dracula } from 'react-syntax-highlighter/dist/esm/styles/prism';
 
+// ─── Deep Research Sources Card ───────────────────────────────────────────────
+const DeepResearchSourcesCard = ({ sources = [], subQuestions = [] }) => {
+    const [showSources, setShowSources] = useState(false);
+    const [showQuestions, setShowQuestions] = useState(false);
+
+    return (
+        <div className="mt-4 flex flex-col gap-2 not-prose">
+            {/* Sub-Questions Toggle */}
+            {subQuestions.length > 0 && (
+                <div className="border border-blue-200 dark:border-blue-500/30 rounded-2xl overflow-hidden bg-blue-50/50 dark:bg-blue-500/5">
+                    <button
+                        type="button"
+                        onClick={() => setShowQuestions(v => !v)}
+                        className="w-full flex items-center justify-between px-4 py-3 text-left hover:bg-blue-50 dark:hover:bg-blue-500/10 transition-colors"
+                    >
+                        <div className="flex items-center gap-2">
+                            <HelpCircle className="w-4 h-4 text-blue-600 dark:text-blue-400" />
+                            <span className="text-xs font-bold text-blue-700 dark:text-blue-300 uppercase tracking-wider">
+                                {subQuestions.length} Sub-Questions Researched
+                            </span>
+                        </div>
+                        {showQuestions ? <ChevronUp className="w-4 h-4 text-blue-500" /> : <ChevronDown className="w-4 h-4 text-blue-500" />}
+                    </button>
+                    {showQuestions && (
+                        <div className="px-4 pb-3 flex flex-col gap-2 border-t border-blue-200 dark:border-blue-500/20 pt-3">
+                            {subQuestions.map((q, i) => (
+                                <div key={i} className="flex items-start gap-2">
+                                    <span className="text-[10px] font-bold text-blue-500 dark:text-blue-400 mt-0.5 shrink-0 w-4">{i + 1}.</span>
+                                    <span className="text-xs text-gray-700 dark:text-gray-300 leading-relaxed">{q}</span>
+                                </div>
+                            ))}
+                        </div>
+                    )}
+                </div>
+            )}
+
+            {/* Sources Toggle */}
+            {sources.length > 0 && (
+                <div className="border border-purple-200 dark:border-purple-500/30 rounded-2xl overflow-hidden bg-purple-50/50 dark:bg-purple-500/5">
+                    <button
+                        type="button"
+                        onClick={() => setShowSources(v => !v)}
+                        className="w-full flex items-center justify-between px-4 py-3 text-left hover:bg-purple-50 dark:hover:bg-purple-500/10 transition-colors"
+                    >
+                        <div className="flex items-center gap-2">
+                            <Globe className="w-4 h-4 text-purple-600 dark:text-purple-400" />
+                            <span className="text-xs font-bold text-purple-700 dark:text-purple-300 uppercase tracking-wider">
+                                {sources.length} Sources Used
+                            </span>
+                        </div>
+                        {showSources ? <ChevronUp className="w-4 h-4 text-purple-500" /> : <ChevronDown className="w-4 h-4 text-purple-500" />}
+                    </button>
+                    {showSources && (
+                        <div className="px-4 pb-3 flex flex-col gap-2 border-t border-purple-200 dark:border-purple-500/20 pt-3">
+                            {sources.map((s, i) => {
+                                let hostname = '';
+                                try { hostname = new URL(s.link).hostname.replace('www.', ''); } catch { }
+                                return (
+                                    <a
+                                        key={i}
+                                        href={s.link}
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        className="flex items-start gap-3 p-2.5 rounded-xl hover:bg-white dark:hover:bg-white/5 transition-colors group"
+                                    >
+                                        <img
+                                            src={`https://www.google.com/s2/favicons?domain=${hostname}&sz=32`}
+                                            alt=""
+                                            className="w-5 h-5 rounded shrink-0 mt-0.5"
+                                            onError={e => { e.target.style.display = 'none'; }}
+                                        />
+                                        <div className="flex-1 min-w-0">
+                                            <div className="flex items-center gap-1">
+                                                <span className="text-[10px] font-semibold text-purple-600 dark:text-purple-400">[{i + 1}]</span>
+                                                <p className="text-xs font-semibold text-gray-800 dark:text-gray-200 truncate group-hover:text-purple-600 dark:group-hover:text-purple-400 transition-colors">{s.title}</p>
+                                                <ExternalLink className="w-3 h-3 text-gray-400 shrink-0 opacity-0 group-hover:opacity-100 transition-opacity" />
+                                            </div>
+                                            <p className="text-[11px] text-gray-500 dark:text-gray-400 truncate">{hostname}</p>
+                                            {s.snippet && <p className="text-[11px] text-gray-500 dark:text-gray-500 mt-0.5 line-clamp-2 leading-relaxed">{s.snippet}</p>}
+                                        </div>
+                                    </a>
+                                );
+                            })}
+                        </div>
+                    )}
+                </div>
+            )}
+        </div>
+    );
+};
+
 const Home = () => {
     const messages = useSelector((state) => state.chat.messages);
     const isLoading = useSelector((state) => state.chat.isLoading);
     const isTemporaryChat = useSelector((state) => state.chat.isTemporaryChat);
+    const isResearching = useSelector((state) => state.chat.isResearching);
+    const researchSteps = useSelector((state) => state.chat.researchSteps);
     const user = useSelector((state) => state.auth?.user);
 
     const [openMenu, setOpenMenu] = useState(null);
@@ -18,6 +113,13 @@ const Home = () => {
     const menuRootRef = useRef(null);
     const [inputValue, setInputValue] = useState('');
     const [isMdScreen, setIsMdScreen] = useState(window.innerWidth >= 768);
+
+    // Deep Research state
+    const [deepResearchOpen, setDeepResearchOpen] = useState(false);
+    const [researchDepth, setResearchDepth] = useState('Balanced');
+    const [researchSources, setResearchSources] = useState({ Web: true, Academic: false, News: false });
+
+    const isDeepResearchActive = activeTool?.label === 'Deep Research';
 
     useEffect(() => {
         const handleResize = () => setIsMdScreen(window.innerWidth >= 768);
@@ -50,18 +152,27 @@ const Home = () => {
     const handleSend = () => {
         if (!inputValue.trim() && attachments.length === 0) return;
 
+        if (isDeepResearchActive) {
+            // Dispatch real deep research thunk
+            dispatch(sendDeepResearch({
+                query: inputValue.trim(),
+                depth: researchDepth,
+                sources: researchSources,
+            }));
+            setInputValue('');
+            setAttachments([]);
+            if (textareaRef.current) textareaRef.current.style.height = 'auto';
+            return;
+        }
+
         let imageUrl = null;
         const imageAttachment = attachments.find(att => att.kind === 'photo');
-        if (imageAttachment) {
-            imageUrl = imageAttachment.base64;
-        }
+        if (imageAttachment) imageUrl = imageAttachment.base64;
 
         dispatch(sendPrompt({ prompt: inputValue, imageUrl }));
         setInputValue('');
         setAttachments([]);
-        if (textareaRef.current) {
-            textareaRef.current.style.height = 'auto';
-        }
+        if (textareaRef.current) textareaRef.current.style.height = 'auto';
     };
 
     const scrollToBottom = () => {
@@ -292,11 +403,68 @@ const Home = () => {
                                             )}
                                         </div>
                                     </div>
+
+                                    {/* Deep Research Sources Card */}
+                                    {msg.isDeepResearch && msg.sources?.length > 0 && (
+                                        <DeepResearchSourcesCard sources={msg.sources} subQuestions={msg.subQuestions} />
+                                    )}
                                 </div>
                             </div>
                         ))}
 
-                        {isLoading && (
+                        {/* Deep Research In-Progress Panel */}
+                        {isResearching && researchSteps.length > 0 && (
+                            <div className="flex w-full justify-start items-start animate-slideUpFade">
+                                <div className="w-9 h-9 md:w-10 md:h-10 rounded-2xl bg-gradient-to-br from-[#9D00FF] to-blue-600 flex items-center justify-center text-white mr-4 shrink-0 shadow-lg shadow-purple-500/20 mt-1">
+                                    <Globe className="w-5 h-5 animate-spin" style={{ animationDuration: '2s' }} />
+                                </div>
+                                <div className="bg-white/80 dark:bg-[#18181b]/90 backdrop-blur-md rounded-3xl rounded-tl-sm p-5 border border-purple-200 dark:border-purple-500/30 shadow-lg shadow-purple-500/10 min-w-[260px] max-w-sm">
+                                    <div className="flex items-center gap-2 mb-4">
+                                        <div className="w-5 h-5 rounded-full bg-gradient-to-br from-purple-500 to-blue-600 flex items-center justify-center">
+                                            <Search className="w-2.5 h-2.5 text-white" />
+                                        </div>
+                                        <span className="text-xs font-bold text-purple-700 dark:text-purple-300 uppercase tracking-wider">Deep Research in progress</span>
+                                    </div>
+                                    <div className="flex flex-col gap-3">
+                                        {researchSteps.map((step, i) => (
+                                            <div key={step.id} className="flex items-center gap-3">
+                                                <div className={`w-5 h-5 rounded-full flex items-center justify-center shrink-0 transition-all duration-500 ${step.done
+                                                    ? 'bg-green-500 text-white'
+                                                    : i === researchSteps.findIndex(s => !s.done)
+                                                        ? 'bg-purple-500 text-white animate-pulse'
+                                                        : 'bg-gray-200 dark:bg-white/10 text-gray-400'
+                                                    }`}>
+                                                    {step.done ? (
+                                                        <svg className="w-2.5 h-2.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}><path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" /></svg>
+                                                    ) : i === researchSteps.findIndex(s => !s.done) ? (
+                                                        <div className="w-1.5 h-1.5 bg-white rounded-full animate-bounce" />
+                                                    ) : (
+                                                        <div className="w-1.5 h-1.5 bg-gray-400 rounded-full" />
+                                                    )}
+                                                </div>
+                                                <span className={`text-xs font-medium transition-colors ${step.done ? 'text-green-600 dark:text-green-400 line-through opacity-70' :
+                                                    i === researchSteps.findIndex(s => !s.done) ? 'text-gray-900 dark:text-white' :
+                                                        'text-gray-400 dark:text-gray-600'
+                                                    }`}>{step.label}</span>
+                                            </div>
+                                        ))}
+                                    </div>
+                                    <div className="mt-4 flex gap-1">
+                                        {[0, 1, 2, 3, 4].map(i => (
+                                            <div key={i} className="flex-1 h-1 rounded-full bg-purple-200 dark:bg-purple-500/30 overflow-hidden">
+                                                <div
+                                                    className="h-full bg-gradient-to-r from-purple-500 to-blue-500 rounded-full animate-pulse"
+                                                    style={{ animationDelay: `${i * 150}ms` }}
+                                                />
+                                            </div>
+                                        ))}
+                                    </div>
+                                </div>
+                            </div>
+                        )}
+
+                        {/* Regular loading dots */}
+                        {isLoading && !isResearching && (
                             <div className="flex w-full justify-start items-center animate-slideUpFade">
                                 <div className="w-9 h-9 md:w-10 md:h-10 rounded-2xl bg-gradient-to-br from-[#9D00FF] to-blue-600 flex items-center justify-center text-white mr-4 shrink-0 shadow-lg shadow-purple-500/20">
                                     <Sparkles className="w-5 h-5 animate-pulse" />
@@ -367,6 +535,113 @@ const Home = () => {
 
                 {/* Input Area */}
                 <div className="mt-auto pt-4 relative animate-slideUpFade z-20" style={{ animationDelay: '0.2s' }}>
+
+                    {/* Deep Research Panel */}
+                    {isDeepResearchActive && (
+                        <div className="mb-3 w-full mx-auto max-w-4xl">
+                            <div className="bg-white/90 dark:bg-[#18181b]/90 backdrop-blur-xl border border-purple-200 dark:border-purple-500/30 rounded-2xl shadow-lg shadow-purple-500/10 overflow-hidden">
+                                {/* Panel Header */}
+                                <div
+                                    className="flex items-center justify-between px-4 py-3 cursor-pointer select-none"
+                                    onClick={() => setDeepResearchOpen(v => !v)}
+                                >
+                                    <div className="flex items-center gap-2.5">
+                                        <div className="w-7 h-7 rounded-lg bg-gradient-to-br from-purple-500 to-blue-600 flex items-center justify-center shadow-md shadow-purple-500/20">
+                                            <Search className="w-3.5 h-3.5 text-white" />
+                                        </div>
+                                        <span className="text-sm font-semibold text-gray-800 dark:text-white">Deep Research</span>
+                                        <span className="hidden sm:inline-flex items-center gap-1 text-[11px] font-medium bg-purple-100 dark:bg-purple-500/20 text-purple-700 dark:text-purple-300 px-2 py-0.5 rounded-full">
+                                            <Zap className="w-3 h-3" />
+                                            {researchDepth}
+                                        </span>
+                                    </div>
+                                    <div className="flex items-center gap-3">
+                                        <div className="hidden sm:flex items-center gap-1.5">
+                                            {Object.entries(researchSources).filter(([, v]) => v).map(([k]) => (
+                                                <span key={k} className="text-[10px] font-semibold bg-gray-100 dark:bg-white/10 text-gray-600 dark:text-gray-300 px-2 py-0.5 rounded-full">{k}</span>
+                                            ))}
+                                        </div>
+                                        <button
+                                            type="button"
+                                            onClick={(e) => { e.stopPropagation(); setActiveTool(null); setDeepResearchOpen(false); }}
+                                            className="w-6 h-6 flex items-center justify-center rounded-full hover:bg-red-100 dark:hover:bg-red-500/20 text-gray-400 hover:text-red-500 transition-colors"
+                                            title="Disable Deep Research"
+                                        >
+                                            <X className="w-3.5 h-3.5" />
+                                        </button>
+                                        {deepResearchOpen
+                                            ? <ChevronUp className="w-4 h-4 text-gray-400" />
+                                            : <ChevronDown className="w-4 h-4 text-gray-400" />}
+                                    </div>
+                                </div>
+
+                                {/* Expanded Settings */}
+                                {deepResearchOpen && (
+                                    <div className="px-4 pb-4 pt-1 border-t border-gray-100 dark:border-white/5">
+                                        <div className="flex flex-col sm:flex-row gap-4">
+                                            {/* Depth Selector */}
+                                            <div className="flex-1">
+                                                <p className="text-[11px] font-semibold text-gray-400 dark:text-gray-500 uppercase tracking-wider mb-2">Research Depth</p>
+                                                <div className="flex gap-2">
+                                                    {[
+                                                        { id: 'Quick', icon: <Zap className="w-3.5 h-3.5" />, desc: 'Fast scan' },
+                                                        { id: 'Balanced', icon: <Scale className="w-3.5 h-3.5" />, desc: 'Thorough' },
+                                                        { id: 'Deep', icon: <Layers className="w-3.5 h-3.5" />, desc: 'Exhaustive' },
+                                                    ].map(({ id, icon, desc }) => (
+                                                        <button
+                                                            key={id}
+                                                            type="button"
+                                                            onClick={() => setResearchDepth(id)}
+                                                            className={`flex-1 flex flex-col items-center gap-1 py-2.5 px-2 rounded-xl border text-center transition-all duration-200 ${researchDepth === id
+                                                                ? 'border-purple-500 bg-purple-50 dark:bg-purple-500/15 text-purple-700 dark:text-purple-300 shadow-sm shadow-purple-500/10'
+                                                                : 'border-gray-200 dark:border-white/10 bg-gray-50 dark:bg-white/5 text-gray-500 dark:text-gray-400 hover:border-purple-300 dark:hover:border-purple-500/40 hover:bg-purple-50/50 dark:hover:bg-purple-500/10'
+                                                                }`}
+                                                        >
+                                                            <span className={researchDepth === id ? 'text-purple-600 dark:text-purple-400' : ''}>{icon}</span>
+                                                            <span className="text-xs font-semibold">{id}</span>
+                                                            <span className="text-[10px] opacity-70">{desc}</span>
+                                                        </button>
+                                                    ))}
+                                                </div>
+                                            </div>
+
+                                            {/* Source Toggles */}
+                                            <div className="flex-1">
+                                                <p className="text-[11px] font-semibold text-gray-400 dark:text-gray-500 uppercase tracking-wider mb-2">Sources</p>
+                                                <div className="flex gap-2">
+                                                    {[
+                                                        { id: 'Web', icon: <Globe className="w-3.5 h-3.5" /> },
+                                                        { id: 'Academic', icon: <BookOpen className="w-3.5 h-3.5" /> },
+                                                        { id: 'News', icon: <Newspaper className="w-3.5 h-3.5" /> },
+                                                    ].map(({ id, icon }) => {
+                                                        const active = researchSources[id];
+                                                        return (
+                                                            <button
+                                                                key={id}
+                                                                type="button"
+                                                                onClick={() => setResearchSources(prev => ({ ...prev, [id]: !prev[id] }))}
+                                                                className={`flex-1 flex flex-col items-center gap-1 py-2.5 px-2 rounded-xl border text-center transition-all duration-200 ${active
+                                                                    ? 'border-blue-500 bg-blue-50 dark:bg-blue-500/15 text-blue-700 dark:text-blue-300 shadow-sm shadow-blue-500/10'
+                                                                    : 'border-gray-200 dark:border-white/10 bg-gray-50 dark:bg-white/5 text-gray-400 dark:text-gray-500 hover:border-blue-300 dark:hover:border-blue-500/40 hover:bg-blue-50/50 dark:hover:bg-blue-500/10'
+                                                                    }`}
+                                                            >
+                                                                <span className={active ? 'text-blue-600 dark:text-blue-400' : ''}>{icon}</span>
+                                                                <span className="text-xs font-semibold">{id}</span>
+                                                            </button>
+                                                        );
+                                                    })}
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <p className="mt-3 text-[11px] text-gray-400 dark:text-gray-500 leading-relaxed">
+                                            Deep Research will conduct a comprehensive multi-step analysis, gather information from selected sources, and provide a well-structured report with key insights and conclusions.
+                                        </p>
+                                    </div>
+                                )}
+                            </div>
+                        </div>
+                    )}
                     <div
                         ref={menuRootRef}
                         onDragEnter={handleDragEnter}
@@ -408,6 +683,25 @@ const Home = () => {
                                         </button>
                                     </div>
                                 ))}
+                            </div>
+                        )}
+
+                        {/* Active Tool Badge */}
+                        {isDeepResearchActive && (
+                            <div className="flex items-center gap-2 px-3 pt-2 pb-0">
+                                <div className="flex items-center gap-1.5 bg-gradient-to-r from-purple-500/10 to-blue-500/10 border border-purple-200 dark:border-purple-500/30 text-purple-700 dark:text-purple-300 text-xs font-semibold px-3 py-1 rounded-full animate-popIn">
+                                    <Search className="w-3 h-3" />
+                                    <span>Deep Research</span>
+                                    <span className="text-purple-400 dark:text-purple-500">·</span>
+                                    <span className="text-purple-500 dark:text-purple-400">{researchDepth}</span>
+                                </div>
+                                <button
+                                    type="button"
+                                    onClick={() => setDeepResearchOpen(v => !v)}
+                                    className="text-[11px] text-gray-400 hover:text-purple-600 dark:hover:text-purple-400 transition-colors underline underline-offset-2"
+                                >
+                                    {deepResearchOpen ? 'hide settings' : 'settings'}
+                                </button>
                             </div>
                         )}
 
@@ -491,8 +785,14 @@ const Home = () => {
                                                             type="button"
                                                             className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-xl transition-colors text-left font-medium ${isActive ? 'bg-purple-50 dark:bg-purple-500/20 text-purple-700 dark:text-purple-300' : 'hover:bg-gray-100 dark:hover:bg-white/10 text-gray-700 dark:text-gray-200'}`}
                                                             onClick={() => {
-                                                                setActiveTool(isActive ? null : item);
+                                                                const nextTool = isActive ? null : item;
+                                                                setActiveTool(nextTool);
                                                                 setOpenMenu(null);
+                                                                if (nextTool?.label === 'Deep Research') {
+                                                                    setDeepResearchOpen(true);
+                                                                } else {
+                                                                    setDeepResearchOpen(false);
+                                                                }
                                                             }}
                                                         >
                                                             <span className={isActive ? 'text-purple-600 dark:text-purple-400' : 'text-gray-500 dark:text-gray-400'}>{item.icon}</span>
