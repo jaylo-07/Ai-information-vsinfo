@@ -1,6 +1,6 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { Plus, SlidersHorizontal, Search, Image as ImageIcon, LayoutPanelTop, GraduationCap, Upload, Images, File as FileIcon, X, SendHorizontal, Sparkles, Paintbrush, BarChart3, Code2, Lightbulb, MessageSquareDashed } from 'lucide-react';
+import { Plus, SlidersHorizontal, Search, Image as ImageIcon, LayoutPanelTop, GraduationCap, Upload, Images, File as FileIcon, X, SendHorizontal, Sparkles, Paintbrush, BarChart3, Code2, Lightbulb, MessageSquareDashed, Download } from 'lucide-react';
 import { sendPrompt, sendDeepResearch } from '../redux/slice/chat.slice';
 import { Globe, BookOpen, Newspaper, Zap, Scale, Layers, ChevronDown, ChevronUp, ExternalLink, HelpCircle } from 'lucide-react';
 import ReactMarkdown from 'react-markdown';
@@ -168,10 +168,39 @@ const Home = () => {
         const imageAttachment = attachments.find(att => att.kind === 'photo');
         if (imageAttachment) imageUrl = imageAttachment.base64;
 
-        dispatch(sendPrompt({ prompt: inputValue, imageUrl }));
+        dispatch(sendPrompt({ prompt: inputValue, imageUrl, actionType: activeTool?.label }));
         setInputValue('');
         setAttachments([]);
         if (textareaRef.current) textareaRef.current.style.height = 'auto';
+    };
+
+    const handleDownloadImage = async (imageUrl) => {
+        try {
+            const response = await fetch(imageUrl);
+            const blob = await response.blob();
+            const url = window.URL.createObjectURL(blob);
+            const link = document.createElement('a');
+            link.href = url;
+            const now = new Date();
+            const date = `${String(now.getDate()).padStart(2, '0')}-${String(now.getMonth() + 1).padStart(2, '0')}-${now.getFullYear()}`;
+            link.download = `vsinfotech-AI-${date}.png`;
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            window.URL.revokeObjectURL(url);
+        } catch (error) {
+            console.error('Error downloading image:', error);
+            // Fallback
+            const link = document.createElement('a');
+            link.href = imageUrl;
+            const now = new Date();
+            const date = `${String(now.getDate()).padStart(2, '0')}-${String(now.getMonth() + 1).padStart(2, '0')}-${now.getFullYear()}`;
+            link.download = `vsinfotech-AI-${date}.png`;
+            link.target = '_blank'; // in case download fails, open in new tab
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
     };
 
     const scrollToBottom = () => {
@@ -342,10 +371,7 @@ const Home = () => {
 
     return (
         <main className="flex-1 flex flex-col w-full h-full relative overflow-hidden bg-transparent transition-colors duration-300">
-
-
             <div className="z-10 w-full max-w-4xl mx-auto flex flex-col h-full pt-4 md:pt-8 px-4 sm:px-6 lg:px-8 pb-6">
-
                 {/* Chat Area / Hero */}
                 {messages && messages.length > 0 ? (
                     <div className="flex-1 overflow-y-auto scrollbar-hide flex flex-col gap-8">
@@ -360,13 +386,25 @@ const Home = () => {
                                 <div className={`flex flex-col max-w-[85%] md:max-w-[75%] ${msg.role === 'user' ? 'items-end' : 'items-start'}`}>
                                     <div
                                         className={`${msg.role === 'user'
-                                            ? 'bg-gradient-to-br from-gray-900 to-gray-800 dark:from-white dark:to-gray-200 text-white dark:text-black rounded-3xl rounded-tr-sm p-4 md:p-5 shadow-xl shadow-gray-900/10 dark:shadow-white/5'
-                                            : 'bg-white/60 dark:bg-[#18181b]/80 backdrop-blur-md rounded-3xl rounded-tl-sm p-5 md:p-6 text-gray-800 dark:text-gray-200 border border-gray-200 dark:border-white/5 shadow-sm'
+                                            ? 'bg-gradient-to-br from-gray-700 to-gray-700 dark:from-white/80 dark:to-gray-200 text-white dark:text-black rounded-xl rounded-tr-sm p-4 md:p-5 shadow-xl shadow-gray-900/10 dark:shadow-white/5'
+                                            : 'bg-white/60 dark:bg-[#18181b]/80 backdrop-blur-md rounded-xl rounded-tl-sm p-5 md:p-6 text-gray-800 dark:text-gray-200 border border-gray-200 dark:border-white/5 shadow-sm'
                                             }`}
                                     >
                                         <div className="flex flex-col gap-3">
                                             {msg.imageUrl && (
-                                                <img src={msg.imageUrl} alt="attachment" className="max-w-[240px] md:max-w-[300px] rounded-xl shadow-md border border-white/10" />
+                                                <img src={msg.imageUrl} alt="attachment" className="max-w-[100px] rounded-xl shadow-md border border-white/10" />
+                                            )}
+                                            {msg.generatedImageUrl && (
+                                                <div className="relative group w-full max-w-sm md:max-w-md">
+                                                    <img src={msg.generatedImageUrl} alt="generated" className="w-full rounded-2xl shadow-[0_0_30px_rgba(157,0,255,0.15)] border border-purple-500/20 block" />
+                                                    <button
+                                                        onClick={() => handleDownloadImage(msg.generatedImageUrl)}
+                                                        className="absolute top-3 right-3 p-2.5 bg-black/40 hover:bg-black/70 rounded-full text-white/90 hover:text-white opacity-0 group-hover:opacity-100 transition-all duration-300 backdrop-blur-md shadow-lg flex items-center justify-center transform hover:scale-105"
+                                                        title="Download Image"
+                                                    >
+                                                        <Download className="w-4 h-4" />
+                                                    </button>
+                                                </div>
                                             )}
                                             {msg.role === 'user' ? (
                                                 <div className="whitespace-pre-wrap text-[15px] leading-relaxed font-medium">
@@ -495,12 +533,12 @@ const Home = () => {
                             </div>
                         ) : (
                             <>
-                                <div className="relative mb-8 group cursor-default">
+                                {/* <div className="relative mb-8 group cursor-default">
                                     <div className="absolute inset-0 bg-gradient-to-r from-purple-500 to-blue-500 rounded-full blur-xl opacity-40 group-hover:opacity-60 transition-opacity duration-500 animate-pulse"></div>
                                     <div className="relative w-24 h-24 md:w-28 md:h-28 rounded-full bg-white dark:bg-[#121212] border border-gray-100 dark:border-white/10 flex items-center justify-center shadow-2xl">
                                         <Sparkles className="w-12 h-12 md:w-14 md:h-14 text-[#9D00FF]" />
                                     </div>
-                                </div>
+                                </div> */}
 
                                 <h1 className="text-4xl md:text-5xl lg:text-6xl font-extrabold tracking-tight text-center mb-4">
                                     <span className="bg-clip-text text-transparent bg-gradient-to-r from-gray-900 via-[#9D00FF] to-gray-900 dark:from-white dark:via-purple-400 dark:to-white">
@@ -711,7 +749,7 @@ const Home = () => {
                                     <button
                                         type="button"
                                         onClick={() => setOpenMenu((v) => (v === 'plus' ? null : 'plus'))}
-                                        className={`flex items-center justify-center w-10 h-10 rounded-full transition-all duration-300 ${openMenu === 'plus' ? 'bg-[#9D00FF] text-white rotate-90 shadow-lg shadow-purple-500/30' : 'bg-gray-100 dark:bg-[#27272a] text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-[#3f3f46]'}`}
+                                        className={`flex items-center justify-center w-10 h-10 rounded-full transition-all duration-300 ${openMenu === 'plus' ? 'bg-purple-100 dark:bg-purple-500/20 rotate-90 shadow-lg text-purple-600 dark:text-purple-400' : 'bg-gray-100 dark:bg-[#27272a] text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-[#3f3f46]'}`}
                                     >
                                         <Plus className="w-5 h-5" />
                                     </button>

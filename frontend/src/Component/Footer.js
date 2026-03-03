@@ -75,7 +75,7 @@ const Footer = () => {
                     className="w-8 h-8 rounded drop-shadow-[0_0_5px_rgba(255,255,255,0.3)] group-hover:drop-shadow-[0_0_10px_rgba(157,0,255,0.5)] transition-all"
                   />
                   <span className="text-lg text-gray-300 group-hover:text-white font-medium transition-colors">
-                    Vsinfo AI
+                    vsinfotech AI
                   </span>
                   <svg
                     className="w-5 h-5 text-themedark opacity-0 -translate-x-2 group-hover:opacity-100 group-hover:translate-x-0 transition-all duration-300"

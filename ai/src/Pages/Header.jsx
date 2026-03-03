@@ -2,10 +2,9 @@ import React, { useState, useRef, useEffect } from 'react';
 import { Menu, LogOut } from 'lucide-react';
 import { useDispatch, useSelector } from 'react-redux';
 import { setIsMobileSidebarOpen } from '../redux/slice/chat.slice';
-import { googleLogin, googleLoginUser, logout, logoutUser } from '../redux/slice/auth.slice';
-import { GoogleLogin, useGoogleLogin } from '@react-oauth/google';
-import toast from 'react-hot-toast';
-import logo from '../logo.svg';
+import { googleLogin, logoutUser } from '../redux/slice/auth.slice';
+import { useGoogleLogin } from '@react-oauth/google';
+import logo from '../asset/apple-touch-icon.png';
 
 const Header = () => {
   const dispatch = useDispatch();
@@ -70,10 +69,10 @@ const Header = () => {
           >
             <Menu className="w-6 h-6 text-gray-900 dark:text-white" />
           </button>
-          {/* <img src={logo} alt="vsinfotech AI" className="h-10 cursor-pointer self-center" /> */}
-          <p className="font-bold tracking-tight text-gray-900 dark:text-white">
+          <img src={logo} alt="vsinfotech AI" className="h-10 cursor-pointer self-center" />
+          {/* <p className="font-bold tracking-tight text-gray-900 dark:text-white">
             vsinfotech AI
-          </p>
+          </p> */}
         </div>
         <div className="flex items-center gap-3">
           <div className="flex items-center gap-3">

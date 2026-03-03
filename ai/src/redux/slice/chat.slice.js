@@ -3,6 +3,7 @@ import { toast } from 'react-hot-toast';
 import { gemini_runChat } from '../../config/gemini';
 import axios from 'axios';
 import { BASE_URL } from '../../Utils/baseUrl';
+import { sendAIRequest } from './ai.slice';
 
 // Get token helper
 const getConfig = () => ({
@@ -129,33 +130,65 @@ export const sendDeepResearch = createAsyncThunk(
             let threadId = state.chat.currentThreadId;
             const title = query.substring(0, 30) + (query.length > 30 ? '...' : '');
 
-            if (!threadId) {
-                const threadResponse = await axios.post(`${BASE_URL}/threads`, { title: `[Deep Research] ${title}` }, getConfig());
-                threadId = threadResponse.data.id;
+            const isLoggedIn = isUserLoggedIn();
+            const isTemp = state.chat.isTemporaryChat;
+
+            if (!isTemp && !threadId) {
+                if (isLoggedIn) {
+                    const threadResponse = await axios.post(`${BASE_URL}/threads`, { title: `[Deep Research] ${title}` }, getConfig());
+                    threadId = threadResponse.data.id;
+                } else {
+                    threadId = 'local_' + Date.now();
+                    const newThread = { id: threadId, title: `[Deep Research] ${title}`, created_at: new Date().toISOString() };
+                    saveLocalThreads([newThread, ...getLocalThreads()]);
+                }
                 dispatch(setCurrentThreadId(threadId));
                 dispatch(fetchThreads());
             }
 
             // Save user message
-            await axios.post(`${BASE_URL}/messages`, {
-                thread_id: threadId,
-                role: 'user',
-                message: query
-            }, getConfig());
+            if (!isTemp) {
+                if (isLoggedIn) {
+                    await axios.post(`${BASE_URL}/messages`, {
+                        thread_id: threadId,
+                        role: 'user',
+                        message: query
+                    }, getConfig());
+                } else {
+                    saveLocalThreadMessage(threadId, {
+                        id: 'msg_' + Date.now(),
+                        role: 'user',
+                        message: query,
+                        created_at: new Date().toISOString()
+                    });
+                }
+            }
 
             // Call backend deep-research endpoint
-            const { data } = await axios.post(`${BASE_URL}/deep-research`, {
+            const nodeApiUrl = process.env.REACT_APP_API_URL || 'http://localhost:5000/api';
+            const { data } = await axios.post(`${nodeApiUrl}/deep-research`, {
                 query,
                 depth,
                 sources
             }, { ...getConfig(), timeout: 120000 });
 
             // Save model response
-            await axios.post(`${BASE_URL}/messages`, {
-                thread_id: threadId,
-                role: 'model',
-                message: data.report
-            }, getConfig());
+            if (!isTemp) {
+                if (isLoggedIn) {
+                    await axios.post(`${BASE_URL}/messages`, {
+                        thread_id: threadId,
+                        role: 'model',
+                        message: data.report
+                    }, getConfig());
+                } else {
+                    saveLocalThreadMessage(threadId, {
+                        id: 'msg_' + Date.now(),
+                        role: 'model',
+                        message: data.report,
+                        created_at: new Date().toISOString()
+                    });
+                }
+            }
 
             return {
                 query,
@@ -173,7 +206,7 @@ export const sendDeepResearch = createAsyncThunk(
 // Async thunk to simulate receiving a response for a prompt
 export const sendPrompt = createAsyncThunk(
     'chat/sendPrompt',
-    async ({ prompt, imageUrl }, { rejectWithValue, getState, dispatch }) => {
+    async ({ prompt, imageUrl, actionType }, { rejectWithValue, getState, dispatch }) => {
         try {
             if (!prompt && !imageUrl) return;
             const state = getState();
@@ -228,7 +261,18 @@ export const sendPrompt = createAsyncThunk(
                 formattedHistory.pop();
             }
 
-            const responseText = await gemini_runChat(prompt || "", formattedHistory);
+            let responseText = "";
+            let generatedModelImageUrl = null;
+
+            // Using the new Hugging Face models via aiSlice
+            const aiResponse = await dispatch(sendAIRequest(prompt || "")).unwrap();
+
+            if (aiResponse.type === "image") {
+                generatedModelImageUrl = aiResponse.data;
+                // responseText = "Here is the image you requested.";
+            } else {
+                responseText = aiResponse.data;
+            }
 
             // Save model message to database
             if (!isTemp) {
@@ -250,14 +294,14 @@ export const sendPrompt = createAsyncThunk(
 
             return {
                 prompt: prompt,
-                response: responseText
+                response: responseText,
+                generatedImageUrl: generatedModelImageUrl
             };
         } catch (error) {
             return rejectWithValue(error.message);
         }
     }
 );
-
 
 const getInitialTheme = () => {
     if (typeof window !== 'undefined') {
@@ -335,7 +379,11 @@ const chatSlice = createSlice({
                 state.isLoading = false;
                 if (action.payload && action.payload.prompt) {
                     state.currentResponse = action.payload.response;
-                    state.messages.push({ role: 'model', text: action.payload.response });
+                    state.messages.push({
+                        role: 'model',
+                        text: action.payload.response,
+                        generatedImageUrl: action.payload.generatedImageUrl
+                    });
                 }
             })
             .addCase(sendPrompt.rejected, (state, action) => {
@@ -428,6 +476,23 @@ const chatSlice = createSlice({
             });
     }
 });
+
+export const generateImage = createAsyncThunk(
+    "image/generate",
+    async (prompt, { rejectWithValue }) => {
+        try {
+            const nodeApiUrl = process.env.REACT_APP_API_URL || 'http://localhost:5000/api';
+            const response = await axios.post(
+                `${nodeApiUrl}/generate-image`,
+                { prompt },
+                { ...getConfig(), timeout: 120000 }
+            );
+            return response.data.image;
+        } catch (error) {
+            return rejectWithValue(error.response?.data || error.message);
+        }
+    }
+);
 
 export const { setTheme, setIsMobileSidebarOpen, setRecentPromptSafe, setCurrentThreadId, newChat, setIsTemporaryChat } = chatSlice.actions;
 export default chatSlice.reducer;
