@@ -7,7 +7,7 @@ import {
   Share2, Pin, Edit2, Trash2, Search, AlertCircle, ArrowLeft, MessageSquareDashed
 } from 'lucide-react';
 import { useDispatch, useSelector } from 'react-redux';
-import { sendPrompt, setRecentPromptSafe, newChat, setTheme, setIsMobileSidebarOpen, fetchThreads, fetchThreadMessages, deleteThread, renameThread, setIsTemporaryChat } from '../redux/slice/chat.slice';
+import { sendPrompt, setRecentPromptSafe, newChat, setTheme, setIsMobileSidebarOpen, fetchThreads, fetchThreadMessages, deleteThread, renameThread, setIsTemporaryChat, togglePinThread } from '../redux/slice/chat.slice';
 
 const Sidebar = () => {
   const [extended, setExtended] = useState(true);
@@ -354,7 +354,10 @@ const Sidebar = () => {
                             className="bg-transparent outline-none w-full text-[13px] font-medium"
                           />
                         ) : (
-                          <p className={`text-[13px] font-medium truncate w-full transition-colors ${showChatMenu === index || isActive ? 'text-purple-700 dark:text-purple-300' : ''}`}>{item.title}</p>
+                          <div className="flex items-center gap-1.5 overflow-hidden">
+                            {Number(item.is_pin) === 1 && <Pin className="w-[12px] h-[12px] mt-0.5 shrink-0 fill-current opacity-70" />}
+                            <p className={`text-[13px] font-medium truncate w-full transition-colors ${showChatMenu === index || isActive ? 'text-purple-700 dark:text-purple-300' : ''}`}>{item.title}</p>
+                          </div>
                         )}
                       </div>
 
@@ -384,9 +387,13 @@ const Sidebar = () => {
                           }}
                           className="fixed bg-white dark:bg-[#171717] border border-gray-200 dark:border-gray-800 rounded-xl py-1.5 w-[220px] shadow-xl dark:shadow-[0_10px_40px_rgba(0,0,0,0.5)] z-[9999] animate-scaleIn"
                         >
-                          <button onClick={(e) => { e.stopPropagation(); setShowChatMenu(null); }} className="w-full flex items-center gap-3 px-4 py-2 hover:bg-gray-100 dark:hover:bg-[#252525] text-gray-800 dark:text-[#e3e3e3] transition-colors text-left">
+                          <button onClick={(e) => {
+                            e.stopPropagation();
+                            dispatch(togglePinThread({ threadId: item.id, is_pin: Number(item.is_pin) === 1 ? 0 : 1 }));
+                            setShowChatMenu(null);
+                          }} className="w-full flex items-center gap-3 px-4 py-2 hover:bg-gray-100 dark:hover:bg-[#252525] text-gray-800 dark:text-[#e3e3e3] transition-colors text-left">
                             <Pin className="w-[18px] h-[18px]" />
-                            <span className="text-sm font-medium">Pin</span>
+                            <span className="text-sm font-medium">{Number(item.is_pin) === 1 ? 'Unpin' : 'Pin'}</span>
                           </button>
                           <button onClick={(e) => {
                             e.stopPropagation();

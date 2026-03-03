@@ -4,6 +4,7 @@ import { gemini_runChat } from '../../config/gemini';
 import axios from 'axios';
 import { BASE_URL } from '../../Utils/baseUrl';
 import { sendAIRequest } from './ai.slice';
+import { openRouter_runChat } from '../../config/openRoute';
 
 // Get token helper
 const getConfig = () => ({
@@ -52,8 +53,13 @@ export const fetchThreads = createAsyncThunk(
         try {
             if (!isUserLoggedIn()) return getLocalThreads();
             const response = await axios.get(`${BASE_URL}/threads`, getConfig());
-            // Depending on pagination or direct array return format in Laravel:
-            return response.data?.data || response.data;
+
+            let data = response.data?.data || response.data;
+            if (Array.isArray(data)) {
+                // Sort pinned threads first, maintaining the rest's relative order
+                data = data.sort((a, b) => (Number(b.is_pin) || 0) - (Number(a.is_pin) || 0));
+            }
+            return data;
         } catch (error) {
             return rejectWithValue(error.response?.data || error.message);
         }
@@ -72,21 +78,6 @@ export const fetchThreadMessages = createAsyncThunk(
                 };
             }
             const response = await axios.get(`${BASE_URL}/threads/${threadId}`, getConfig());
-            return response.data;
-        } catch (error) {
-            return rejectWithValue(error.response?.data || error.message);
-        }
-    });
-
-export const createThread = createAsyncThunk(
-    'chat/createThread', async (title, { rejectWithValue }) => {
-        try {
-            if (!isUserLoggedIn()) {
-                const newThread = { id: 'local_' + Date.now(), title, created_at: new Date().toISOString() };
-                saveLocalThreads([newThread, ...getLocalThreads()]);
-                return newThread;
-            }
-            const response = await axios.post(`${BASE_URL}/threads`, { title }, getConfig());
             return response.data;
         } catch (error) {
             return rejectWithValue(error.response?.data || error.message);
@@ -116,6 +107,20 @@ export const renameThread = createAsyncThunk(
             }
             const response = await axios.put(`${BASE_URL}/threads/${threadId}`, { title }, getConfig());
             return response.data;
+        } catch (error) {
+            return rejectWithValue(error.response?.data || error.message);
+        }
+    });
+
+export const togglePinThread = createAsyncThunk(
+    'chat/togglePinThread', async ({ threadId, is_pin }, { rejectWithValue }) => {
+        try {
+            if (!isUserLoggedIn()) {
+                return { id: threadId, is_pin };
+            }
+            // Call API to update the pin status
+            const response = await axios.put(`${BASE_URL}/threads/${threadId}`, { is_pin }, getConfig());
+            return { id: threadId, is_pin };
         } catch (error) {
             return rejectWithValue(error.response?.data || error.message);
         }
@@ -217,29 +222,29 @@ export const sendPrompt = createAsyncThunk(
             const isLoggedIn = isUserLoggedIn();
             const isTemp = state.chat.isTemporaryChat;
 
-            // If no active thread, create one
-            if (!isTemp && !threadId) {
-                if (isLoggedIn) {
-                    const threadResponse = await axios.post(`${BASE_URL}/threads`, { title: formattedTitle }, getConfig());
-                    threadId = threadResponse.data.id;
-                } else {
-                    threadId = 'local_' + Date.now();
-                    const newThread = { id: threadId, title: formattedTitle, created_at: new Date().toISOString() };
-                    saveLocalThreads([newThread, ...getLocalThreads()]);
-                }
-                dispatch(setCurrentThreadId(threadId));
-                dispatch(fetchThreads());
-            }
-
-            // Save user message to database
+            // If no active thread, create one & Save user message to database
             if (!isTemp) {
                 if (isLoggedIn) {
-                    await axios.post(`${BASE_URL}/messages`, {
-                        thread_id: threadId,
-                        role: 'user',
-                        message: prompt || ""
-                    }, getConfig());
+                    const formData = new FormData();
+                    if (prompt) formData.append('message', prompt);
+                    if (imageUrl) formData.append('file', imageUrl);
+                    if (threadId) formData.append('thread_id', threadId);
+
+                    const response = await axios.post(`${BASE_URL}/messages/send`, formData, getConfig());
+
+                    if (!threadId) {
+                        threadId = response.data.thread_id;
+                        dispatch(setCurrentThreadId(threadId));
+                        dispatch(fetchThreads());
+                    }
                 } else {
+                    if (!threadId) {
+                        threadId = 'local_' + Date.now();
+                        const newThread = { id: threadId, title: formattedTitle, created_at: new Date().toISOString() };
+                        saveLocalThreads([newThread, ...getLocalThreads()]);
+                        dispatch(setCurrentThreadId(threadId));
+                        dispatch(fetchThreads());
+                    }
                     saveLocalThreadMessage(threadId, {
                         id: 'msg_' + Date.now(),
                         role: 'user',
@@ -273,15 +278,17 @@ export const sendPrompt = createAsyncThunk(
             } else {
                 responseText = aiResponse.data;
             }
+            // const responseText = await gemini_runChat(prompt || "", formattedHistory);
+            //  responseText = await openRouter_runChat(prompt || "", formattedHistory);
 
             // Save model message to database
             if (!isTemp) {
                 if (isLoggedIn) {
-                    await axios.post(`${BASE_URL}/messages`, {
-                        thread_id: threadId,
-                        role: 'model',
-                        message: responseText
-                    }, getConfig());
+                    const responseFormData = new FormData();
+                    responseFormData.append('thread_id', threadId);
+                    responseFormData.append('response', responseText);
+
+                    await axios.post(`${BASE_URL}/threads/${threadId}/response`, responseFormData, getConfig());
                 } else {
                     saveLocalThreadMessage(threadId, {
                         id: 'msg_' + Date.now(),
@@ -444,6 +451,9 @@ const chatSlice = createSlice({
                             id: msg.id,
                             role: msg.role,
                             text: msg.message,
+                            imageUrl: msg.file_url || null,
+                            file_type: msg.file_type || null,
+                            type: msg.type || null,
                             created_at: msg.created_at
                         }));
                     } else {
@@ -473,6 +483,14 @@ const chatSlice = createSlice({
                     state.recentPrompt = action.payload.title;
                 }
                 toast.success("Chat renamed");
+            })
+            .addCase(togglePinThread.fulfilled, (state, action) => {
+                const index = state.threads.findIndex(t => t.id === action.payload.id);
+                if (index !== -1) {
+                    state.threads[index].is_pin = action.payload.is_pin;
+                    // Re-sort threads so pinned ones stay at the top
+                    state.threads.sort((a, b) => (Number(b.is_pin) || 0) - (Number(a.is_pin) || 0));
+                }
             });
     }
 });
