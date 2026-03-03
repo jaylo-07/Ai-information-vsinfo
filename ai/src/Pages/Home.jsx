@@ -1,9 +1,8 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { sendPrompt } from '../redux/slice/chat.slice';
 import { Plus, SlidersHorizontal, Search, Image as ImageIcon, LayoutPanelTop, GraduationCap, Upload, Images, File as FileIcon, X, SendHorizontal, Sparkles, Paintbrush, BarChart3, Code2, Lightbulb, MessageSquareDashed } from 'lucide-react';
 import { sendPrompt, sendDeepResearch } from '../redux/slice/chat.slice';
-import { Plus, SlidersHorizontal, Search, Image as ImageIcon, LayoutPanelTop, GraduationCap, Upload, Images, File as FileIcon, X, SendHorizontal, Sparkles, Paintbrush, BarChart3, Code2, Lightbulb, Globe, BookOpen, Newspaper, Zap, Scale, Layers, ChevronDown, ChevronUp, ExternalLink, HelpCircle } from 'lucide-react';
+import { Globe, BookOpen, Newspaper, Zap, Scale, Layers, ChevronDown, ChevronUp, ExternalLink, HelpCircle } from 'lucide-react';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
