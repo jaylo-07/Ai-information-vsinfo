@@ -19,23 +19,26 @@ export const googleLoginUser = createAsyncThunk(
 );
 
 export const googleLogin = createAsyncThunk(
-  "auth/google-login",
-  async ({ uid, username, fullName, email, image }, { dispatch, rejectWithValue }) => {
-    // console.log(uid, userName, fullName, email, photo);
-    try {
-      const response = await axios.post(`${BASE_URL}/auth/login`, {  username, fullName, email, image });
-     
-      const userData = response?.data?.user;
-     
-      localStorage.setItem("Token", userData.token);
-      localStorage.setItem("userId", userData.id);
-      toast.success(response.data.message || "Google Login successful");
-      return response.data;
-    } catch (error) {
-      // Optionally handle errors here
-      return rejectWithValue(error.response?.data || error.message);
+    "auth/google-login",
+    async ({ uid, username, fullName, email, image }, { dispatch, rejectWithValue }) => {
+        // console.log(uid, userName, fullName, email, photo);
+        try {
+            const response = await axios.post(`${BASE_URL}/auth/login`, { username, fullName, email, image });
+
+            const userData = response?.data?.user;
+
+            localStorage.setItem("Token", userData.token);
+            localStorage.setItem("userId", userData.id);
+            localStorage.removeItem("localChatHistory");
+            localStorage.removeItem("localThreads");
+            localStorage.removeItem("localMessages");
+            toast.success(response.data.message || "Google Login successful");
+            return response.data;
+        } catch (error) {
+            // Optionally handle errors here
+            return rejectWithValue(error.response?.data || error.message);
+        }
     }
-  }
 );
 
 
@@ -87,7 +90,10 @@ const authSlice = createSlice({
                 state.isLoading = false;
                 state.user = action.payload.user;
                 state.token = action.payload.token;
-                localStorage.setItem('token', action.payload.token);
+                localStorage.setItem('Token', action.payload.token);
+                localStorage.removeItem('localChatHistory');
+                localStorage.removeItem("localThreads");
+                localStorage.removeItem("localMessages");
             })
             .addCase(googleLoginUser.rejected, (state, action) => {
                 state.isLoading = false;
@@ -97,7 +103,10 @@ const authSlice = createSlice({
                 state.isLoading = false;
                 state.user = action.payload.user;
                 state.token = action.payload.user.token;
-                localStorage.setItem('token', action.payload.user.token);
+                localStorage.setItem('Token', action.payload.user.token);
+                localStorage.removeItem('localChatHistory');
+                localStorage.removeItem("localThreads");
+                localStorage.removeItem("localMessages");
             })
             .addCase(googleLogin.rejected, (state, action) => {
                 state.isLoading = false;
@@ -106,8 +115,11 @@ const authSlice = createSlice({
             .addCase(logoutUser.fulfilled, (state) => {
                 state.user = null;
                 state.token = null;
-                localStorage.removeItem('token');
+                localStorage.removeItem('Token');
                 localStorage.removeItem('userId');
+                localStorage.removeItem('localChatHistory');
+                localStorage.removeItem("localThreads");
+                localStorage.removeItem("localMessages");
             })
     }
 });

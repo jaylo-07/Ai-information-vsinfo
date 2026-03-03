@@ -11,9 +11,45 @@ const getConfig = () => ({
     }
 });
 
+const isUserLoggedIn = () => !!(typeof window !== 'undefined' && (localStorage.getItem('token') || localStorage.getItem('Token')));
+
+const getLocalThreads = () => {
+    if (typeof window === 'undefined') return [];
+    return JSON.parse(localStorage.getItem('localThreads') || '[]');
+};
+const saveLocalThreads = (threads) => {
+    if (typeof window !== 'undefined') localStorage.setItem('localThreads', JSON.stringify(threads));
+};
+const getLocalThreadMessages = (threadId) => {
+    if (typeof window === 'undefined') return [];
+    const msgs = JSON.parse(localStorage.getItem('localMessages') || '{}');
+    return msgs[threadId] || [];
+};
+const saveLocalThreadMessage = (threadId, message) => {
+    if (typeof window === 'undefined') return;
+    const msgs = JSON.parse(localStorage.getItem('localMessages') || '{}');
+    if (!msgs[threadId]) msgs[threadId] = [];
+    msgs[threadId].push(message);
+    localStorage.setItem('localMessages', JSON.stringify(msgs));
+};
+const deleteLocalThread = (threadId) => {
+    if (typeof window === 'undefined') return;
+    const threads = getLocalThreads().filter(t => t.id !== threadId);
+    saveLocalThreads(threads);
+    const msgs = JSON.parse(localStorage.getItem('localMessages') || '{}');
+    delete msgs[threadId];
+    localStorage.setItem('localMessages', JSON.stringify(msgs));
+};
+const renameLocalThread = (threadId, title) => {
+    if (typeof window === 'undefined') return;
+    const threads = getLocalThreads().map(t => t.id === threadId ? { ...t, title } : t);
+    saveLocalThreads(threads);
+};
+
 export const fetchThreads = createAsyncThunk(
     'chat/fetchThreads', async (_, { rejectWithValue }) => {
         try {
+            if (!isUserLoggedIn()) return getLocalThreads();
             const response = await axios.get(`${BASE_URL}/threads`, getConfig());
             // Depending on pagination or direct array return format in Laravel:
             return response.data?.data || response.data;
@@ -25,6 +61,15 @@ export const fetchThreads = createAsyncThunk(
 export const fetchThreadMessages = createAsyncThunk(
     'chat/fetchThreadMessages', async (threadId, { rejectWithValue }) => {
         try {
+            if (!isUserLoggedIn()) {
+                const thread = getLocalThreads().find(t => t.id === threadId);
+                const messages = getLocalThreadMessages(threadId);
+                return {
+                    id: threadId,
+                    title: thread?.title || 'Local Chat',
+                    messages: messages
+                };
+            }
             const response = await axios.get(`${BASE_URL}/threads/${threadId}`, getConfig());
             return response.data;
         } catch (error) {
@@ -35,6 +80,11 @@ export const fetchThreadMessages = createAsyncThunk(
 export const createThread = createAsyncThunk(
     'chat/createThread', async (title, { rejectWithValue }) => {
         try {
+            if (!isUserLoggedIn()) {
+                const newThread = { id: 'local_' + Date.now(), title, created_at: new Date().toISOString() };
+                saveLocalThreads([newThread, ...getLocalThreads()]);
+                return newThread;
+            }
             const response = await axios.post(`${BASE_URL}/threads`, { title }, getConfig());
             return response.data;
         } catch (error) {
@@ -45,6 +95,10 @@ export const createThread = createAsyncThunk(
 export const deleteThread = createAsyncThunk(
     'chat/deleteThread', async (threadId, { rejectWithValue }) => {
         try {
+            if (!isUserLoggedIn()) {
+                deleteLocalThread(threadId);
+                return threadId;
+            }
             await axios.delete(`${BASE_URL}/threads/${threadId}`, getConfig());
             return threadId;
         } catch (error) {
@@ -55,6 +109,10 @@ export const deleteThread = createAsyncThunk(
 export const renameThread = createAsyncThunk(
     'chat/renameThread', async ({ threadId, title }, { rejectWithValue }) => {
         try {
+            if (!isUserLoggedIn()) {
+                renameLocalThread(threadId, title);
+                return { id: threadId, title };
+            }
             const response = await axios.put(`${BASE_URL}/threads/${threadId}`, { title }, getConfig());
             return response.data;
         } catch (error) {
@@ -73,20 +131,40 @@ export const sendPrompt = createAsyncThunk(
             let threadId = state.chat.currentThreadId;
             let formattedTitle = prompt ? prompt.substring(0, 30) + (prompt.length > 30 ? "..." : "") : "Image chat";
 
+            const isLoggedIn = isUserLoggedIn();
+            const isTemp = state.chat.isTemporaryChat;
+
             // If no active thread, create one
-            if (!threadId) {
-                const threadResponse = await axios.post(`${BASE_URL}/threads`, { title: formattedTitle }, getConfig());
-                threadId = threadResponse.data.id;
+            if (!isTemp && !threadId) {
+                if (isLoggedIn) {
+                    const threadResponse = await axios.post(`${BASE_URL}/threads`, { title: formattedTitle }, getConfig());
+                    threadId = threadResponse.data.id;
+                } else {
+                    threadId = 'local_' + Date.now();
+                    const newThread = { id: threadId, title: formattedTitle, created_at: new Date().toISOString() };
+                    saveLocalThreads([newThread, ...getLocalThreads()]);
+                }
                 dispatch(setCurrentThreadId(threadId));
                 dispatch(fetchThreads());
             }
 
             // Save user message to database
-            await axios.post(`${BASE_URL}/messages`, {
-                thread_id: threadId,
-                role: 'user',
-                message: prompt || ""
-            }, getConfig());
+            if (!isTemp) {
+                if (isLoggedIn) {
+                    await axios.post(`${BASE_URL}/messages`, {
+                        thread_id: threadId,
+                        role: 'user',
+                        message: prompt || ""
+                    }, getConfig());
+                } else {
+                    saveLocalThreadMessage(threadId, {
+                        id: 'msg_' + Date.now(),
+                        role: 'user',
+                        message: prompt || "",
+                        created_at: new Date().toISOString()
+                    });
+                }
+            }
 
             // Get previous messages to maintain history
             const previousMessages = state.chat.messages;
@@ -103,11 +181,22 @@ export const sendPrompt = createAsyncThunk(
             const responseText = await gemini_runChat(prompt || "", formattedHistory);
 
             // Save model message to database
-            await axios.post(`${BASE_URL}/messages`, {
-                thread_id: threadId,
-                role: 'model',
-                message: responseText
-            }, getConfig());
+            if (!isTemp) {
+                if (isLoggedIn) {
+                    await axios.post(`${BASE_URL}/messages`, {
+                        thread_id: threadId,
+                        role: 'model',
+                        message: responseText
+                    }, getConfig());
+                } else {
+                    saveLocalThreadMessage(threadId, {
+                        id: 'msg_' + Date.now(),
+                        role: 'model',
+                        message: responseText,
+                        created_at: new Date().toISOString()
+                    });
+                }
+            }
 
             return {
                 prompt: prompt,
@@ -118,6 +207,7 @@ export const sendPrompt = createAsyncThunk(
         }
     }
 );
+
 
 const getInitialTheme = () => {
     if (typeof window !== 'undefined') {
@@ -138,7 +228,8 @@ const initialState = {
     isMobileSidebarOpen: false,
     isLoading: false,
     currentResponse: '',
-    messages: [] // Store the chat history for the current session
+    messages: [], // Store the chat history for the current session
+    isTemporaryChat: false
 };
 
 const chatSlice = createSlice({
@@ -160,12 +251,20 @@ const chatSlice = createSlice({
         setCurrentThreadId: (state, action) => {
             state.currentThreadId = action.payload;
         },
+        setIsTemporaryChat: (state, action) => {
+            state.isTemporaryChat = action.payload;
+            state.recentPrompt = '';
+            state.currentResponse = '';
+            state.messages = [];
+            state.currentThreadId = null;
+        },
         newChat: (state) => {
             if (!state.isLoading) {
                 state.recentPrompt = '';
                 state.currentResponse = '';
                 state.messages = [];
                 state.currentThreadId = null;
+                state.isTemporaryChat = false;
             }
         }
     },
@@ -240,5 +339,5 @@ const chatSlice = createSlice({
     }
 });
 
-export const { setTheme, setIsMobileSidebarOpen, setRecentPromptSafe, setCurrentThreadId, newChat } = chatSlice.actions;
+export const { setTheme, setIsMobileSidebarOpen, setRecentPromptSafe, setCurrentThreadId, newChat, setIsTemporaryChat } = chatSlice.actions;
 export default chatSlice.reducer;

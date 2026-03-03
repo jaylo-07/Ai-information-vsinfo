@@ -4,10 +4,10 @@ import {
   Menu, Plus, MessageSquare, HelpCircle, History, Settings,
   Link, Sun, CreditCard, BookOpen, MessageSquarePlus,
   ChevronRight, MapPin, Check, Sparkles, Box, X, Shield, MoreVertical,
-  Share2, Pin, Edit2, Trash2, Search, AlertCircle, ArrowLeft
+  Share2, Pin, Edit2, Trash2, Search, AlertCircle, ArrowLeft, MessageSquareDashed
 } from 'lucide-react';
 import { useDispatch, useSelector } from 'react-redux';
-import { sendPrompt, setRecentPromptSafe, newChat, setTheme, setIsMobileSidebarOpen, fetchThreads, fetchThreadMessages, deleteThread, renameThread } from '../redux/slice/chat.slice';
+import { sendPrompt, setRecentPromptSafe, newChat, setTheme, setIsMobileSidebarOpen, fetchThreads, fetchThreadMessages, deleteThread, renameThread, setIsTemporaryChat } from '../redux/slice/chat.slice';
 
 const Sidebar = () => {
   const [extended, setExtended] = useState(true);
@@ -50,14 +50,12 @@ const Sidebar = () => {
   const chatMenuRef = useRef(null);
 
   const dispatch = useDispatch();
-  const { threads, recentPrompt, theme, isMobileSidebarOpen, currentThreadId } = useSelector((state) => state.chat);
+  const { threads, recentPrompt, theme, isMobileSidebarOpen, currentThreadId, isTemporaryChat } = useSelector((state) => state.chat);
   const authState = useSelector((state) => state.auth);
 
   useEffect(() => {
-    // Fetch threads when Sidebar mounts if user is generally logged in (or just try to fetch)
-    if (authState?.token || localStorage.getItem('token') || localStorage.getItem('Token')) {
-      dispatch(fetchThreads());
-    }
+    // Fetch threads when Sidebar mounts, whether logged in or not
+    dispatch(fetchThreads());
   }, [dispatch, authState?.token]);
 
   // Close dropdown when clicking outside
@@ -291,9 +289,20 @@ const Sidebar = () => {
             </div>
           </div>
 
-          <div onClick={() => dispatch(newChat())} className={`mt-[40px] rounded-full cursor-pointer transition-colors group bg-black/5 dark:bg-[#1e1e1e] text-gray-700 dark:text-[#a0a09e] hover:bg-black/10 dark:hover:bg-[#252525] dark:hover:text-white ${extended ? 'w-full flex items-center gap-3 p-2.5 pl-4' : 'flex items-center justify-center w-10 h-10 px-0'}`}>
-            <Plus className="w-5 h-5 shrink-0 text-gray-900 dark:text-white/80" />
-            {extended && <p className="font-medium whitespace-nowrap text-[14px] text-gray-900 dark:text-white/80">New chat</p>}
+          <div className={`mt-[40px] flex items-center gap-2 ${extended ? 'w-full' : 'w-10 flex-col gap-2'}`}>
+            <div onClick={() => dispatch(newChat())} className={`flex-1 rounded-full cursor-pointer transition-colors group bg-black/5 dark:bg-[#1e1e1e] text-gray-700 dark:text-[#a0a09e] hover:bg-black/10 dark:hover:bg-[#252525] dark:hover:text-white flex items-center justify-center ${extended ? 'gap-3 p-2.5 pl-4 justify-start' : 'w-10 h-10 px-0'}`}>
+              <Plus className="w-5 h-5 shrink-0 text-gray-900 dark:text-white/80" />
+              {extended && <p className="font-medium whitespace-nowrap text-[14px] text-gray-900 dark:text-white/80">New chat</p>}
+            </div>
+            {extended && (
+              <div
+                title="Temporary chat"
+                onClick={() => dispatch(setIsTemporaryChat(!isTemporaryChat))}
+                className={`w-10 h-10 flex items-center justify-center flex-shrink-0 cursor-pointer rounded-full transition-colors ${isTemporaryChat ? 'bg-gray-300 dark:bg-white/20' : 'bg-black/5 dark:bg-[#1e1e1e] hover:bg-black/10 dark:hover:bg-[#252525]'}`}
+              >
+                <MessageSquareDashed className={`w-5 h-5 ${isTemporaryChat ? 'text-gray-900 dark:text-white' : 'text-gray-900 dark:text-white/80'}`} />
+              </div>
+            )}
           </div>
 
           {extended && (

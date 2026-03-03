@@ -1,7 +1,7 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { sendPrompt } from '../redux/slice/chat.slice';
-import { Plus, SlidersHorizontal, Search, Image as ImageIcon, LayoutPanelTop, GraduationCap, Upload, Images, File as FileIcon, X, SendHorizontal, Sparkles, Paintbrush, BarChart3, Code2, Lightbulb } from 'lucide-react';
+import { Plus, SlidersHorizontal, Search, Image as ImageIcon, LayoutPanelTop, GraduationCap, Upload, Images, File as FileIcon, X, SendHorizontal, Sparkles, Paintbrush, BarChart3, Code2, Lightbulb, MessageSquareDashed } from 'lucide-react';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
@@ -10,6 +10,7 @@ import { dracula } from 'react-syntax-highlighter/dist/esm/styles/prism';
 const Home = () => {
     const messages = useSelector((state) => state.chat.messages);
     const isLoading = useSelector((state) => state.chat.isLoading);
+    const isTemporaryChat = useSelector((state) => state.chat.isTemporaryChat);
     const user = useSelector((state) => state.auth?.user);
 
     const [openMenu, setOpenMenu] = useState(null);
@@ -224,6 +225,7 @@ const Home = () => {
     };
 
     const getInputPlaceholder = () => {
+        if (isTemporaryChat) return 'Ask questions in a temporary chat';
         if (!activeTool) return isMdScreen ? 'Ask to vsinfotech AI...' : 'Ask anything...';
         return `Using ${activeTool.label}...`;
     };
@@ -310,38 +312,56 @@ const Home = () => {
                     </div>
                 ) : (
                     <div className="flex-1 flex flex-col justify-center items-center mt-4 px-2">
-                        <div className="relative mb-8 group cursor-default">
-                            <div className="absolute inset-0 bg-gradient-to-r from-purple-500 to-blue-500 rounded-full blur-xl opacity-40 group-hover:opacity-60 transition-opacity duration-500 animate-pulse"></div>
-                            <div className="relative w-24 h-24 md:w-28 md:h-28 rounded-full bg-white dark:bg-[#121212] border border-gray-100 dark:border-white/10 flex items-center justify-center shadow-2xl">
-                                <Sparkles className="w-12 h-12 md:w-14 md:h-14 text-[#9D00FF]" />
-                            </div>
-                        </div>
-
-                        <h1 className="text-4xl md:text-5xl lg:text-6xl font-extrabold tracking-tight text-center mb-4">
-                            <span className="bg-clip-text text-transparent bg-gradient-to-r from-gray-900 via-[#9D00FF] to-gray-900 dark:from-white dark:via-purple-400 dark:to-white">
-                                {greeting}
-                            </span>
-                        </h1>
-                        <p className="text-gray-500 dark:text-gray-400 mb-12 text-center text-base md:text-lg max-w-xl">
-                            Unlock your creativity, solve complex problems, or just chat. Let's make something amazing together.
-                        </p>
-
-                        <div className="hidden md:grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4 w-full max-w-4xl mx-auto animate-slideUpFade" style={{ animationDelay: '0.1s' }}>
-                            {quickActions.map((action, idx) => (
-                                <div
-                                    key={idx}
-                                    onClick={() => { setInputValue(action.label); textareaRef.current?.focus(); }}
-                                    className="group relative overflow-hidden flex flex-col items-start p-5 rounded-3xl bg-white/50 dark:bg-[#121212]/50 backdrop-blur-md border border-gray-200 dark:border-white/10 hover:border-purple-500/50 dark:hover:border-purple-400/50 cursor-pointer transition-all duration-300 hover:-translate-y-1 hover:shadow-xl dark:hover:shadow-[0_0_30px_rgba(157,0,255,0.1)]"
-                                >
-                                    <div className={`absolute top-0 left-0 w-full transition-opacity`}></div>
-                                    <div className="w-12 h-12 rounded-2xl bg-gray-100 dark:bg-white/5 flex items-center justify-center text-gray-700 dark:text-gray-300 mb-4 group-hover:scale-110 group-hover:text-purple-600 dark:group-hover:text-purple-400 transition-all duration-300 shadow-sm relative z-10">
-                                        {action.icon}
-                                    </div>
-                                    <span className="text-base font-semibold text-gray-900 dark:text-white mb-1 group-hover:text-purple-600 dark:group-hover:text-purple-400 transition-colors">{action.label}</span>
-                                    <span className="text-sm font-medium text-gray-500 dark:text-gray-400">{action.desc}</span>
+                        {isTemporaryChat ? (
+                            <div className="flex flex-col items-center max-w-2xl text-center animate-slideUpFade">
+                                <div className="w-16 h-16 md:w-20 md:h-20 rounded-full bg-gray-100 dark:bg-[#1f1f1f] flex items-center justify-center mb-6 border border-gray-200 dark:border-white/10 shadow-lg">
+                                    <MessageSquareDashed className="w-8 h-8 md:w-10 md:h-10 text-gray-700 dark:text-gray-300" />
                                 </div>
-                            ))}
-                        </div>
+                                <h1 className="text-3xl md:text-4xl lg:text-5xl font-extrabold tracking-tight text-center mb-4">
+                                    <span className="text-gray-900 dark:text-white">
+                                        Temporary chat
+                                    </span>
+                                </h1>
+                                <p className="text-sm md:text-base text-gray-500 dark:text-[#9aa0a6] leading-relaxed mb-8 max-w-xl">
+                                    Temporary chats don't appear in Recent chats or Activity and aren't used to train models or personalise your experience.
+                                </p>
+                            </div>
+                        ) : (
+                            <>
+                                <div className="relative mb-8 group cursor-default">
+                                    <div className="absolute inset-0 bg-gradient-to-r from-purple-500 to-blue-500 rounded-full blur-xl opacity-40 group-hover:opacity-60 transition-opacity duration-500 animate-pulse"></div>
+                                    <div className="relative w-24 h-24 md:w-28 md:h-28 rounded-full bg-white dark:bg-[#121212] border border-gray-100 dark:border-white/10 flex items-center justify-center shadow-2xl">
+                                        <Sparkles className="w-12 h-12 md:w-14 md:h-14 text-[#9D00FF]" />
+                                    </div>
+                                </div>
+
+                                <h1 className="text-4xl md:text-5xl lg:text-6xl font-extrabold tracking-tight text-center mb-4">
+                                    <span className="bg-clip-text text-transparent bg-gradient-to-r from-gray-900 via-[#9D00FF] to-gray-900 dark:from-white dark:via-purple-400 dark:to-white">
+                                        {greeting}
+                                    </span>
+                                </h1>
+                                <p className="text-gray-500 dark:text-gray-400 mb-12 text-center text-base md:text-lg max-w-xl">
+                                    Unlock your creativity, solve complex problems, or just chat. Let's make something amazing together.
+                                </p>
+
+                                <div className="hidden md:grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4 w-full max-w-4xl mx-auto animate-slideUpFade" style={{ animationDelay: '0.1s' }}>
+                                    {quickActions.map((action, idx) => (
+                                        <div
+                                            key={idx}
+                                            onClick={() => { setInputValue(action.label); textareaRef.current?.focus(); }}
+                                            className="group relative overflow-hidden flex flex-col items-start p-5 rounded-3xl bg-white/50 dark:bg-[#121212]/50 backdrop-blur-md border border-gray-200 dark:border-white/10 hover:border-purple-500/50 dark:hover:border-purple-400/50 cursor-pointer transition-all duration-300 hover:-translate-y-1 hover:shadow-xl dark:hover:shadow-[0_0_30px_rgba(157,0,255,0.1)]"
+                                        >
+                                            <div className={`absolute top-0 left-0 w-full transition-opacity`}></div>
+                                            <div className="w-12 h-12 rounded-2xl bg-gray-100 dark:bg-white/5 flex items-center justify-center text-gray-700 dark:text-gray-300 mb-4 group-hover:scale-110 group-hover:text-purple-600 dark:group-hover:text-purple-400 transition-all duration-300 shadow-sm relative z-10">
+                                                {action.icon}
+                                            </div>
+                                            <span className="text-base font-semibold text-gray-900 dark:text-white mb-1 group-hover:text-purple-600 dark:group-hover:text-purple-400 transition-colors">{action.label}</span>
+                                            <span className="text-sm font-medium text-gray-500 dark:text-gray-400">{action.desc}</span>
+                                        </div>
+                                    ))}
+                                </div>
+                            </>
+                        )}
                     </div>
                 )}
 
