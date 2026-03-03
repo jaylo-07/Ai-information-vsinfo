@@ -13,7 +13,6 @@ const addContactUs = async (req, res) => {
         description,
         date: new Date()
     })
-    console.log(firstName, lastName, workEmail,subject, phoneNumber,description)
     const savedContactUs = await contact.save()
     res.status(201).json({
         success: true,

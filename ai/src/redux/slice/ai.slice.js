@@ -5,8 +5,15 @@ const nodeApiUrl = process.env.REACT_APP_API_URL || 'http://localhost:5000/api';
 
 export const sendAIRequest = createAsyncThunk(
     "ai/sendRequest",
-    async (prompt, { rejectWithValue }) => {
+    async (payload, { rejectWithValue }) => {
         try {
+            let prompt = payload;
+            let image = null;
+            if (typeof payload === 'object' && payload !== null) {
+                prompt = payload.prompt || "";
+                image = payload.image || null;
+            }
+
             const type = detectPromptType(prompt);
 
             if (type === "image") {
@@ -15,7 +22,7 @@ export const sendAIRequest = createAsyncThunk(
                     headers: {
                         "Content-Type": "application/json"
                     },
-                    body: JSON.stringify({ prompt })
+                    body: JSON.stringify({ prompt, image })
                 });
 
                 if (!response.ok) {
@@ -34,7 +41,7 @@ export const sendAIRequest = createAsyncThunk(
                 headers: {
                     "Content-Type": "application/json"
                 },
-                body: JSON.stringify({ prompt })
+                body: JSON.stringify({ prompt, image })
             });
 
             if (!response.ok) {

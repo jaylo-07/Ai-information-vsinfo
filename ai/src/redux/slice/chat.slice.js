@@ -265,7 +265,7 @@ export const sendPrompt = createAsyncThunk(
             let generatedModelImageUrl = null;
 
             // Using the new Hugging Face models via aiSlice
-            const aiResponse = await dispatch(sendAIRequest(prompt || "")).unwrap();
+            const aiResponse = await dispatch(sendAIRequest({ prompt: prompt || "", image: imageUrl })).unwrap();
 
             if (aiResponse.type === "image") {
                 generatedModelImageUrl = aiResponse.data;

@@ -2,16 +2,41 @@ const { HfInference } = require("@huggingface/inference");
 
 exports.generateImage = async (req, res) => {
     try {
-        const { prompt } = req.body;
+        const { prompt, image } = req.body;
 
         const client = new HfInference(process.env.HF_TOKEN);
+        let imageBlob;
 
-        // HF updated its routing system; we use their official inference client
-        const imageBlob = await client.textToImage({
-            model: "stabilityai/stable-diffusion-xl-base-1.0",
-            provider: "hf-inference",
-            inputs: prompt
-        });
+        if (image) {
+            // Remove data URL prefix (e.g., 'data:image/jpeg;base64,')
+            const base64Data = image.replace(/^data:image\/\w+;base64,/, "");
+            const buffer = Buffer.from(base64Data, "base64");
+            const blob = new Blob([buffer]);
+
+            try {
+                // Runway ML v1.5 supports image-to-image via Hugging Face Inference
+                imageBlob = await client.imageToImage({
+                    model: "runwayml/stable-diffusion-v1-5",
+                    inputs: blob,
+                    parameters: { prompt }
+                });
+            } catch (fallbackError) {
+                console.log("Image-to-image fallback", fallbackError.message);
+                // Fallback to text-to-image if image-to-image fails or is unsupported
+                imageBlob = await client.textToImage({
+                    model: "stabilityai/stable-diffusion-xl-base-1.0",
+                    provider: "hf-inference",
+                    inputs: prompt
+                });
+            }
+        } else {
+            // text-to-image
+            imageBlob = await client.textToImage({
+                model: "stabilityai/stable-diffusion-xl-base-1.0",
+                provider: "hf-inference",
+                inputs: prompt
+            });
+        }
 
         // Convert the Blob to a Buffer and then to base64
         const arrayBuffer = await imageBlob.arrayBuffer();

@@ -1,12 +1,52 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { Plus, SlidersHorizontal, Search, Image as ImageIcon, LayoutPanelTop, GraduationCap, Upload, Images, File as FileIcon, X, SendHorizontal, Sparkles, Paintbrush, BarChart3, Code2, Lightbulb, MessageSquareDashed, Download } from 'lucide-react';
+import { Plus, SlidersHorizontal, Search, Image as ImageIcon, LayoutPanelTop, GraduationCap, Upload, Images, File as FileIcon, X, SendHorizontal, Sparkles, Paintbrush, BarChart3, Code2, Lightbulb, MessageSquareDashed, Download, Copy, Check } from 'lucide-react';
 import { sendPrompt, sendDeepResearch } from '../redux/slice/chat.slice';
 import { Globe, BookOpen, Newspaper, Zap, Scale, Layers, ChevronDown, ChevronUp, ExternalLink, HelpCircle } from 'lucide-react';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
 import { dracula } from 'react-syntax-highlighter/dist/esm/styles/prism';
+
+// ─── Code Block Renderer ──────────────────────────────────────────────────────
+const CodeBlockRenderer = ({ inline, className, children, ...props }) => {
+    const match = /language-(\w+)/.exec(className || '');
+    const [isCopied, setIsCopied] = useState(false);
+
+    const handleCopy = () => {
+        navigator.clipboard.writeText(String(children).replace(/\n$/, ''));
+        setIsCopied(true);
+        setTimeout(() => setIsCopied(false), 2000);
+    };
+
+    if (!inline && match) {
+        return (
+            <div className="rounded-xl overflow-hidden m-2 border border-gray-200 dark:border-white/10 shadow-lg group">
+                <div className="px-4 py-2 bg-gray-100 dark:bg-[#121212] text-xs font-mono text-gray-500 dark:text-gray-400 border-b border-gray-200 dark:border-white/10 flex justify-between items-center transition-colors duration-300">
+                    <span className="uppercase tracking-wider font-semibold">{match[1]}</span>
+                    <button
+                        onClick={handleCopy}
+                        className="flex items-center gap-1.5 px-2 py-1 rounded-md hover:bg-gray-200 dark:hover:bg-white/10 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 transition-all duration-200"
+                        title="Copy code"
+                    >
+                        {isCopied ? <Check className="w-3.5 h-3.5 text-green-500" /> : <Copy className="w-3.5 h-3.5" />}
+                        <span className="text-[10px] sm:text-xs">{isCopied ? 'Copied!' : 'Copy'}</span>
+                    </button>
+                </div>
+                <div className="overflow-x-auto max-h-[500px] custom-scrollbar">
+                    <SyntaxHighlighter {...props} style={dracula} language={match[1]} PreTag="div" className="!m-0 !bg-[#1e1e1e] text-[13px] sm:text-sm">
+                        {String(children).replace(/\n$/, '')}
+                    </SyntaxHighlighter>
+                </div>
+            </div>
+        );
+    }
+    return (
+        <code {...props} className="bg-gray-100 dark:bg-gray-800 rounded-md px-1.5 py-0.5 text-sm font-mono text-pink-600 dark:text-pink-400">
+            {children}
+        </code>
+    );
+};
 
 // ─── Deep Research Sources Card ───────────────────────────────────────────────
 const DeepResearchSourcesCard = ({ sources = [], subQuestions = [] }) => {
@@ -383,14 +423,14 @@ const Home = () => {
                                     </div>
                                 )}
 
-                                <div className={`flex flex-col max-w-[85%] md:max-w-[75%] ${msg.role === 'user' ? 'items-end' : 'items-start'}`}>
+                                <div className={`flex flex-col max-w-[85%] md:max-w-[75%] ${msg.role === 'user' ? 'items-end' : 'items-start'} min-w-0`}>
                                     <div
                                         className={`${msg.role === 'user'
-                                            ? 'bg-gradient-to-br from-gray-700 to-gray-700 dark:from-white/80 dark:to-gray-200 text-white dark:text-black rounded-xl rounded-tr-sm p-4 md:p-5 shadow-xl shadow-gray-900/10 dark:shadow-white/5'
-                                            : 'bg-white/60 dark:bg-[#18181b]/80 backdrop-blur-md rounded-xl rounded-tl-sm p-5 md:p-6 text-gray-800 dark:text-gray-200 border border-gray-200 dark:border-white/5 shadow-sm'
+                                            ? 'bg-gradient-to-br from-gray-700 to-gray-700 dark:from-white/80 dark:to-gray-200 text-white dark:text-black rounded-xl rounded-tr-sm p-4 md:p-5 shadow-xl shadow-gray-900/10 dark:shadow-white/5 w-full min-w-0'
+                                            : 'bg-white/60 dark:bg-[#18181b]/80 backdrop-blur-md rounded-xl rounded-tl-sm p-5 md:p-6 text-gray-800 dark:text-gray-200 border border-gray-200 dark:border-white/5 shadow-sm w-full min-w-0'
                                             }`}
                                     >
-                                        <div className="flex flex-col gap-3">
+                                        <div className="flex flex-col gap-3 min-w-0 w-full">
                                             {msg.imageUrl && (
                                                 <img src={msg.imageUrl} alt="attachment" className="max-w-[100px] rounded-xl shadow-md border border-white/10" />
                                             )}
@@ -411,27 +451,11 @@ const Home = () => {
                                                     {msg.text}
                                                 </div>
                                             ) : (
-                                                <div className="prose prose-sm md:prose-base dark:prose-invert max-w-none break-words text-[15px] leading-7">
+                                                <div className="prose prose-sm md:prose-base dark:prose-invert max-w-none break-words text-[15px] leading-relaxed min-w-0 w-full prose-p:my-1 prose-ul:my-1 prose-ol:my-1 prose-pre:my-0 prose-pre:p-0">
                                                     <ReactMarkdown
                                                         remarkPlugins={[remarkGfm]}
                                                         components={{
-                                                            code({ inline, className, children, ...props }) {
-                                                                const match = /language-(\w+)/.exec(className || '');
-                                                                return !inline && match ? (
-                                                                    <div className="rounded-xl overflow-hidden my-4 border border-gray-200 dark:border-white/10 shadow-lg">
-                                                                        <div className="px-4 py-2 bg-gray-100 dark:bg-[#121212] text-xs font-mono text-gray-500 dark:text-gray-400 border-b border-gray-200 dark:border-white/10 flex justify-between items-center">
-                                                                            <span>{match[1]}</span>
-                                                                        </div>
-                                                                        <SyntaxHighlighter {...props} style={dracula} language={match[1]} PreTag="div" className="!m-0 !bg-[#1e1e1e] text-sm">
-                                                                            {String(children).replace(/\n$/, '')}
-                                                                        </SyntaxHighlighter>
-                                                                    </div>
-                                                                ) : (
-                                                                    <code {...props} className="bg-gray-100 dark:bg-gray-800 rounded-md px-1.5 py-0.5 text-sm font-mono text-pink-600 dark:text-pink-400">
-                                                                        {children}
-                                                                    </code>
-                                                                );
-                                                            },
+                                                            code: CodeBlockRenderer
                                                         }}
                                                     >
                                                         {msg.text}

@@ -36,7 +36,7 @@ const Login = () => {
 
             const { name, email, sub, picture } = userInfo;
             const formattedUserName = name.replace(/\s+/g, '_');
-            console.log("userInfo", userInfo);
+            // console.log("userInfo", userInfo);
 
             dispatch(googleLogin({ uid: sub, userName: formattedUserName, fullName: name, email, photo: picture })).then((response) => {
                 if (response.payload.success) {
