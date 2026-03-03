@@ -138,23 +138,23 @@ const Contact = () => {
 
   return (
     <>
-      <div id="stars"></div>
-      <div id="stars2"></div>
-      <div id="stars3"></div>
-      <div className="text-white relative z-10">
+      <div id="stars" className="hidden dark:block"></div>
+      <div id="stars2" className="hidden dark:block"></div>
+      <div id="stars3" className="hidden dark:block"></div>
+      <div className="text-black dark:text-white relative z-10 transition-colors duration-300">
         <div className="max-w-6xl mx-auto px-6 py-8">
           <h1 className="text-5xl font-normal pb-12">Contact</h1>
 
-          <div className="flex md:flex-nowrap flex-wrap  gap-8 border-gray-800 pb-8">
+          <div className="flex md:flex-nowrap flex-wrap gap-8 border-gray-300 dark:border-gray-800 pb-8">
             <div className=" sm:w-1/2 w-full " data-aos="fade-up" data-aos-duration="3000">
-              <div className='flex flex-col gap-12 md:border-r border-gray-800 pr-8 flex-1'>
+              <div className='flex flex-col gap-12 md:border-r border-gray-300 dark:border-gray-800 pr-8 flex-1'>
                 <div className="text-2xl"><FaRegComment className="text-4xl" /></div>
                 <div>
                   <h2 className="text-xl font-normal mb-4">Find Answers Quickly</h2>
-                  <p className="text-[#7D8187] text-md mb-4">Explore our resources or visit the Help Center to find immediate solutions.</p>
+                  <p className="text-gray-600 dark:text-[#7D8187] text-md mb-4">Explore our resources or visit the Help Center to find immediate solutions.</p>
                   <div className="flex gap-3 mt-2 flex-wrap">
-                    <button onClick={handleComingSoon} className="px-4 py-2 border border-gray-700 rounded-full text-md hover:bg-gray-800">HELP CENTER</button>
-                    <button onClick={handleComingSoon} className="px-4 py-2 border border-gray-700 rounded-full text-md hover:bg-gray-800">COMMUNITY FORUM</button>
+                    <button onClick={handleComingSoon} className="px-4 py-2 border border-black/20 dark:border-gray-700 rounded-full text-md hover:bg-black/5 dark:hover:bg-gray-800 transition-colors">HELP CENTER</button>
+                    <button onClick={handleComingSoon} className="px-4 py-2 border border-black/20 dark:border-gray-700 rounded-full text-md hover:bg-black/5 dark:hover:bg-gray-800 transition-colors">COMMUNITY FORUM</button>
                   </div>
                 </div>
               </div>
@@ -164,10 +164,10 @@ const Contact = () => {
               <div className="text-2xl"><GiSelfLove className="text-4xl" /></div>
               <div>
                 <h2 className="text-xl font-normal mb-4">Partner with Us</h2>
-                <p className="text-[#7D8187] text-md mb-4">Discover how our AI platforms can accelerate your business growth.</p>
+                <p className="text-gray-600 dark:text-[#7D8187] text-md mb-4">Discover how our AI platforms can accelerate your business growth.</p>
                 <div className="flex gap-3 mt-2 flex-wrap">
-                  <button onClick={() => handleScrollToForm("Request Demo")} className="px-4 py-2 border border-gray-700 rounded-full text-sm hover:bg-gray-800">REQUEST DEMO</button>
-                  <button onClick={() => handleScrollToForm("Partner Program")} className="px-4 py-2 border border-gray-700 rounded-full text-sm hover:bg-gray-800">PARTNER PROGRAM</button>
+                  <button onClick={() => handleScrollToForm("Request Demo")} className="px-4 py-2 border border-black/20 dark:border-gray-700 rounded-full text-sm hover:bg-black/5 dark:hover:bg-gray-800 transition-colors">REQUEST DEMO</button>
+                  <button onClick={() => handleScrollToForm("Partner Program")} className="px-4 py-2 border border-black/20 dark:border-gray-700 rounded-full text-sm hover:bg-black/5 dark:hover:bg-gray-800 transition-colors">PARTNER PROGRAM</button>
                 </div>
               </div>
             </div>
@@ -178,7 +178,7 @@ const Contact = () => {
               <div className="h-full" data-aos="flip-left" data-aos-easing="ease-out-cubic" data-aos-duration="2000">
                 <div className="text-4xl mb-4"><FaBook /></div>
                 <h3 className="text-xl mt-2">Read the Documentation</h3>
-                <p className="text-[#7D8187] text-md pt-4">Explore comprehensive guides, tutorials, and API documentation.</p>
+                <p className="text-gray-600 dark:text-[#7D8187] text-md pt-4">Explore comprehensive guides, tutorials, and API documentation.</p>
               </div>
             </div>
 
@@ -187,7 +187,7 @@ const Contact = () => {
               <div className="h-full" data-aos="flip-left" data-aos-easing="ease-out-cubic" data-aos-duration="2000">
                 <div className="text-4xl mb-4"><FaUsers /></div>
                 <h3 className="text-xl mt-2">Join our Community</h3>
-                <p className="text-[#7D8187] text-md pt-4">Connect with fellow developers, share insights, and get inspired.</p>
+                <p className="text-gray-600 dark:text-[#7D8187] text-md pt-4">Connect with fellow developers, share insights, and get inspired.</p>
               </div>
             </div>
 
@@ -196,19 +196,18 @@ const Contact = () => {
               <div className="h-full" data-aos="flip-left" data-aos-easing="ease-out-cubic" data-aos-duration="2000">
                 <div className="text-4xl mb-4"><FaMapMarkerAlt /></div>
                 <h3 className="text-xl mt-2">Global Operations</h3>
-                <p className="text-[#7D8187] text-md pt-4">Headquartered in Canada, we support an international client base.</p>
+                <p className="text-gray-600 dark:text-[#7D8187] text-md pt-4">Headquartered in Canada, we support an international client base.</p>
               </div>
             </div>
 
-            {/* Card 4 */}
             <div className="sm:col-span-2 lg:col-span-3">
               <div className="flex flex-col sm:flex-row gap-8 pt-6 text-sm">
                 <div data-aos="fade-up" data-aos-duration="3000">
-                  <p className="uppercase font-medium text-[#7D8187]">Media</p>
+                  <p className="uppercase font-medium text-gray-600 dark:text-[#7D8187]">Media</p>
                   <p className="mt-1">media@vsinfotech.ca</p>
                 </div>
                 <div data-aos="fade-up" data-aos-duration="3000">
-                  <p className="uppercase font-medium text-[#7D8187]">General Inquiry</p>
+                  <p className="uppercase font-medium text-gray-600 dark:text-[#7D8187]">General Inquiry</p>
                   <p className="mt-1">info@vsinfotech.ca</p>
                 </div>
               </div>
@@ -238,39 +237,39 @@ const Contact = () => {
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
                 <div>
                   <label className="block mb-2 text-sm font-medium">First name</label>
-                  <input type="text" name='firstname' value={ContactFormik.values.firstname} onChange={ContactFormik.handleChange} onBlur={ContactFormik.handleBlur} className="w-full bg-black border border-gray-700 rounded-md px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gray-500" />
+                  <input type="text" name='firstname' value={ContactFormik.values.firstname} onChange={ContactFormik.handleChange} onBlur={ContactFormik.handleBlur} className="w-full bg-transparent border border-gray-300 dark:border-gray-700 rounded-md px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gray-400 dark:focus:ring-gray-500" />
                   {ContactFormik.touched.firstname && ContactFormik.errors.firstname && (<p className="text-red-500 text-xs mt-1">{ContactFormik.errors.firstname}</p>)}
                 </div>
                 <div>
                   <label className="block mb-2 text-sm font-medium">Last name</label>
-                  <input type="text" name='lastname' value={ContactFormik.values.lastname} onChange={ContactFormik.handleChange} onBlur={ContactFormik.handleBlur} className="w-full bg-black border border-gray-700 rounded-md px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gray-500" />
+                  <input type="text" name='lastname' value={ContactFormik.values.lastname} onChange={ContactFormik.handleChange} onBlur={ContactFormik.handleBlur} className="w-full bg-transparent border border-gray-300 dark:border-gray-700 rounded-md px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gray-400 dark:focus:ring-gray-500" />
                   {ContactFormik.touched.lastname && ContactFormik.errors.lastname && (<p className="text-red-500 text-xs mt-1">{ContactFormik.errors.lastname}</p>)}
                 </div>
               </div>
               <div>
                 <label className="block mb-2 text-sm font-medium">Subject</label>
-                <input type="text" name='subject' value={ContactFormik.values.subject} onChange={ContactFormik.handleChange} onBlur={ContactFormik.handleBlur} className="w-full bg-black border border-gray-700 rounded-md px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gray-500" />
+                <input type="text" name='subject' value={ContactFormik.values.subject} onChange={ContactFormik.handleChange} onBlur={ContactFormik.handleBlur} className="w-full bg-transparent border border-gray-300 dark:border-gray-700 rounded-md px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gray-400 dark:focus:ring-gray-500" />
                 {ContactFormik.touched.subject && ContactFormik.errors.subject && (<p className="text-red-500 text-xs mt-1">{ContactFormik.errors.subject}</p>)}
               </div>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
                 <div>
                   <label className="block mb-2 text-sm font-medium">Work email</label>
-                  <input type="email" name='email' value={ContactFormik.values.email} onChange={ContactFormik.handleChange} onBlur={ContactFormik.handleBlur} className="w-full bg-black border border-gray-700 rounded-md px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gray-500" />
+                  <input type="email" name='email' value={ContactFormik.values.email} onChange={ContactFormik.handleChange} onBlur={ContactFormik.handleBlur} className="w-full bg-transparent border border-gray-300 dark:border-gray-700 rounded-md px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gray-400 dark:focus:ring-gray-500" />
                   {ContactFormik.touched.email && ContactFormik.errors.email && (<p className="text-red-500 text-xs mt-1">{ContactFormik.errors.email}</p>)}
                 </div>
                 <div>
                   <label className="block mb-2 text-sm font-medium">Phone number</label>
-                  <input type="tel" name='num' value={ContactFormik.values.num} onChange={ContactFormik.handleChange} onBlur={ContactFormik.handleBlur} className="w-full bg-black border border-gray-700 rounded-md px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gray-500" />
+                  <input type="tel" name='num' value={ContactFormik.values.num} onChange={ContactFormik.handleChange} onBlur={ContactFormik.handleBlur} className="w-full bg-transparent border border-gray-300 dark:border-gray-700 rounded-md px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gray-400 dark:focus:ring-gray-500" />
                   {ContactFormik.touched.num && ContactFormik.errors.num && (<p className="text-red-500 text-xs mt-1">{ContactFormik.errors.num}</p>)}
                 </div>
               </div>
               <div>
                 <label className="block mb-2 text-sm font-medium">Description
                 </label>
-                <textarea rows="5" name="message" value={ContactFormik.values.message} onChange={ContactFormik.handleChange} onBlur={ContactFormik.handleBlur} className="w-full bg-black border border-gray-700 rounded-md px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gray-500"></textarea>
+                <textarea rows="5" name="message" value={ContactFormik.values.message} onChange={ContactFormik.handleChange} onBlur={ContactFormik.handleBlur} className="w-full bg-transparent border border-gray-300 dark:border-gray-700 rounded-md px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gray-400 dark:focus:ring-gray-500"></textarea>
                 {ContactFormik.touched.message && ContactFormik.errors.message && (<p className="text-red-500 text-xs mt-1">{ContactFormik.errors.message}</p>)}
               </div>
-              <button type="submit" className="bg-gray-800 hover:bg-gray-700 px-6 py-2 rounded-full text-sm">Submit</button>
+              <button type="submit" className="bg-black text-white px-6 py-2 rounded-full text-sm hover:bg-black/80 dark:bg-gray-800 dark:hover:bg-gray-700 transition-colors">Submit</button>
             </form>
           </div>
         </div>

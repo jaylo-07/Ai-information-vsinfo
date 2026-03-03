@@ -107,8 +107,12 @@ const DotParticleCanvas = ({
     const width = canvas.clientWidth;
     const height = canvas.clientHeight;
 
-    ctx.fillStyle = backgroundColor;
-    ctx.fillRect(0, 0, width, height);
+    if (backgroundColor === "transparent" || backgroundColor === "rgba(0,0,0,0)" || backgroundColor === "transparent") {
+      ctx.clearRect(0, 0, width, height);
+    } else {
+      ctx.fillStyle = backgroundColor;
+      ctx.fillRect(0, 0, width, height);
+    }
 
     particles.current = particles.current.filter((particle) => {
       particle.life += 16;

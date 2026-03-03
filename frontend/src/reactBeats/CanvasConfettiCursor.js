@@ -29,8 +29,8 @@ class Particle {
 }
 
 export const CanvasConfettiCursor = ({
-    containerRef,
-//   fillParent = false,
+  containerRef,
+  //   fillParent = false,
   colors = ["#9D00FF"],
   minSize = 2,
   maxSize = 7,
@@ -44,7 +44,7 @@ export const CanvasConfettiCursor = ({
   style,
   className,
 }) => {
-    const internalParentRef = useRef(null);
+  const internalParentRef = useRef(null);
   const parentRef = containerRef || internalParentRef
   const canvasRef = useRef(null);
   const mousePos = useRef({ x: 0, y: 0 });
@@ -160,7 +160,7 @@ export const CanvasConfettiCursor = ({
 
   return (
     <div
-      ref={parentRef}
+      ref={containerRef ? internalParentRef : parentRef}
       style={
         fillParent
           ? { position: "relative", width: "100%", height: "100%" }

@@ -9,7 +9,7 @@ import { Link } from 'react-router-dom';
 
 const Footer = () => {
   return (
-    <div className="bg-[#050505] text-white font-sans relative overflow-hidden">
+    <div className="bg-gray-100 dark:bg-[#050505] text-black dark:text-white font-sans relative overflow-hidden transition-colors duration-300">
       {/* Top Gradient Border */}
       <div className="absolute top-0 inset-x-0 h-px bg-gradient-to-r from-transparent via-[rgba(157,0,255,0.6)] to-transparent"></div>
 
@@ -25,7 +25,7 @@ const Footer = () => {
             <div className="flex items-start gap-4">
               <img src={logo} alt="Company Logo" className="w-24 h-auto object-contain drop-shadow-[0_0_10px_rgba(255,255,255,0.2)]" />
               <div>
-                <h2 className="text-xl sm:text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-white to-gray-400">
+                <h2 className="text-xl sm:text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-gray-900 to-gray-500 dark:from-white dark:to-gray-400">
                   Build AI responsibly to<br />benefit humanity
                 </h2>
               </div>
@@ -57,7 +57,7 @@ const Footer = () => {
 
             {/* Models Column */}
             <div className="flex-1  text-center md:text-left">
-              <h3 className="text-lg font-semibold tracking-wide text-white mb-6 relative inline-block">
+              <h3 className="text-lg font-semibold tracking-wide text-black dark:text-white mb-6 relative inline-block">
                 Models
                 <span className="absolute -bottom-2 left-0 w-1/2 h-0.5 bg-themedark rounded-full shadow-[0_0_8px_rgba(157,0,255,0.8)]"></span>
               </h3>
@@ -74,7 +74,7 @@ const Footer = () => {
                     alt="Vsinfo AI"
                     className="w-8 h-8 rounded drop-shadow-[0_0_5px_rgba(255,255,255,0.3)] group-hover:drop-shadow-[0_0_10px_rgba(157,0,255,0.5)] transition-all"
                   />
-                  <span className="text-lg text-gray-300 group-hover:text-white font-medium transition-colors">
+                  <span className="text-lg text-gray-700 dark:text-gray-300 group-hover:text-black dark:group-hover:text-white font-medium transition-colors">
                     vsinfotech AI
                   </span>
                   <svg
@@ -96,7 +96,7 @@ const Footer = () => {
 
             {/* Quick Links Column */}
             <div className="flex-1 text-center md:text-left">
-              <h3 className="text-lg font-semibold tracking-wide text-white mb-6 relative inline-block">
+              <h3 className="text-lg font-semibold tracking-wide text-black dark:text-white mb-6 relative inline-block">
                 Company
                 <span className="absolute -bottom-2 left-0 w-1/2 h-0.5 bg-themedark rounded-full shadow-[0_0_8px_rgba(157,0,255,0.8)]"></span>
               </h3>
@@ -105,7 +105,7 @@ const Footer = () => {
                   <li key={idx}>
                     <Link
                       to={item === 'Home' ? '/' : item === 'Contact Us' ? '/contact' : `/${item.toLowerCase()}`}
-                      className="text-gray-400 hover:text-white hover:translate-x-1 inline-flex items-center gap-2 group transition-all duration-300 text-base font-medium"
+                      className="text-gray-600 dark:text-gray-400 hover:text-black dark:hover:text-white hover:translate-x-1 inline-flex items-center gap-2 group transition-all duration-300 text-base font-medium"
                     >
                       <span className="w-1.5 h-1.5 rounded-full bg-themedark opacity-0 group-hover:opacity-100 transition-opacity"></span>
                       {item}
@@ -117,7 +117,7 @@ const Footer = () => {
 
             {/* Contact Column */}
             <div className="flex-1 md:max-w-xs text-center md:text-left">
-              <h3 className="text-lg font-semibold tracking-wide text-white mb-6 relative inline-block">
+              <h3 className="text-lg font-semibold tracking-wide text-black dark:text-white mb-6 relative inline-block">
                 Contact Office
                 <span className="absolute -bottom-2 left-0 w-1/2 h-0.5 bg-themedark rounded-full shadow-[0_0_8px_rgba(157,0,255,0.8)]"></span>
               </h3>
@@ -125,24 +125,24 @@ const Footer = () => {
               <div className="flex flex-col items-center md:items-start gap-5 bg-white/[0.02] border border-white/5 p-5 rounded-2xl hover:border-white/10 hover:bg-white/[0.04] transition-all duration-300">
                 <div className="flex items-center gap-3">
                   <img src={canada} alt="Canada Flag" className="" />
-                  <h4 className="font-semibold text-white text-lg">Canada</h4>
+                  <h4 className="font-semibold text-black dark:text-white text-lg">Canada</h4>
                 </div>
 
                 <div className="flex items-start gap-3 mt-1">
                   <FaMapMarkerAlt className="text-themedark mt-1 shrink-0 text-lg" />
-                  <a href="https://goo.gl/maps/xyz..." target="_blank" rel="noreferrer" className="text-sm text-gray-400 hover:text-white transition-colors leading-relaxed">
+                  <a href="https://goo.gl/maps/xyz..." target="_blank" rel="noreferrer" className="text-sm text-gray-600 dark:text-gray-400 hover:text-black dark:hover:text-white transition-colors leading-relaxed">
                     855 King Street East, Unit 210<br />Cambridge, ON, Canada
                   </a>
                 </div>
 
                 <div className="flex items-center gap-3">
                   <BsFillTelephoneFill className="text-themedark shrink-0 text-md" />
-                  <a href="tel:+15198817124" className="text-sm text-gray-400 hover:text-white transition-colors">+1 519 881 7124</a>
+                  <a href="tel:+15198817124" className="text-sm text-gray-600 dark:text-gray-400 hover:text-black dark:hover:text-white transition-colors">+1 519 881 7124</a>
                 </div>
 
                 <div className="flex items-center gap-3">
                   <IoMdMail className="text-themedark shrink-0 text-lg" />
-                  <a href="mailto:info@vsinfotech.ca" className="text-sm text-gray-400 hover:text-white transition-colors">info@vsinfotech.ca</a>
+                  <a href="mailto:info@vsinfotech.ca" className="text-sm text-gray-600 dark:text-gray-400 hover:text-black dark:hover:text-white transition-colors">info@vsinfotech.ca</a>
                 </div>
               </div>
             </div>

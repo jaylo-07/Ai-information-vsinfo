@@ -32,11 +32,11 @@ const Introduction = () => {
         <>
             <div
                 ref={containerRef}
-                className="relative xl:h-[900px] md:h-[600px] h-[500px] w-full bg-themeblack overflow-hidden"
+                className="relative xl:h-[900px] md:h-[600px] h-[500px] w-full bg-gray-100 dark:bg-themeblack overflow-hidden transition-colors duration-300"
             >
                 {/* Particle Background */}
                 <div className="absolute inset-0 z-0">
-                    <DotParticleCanvas containerRef={containerRef} />
+                    <DotParticleCanvas containerRef={containerRef} backgroundColor="transparent" />
                 </div>
 
                 {/* Confetti */}
@@ -51,9 +51,9 @@ const Introduction = () => {
 
                 {/* Foreground Text */}
                 <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-0 2xl:px-8 px-3 xl:w-[50%] md:w-[70%] w-full m-auto flex items-center justify-center  flex-col ">
-                    <h2 className="2xl:text-5xl md:text-3xl  text-2xl font-semibold text-white text-center md:mb-5 mb-3 2xl:leading-[60px]" data-aos="fade-up">Create with <span className="text-themedark">AI</span> to produce measurable commercial results. </h2>
-                    <p className="text-[#f0f0f0] text-center sm:text-base text-xs  md:mb-5 mb-3  px-5" data-aos="fade-up" >We extand and provide end-to-end AI solutions, including platforms, models, and strategies, that are optimized for cost, performance, and security in both on-premises and cloud environments.</p>
-                    <p className="text-[#f0f0f0] text-center sm:text-base text-xs md:mb-5 mb-3  px-5" data-aos="fade-up">From automation and analytics to computer vision and generative AI, our experts help businesses expand safely and speed up time-to-value.</p>
+                    <h2 className="2xl:text-5xl md:text-3xl  text-2xl font-semibold text-black dark:text-white text-center md:mb-5 mb-3 2xl:leading-[60px]" data-aos="fade-up">Create with <span className="text-themedark">AI</span> to produce measurable commercial results. </h2>
+                    <p className="text-gray-700 dark:text-[#f0f0f0] text-center sm:text-base text-xs  md:mb-5 mb-3  px-5" data-aos="fade-up" >We extand and provide end-to-end AI solutions, including platforms, models, and strategies, that are optimized for cost, performance, and security in both on-premises and cloud environments.</p>
+                    <p className="text-gray-700 dark:text-[#f0f0f0] text-center sm:text-base text-xs md:mb-5 mb-3  px-5" data-aos="fade-up">From automation and analytics to computer vision and generative AI, our experts help businesses expand safely and speed up time-to-value.</p>
                     <div className="flex sm:flex-row flex-col items-center justify-center gap-4 sm:gap-6 mt-6 md:mt-8">
                         <Link
                             to="https://ai.vsinfotech.ca"
@@ -70,7 +70,7 @@ const Introduction = () => {
 
                         <Link
                             to="/contact"
-                            className="group relative inline-flex items-center justify-center md:w-[220px] w-[180px] px-6 py-3.5 text-base md:text-lg font-bold text-white transition-all duration-300 border border-white/20 hover:border-white/60 bg-white/5 backdrop-blur-sm rounded-full hover:bg-white/10 overflow-hidden hover:-translate-y-1"
+                            className="group relative inline-flex items-center justify-center md:w-[220px] w-[180px] px-6 py-3.5 text-base md:text-lg font-bold text-black dark:text-white transition-all duration-300 border border-black/20 dark:border-white/20 hover:border-black/60 dark:hover:border-white/60 bg-black/5 dark:bg-white/5 backdrop-blur-sm rounded-full hover:bg-black/10 dark:hover:bg-white/10 overflow-hidden hover:-translate-y-1"
                         >
                             <span className="relative flex items-center justify-center gap-2">
                                 Contact Us
@@ -80,13 +80,13 @@ const Introduction = () => {
                     </div>
                 </div>
             </div>
-            <section className="bg-black text-white pt-8 lg:pt-16 container" >
+            <section className="bg-white dark:bg-black text-black dark:text-white pt-8 lg:pt-16 container transition-colors duration-300" >
                 <div className=" mx-auto grid lg:grid-cols-2 grid-cols-1 gap-8 items-center" >
                     <div data-aos="fade-up">
-                        <h1 className="2xl:text-5xl md:text-3xl  text-2xl font-semibold text-white md:mb-5 mb-3 2xl:leading-[60px] ">
+                        <h1 className="2xl:text-5xl md:text-3xl  text-2xl font-semibold text-black dark:text-white md:mb-5 mb-3 2xl:leading-[60px] ">
                             Empowering Business Outcomes <br></br>with  <span className="text-themedark "> AI & Data Analytics</span>
                         </h1>
-                        <p className="text-[#f0f0f0]  sm:text-base text-xs md:mb-5 mb-3  " data-aos="fade-up" >
+                        <p className="text-gray-700 dark:text-[#f0f0f0]  sm:text-base text-xs md:mb-5 mb-3  " data-aos="fade-up" >
                             Cloud-based generative AI and advanced data analytics are revolutionizing the commercial world. This change cannot be undone. Opportunities in the future will push businesses to become more intelligent, autonomous, and networked. Through strategic collaborations, they will create a digitally integrated ecosystem in which businesses work together symbiotically to provide value to customers, residents, and consumers.
                         </p>
                     </div>

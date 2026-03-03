@@ -9,9 +9,9 @@ import img3 from "../Asset/About/about_bg3.webp";
 import { FaArrowRight } from "react-icons/fa";
 
 const cardData = [
-  { title: "AlphaProteo", text: " In order to expedite advances in biology and medicine, AlphaProteo focuses on comprehending and simulating protein structures." , img:img1 },
-  { title: "AlphaGeometry", text: "AlphaGeometry uses sophisticated algorithms to accurately and efficiently tackle challenging geometric problems." , img:img2 },
-  { title: "AlphaMissense", text: "AlphaMissense helps in disease research by using AI to forecast how genetic changes would affect protein function." , img:img3 },
+  { title: "AlphaProteo", text: " In order to expedite advances in biology and medicine, AlphaProteo focuses on comprehending and simulating protein structures.", img: img1 },
+  { title: "AlphaGeometry", text: "AlphaGeometry uses sophisticated algorithms to accurately and efficiently tackle challenging geometric problems.", img: img2 },
+  { title: "AlphaMissense", text: "AlphaMissense helps in disease research by using AI to forecast how genetic changes would affect protein function.", img: img3 },
 ];
 
 const AboutCard = () => {
@@ -114,7 +114,7 @@ const AboutCard = () => {
         <div key={i} className="3xl:w-1/4 lg:w-1/3 md:w-1/2 w-full px-5 cursor-pointer lg:mt-4 sm:mt-10 mt-5" data-aos="fade-up">
           <div
             ref={(el) => (cardRefs.current[i] = el)}
-            className="bg-themeblack border border-gray-500 rounded-[5px] overflow-hidden transform-gpu transition-colors duration-300 h-full"
+            className="bg-gray-100 dark:bg-themeblack border border-gray-300 dark:border-gray-500 rounded-[5px] overflow-hidden transform-gpu transition-colors duration-300 h-full"
             style={{ transformStyle: "preserve-3d" }}
           >
             <div className="overflow-hidden">
@@ -129,12 +129,12 @@ const AboutCard = () => {
               ref={(el) => (textRefs.current[i] = el)}
               className="px-6 mt-4 opacity-90"
             >
-              <p className="text-white sm:text-[20px] text-[18px]">{card.title}</p>
-              <p className="text-[#9aa0a6] sm:text-[16px] text-[14px] leading-[20px] mt-2">{card.text}</p>
+              <p className="text-black dark:text-white sm:text-[20px] text-[18px]">{card.title}</p>
+              <p className="text-gray-700 dark:text-[#9aa0a6] sm:text-[16px] text-[14px] leading-[20px] mt-2">{card.text}</p>
               <p className="flex justify-end">
                 <p
                   ref={(el) => (arrowRefs.current[i] = el)}
-                  className="text-white mt-6 mb-4 opacity-70 transform-gpu"
+                  className="text-black dark:text-white mt-6 mb-4 opacity-70 transform-gpu"
                 />
               </p>
             </div>

@@ -84,7 +84,7 @@ const aiDetails = [
 const steps = [
     {
         number: 1,
-        img:ai1,
+        img: ai1,
         icon: step1,
         title: "Safely connect your tools",
         description: [
@@ -94,7 +94,7 @@ const steps = [
     },
     {
         number: 2,
-        img:ai1,
+        img: ai1,
         icon: step2,
         title: "After exploring your data",
         description: [
@@ -104,7 +104,7 @@ const steps = [
     },
     {
         number: 3,
-        img:ai1,
+        img: ai1,
         icon: step3,
         title: "After exploring your data",
         description: [
@@ -114,7 +114,7 @@ const steps = [
     },
     {
         number: 4,
-        img:ai1,
+        img: ai1,
         icon: step4,
         title: "As time goes ",
         description: [
@@ -123,7 +123,7 @@ const steps = [
         ]
     }
 ];
-const transition= {
+const transition = {
     duration: 4,
     repeat: Infinity,
     repeatType: "reverse",
@@ -134,22 +134,21 @@ const AiandHowitsWork = () => {
 
     return (
         <div className="container relative overflow-hidden">
-            <div className="bg-black  pt-8 lg:pt-16 ">
-                <h2 className="2xl:text-5xl md:text-3xl  text-2xl font-semibold text-white text-center md:mb-5 mb-3 2xl:leading-[60px] py-5" data-aos="fade-up"><span className="text-themedark fond-extrabold">Artificial </span> Intelligence</h2>
-                
+            <div className="bg-white dark:bg-black pt-8 lg:pt-16 transition-colors duration-300">
+                <h2 className="2xl:text-5xl md:text-3xl  text-2xl font-semibold text-black dark:text-white text-center md:mb-5 mb-3 2xl:leading-[60px] py-5" data-aos="fade-up"><span className="text-themedark fond-extrabold">Artificial </span> Intelligence</h2>
+
                 <article class="card__container container  ">
                     {aiDetails.map((item) => {
                         return (
-                            <div class="card mobile p-3 py-5 cursor-pointer" data-aos="flip-left" data-aos-easing="ease-out-cubic" data-aos-duration="2000" tabindex="0" style={{ backgroundImage: `url(${item.img})` }}>
-                                <div className="relative z-10 card_detail">
-                                    <h3 className="text-3xl text-white text-center underline">{item.title}</h3>
-                                    <ul className="text-[#D3D3D3]   sm:text-base text-xs text-center h-full py-8">
-                                        {item.description.map((des) => {
+                            <div class="card mobile p-2 sm:p-4 py-4 sm:py-6 cursor-pointer" data-aos="flip-left" data-aos-easing="ease-out-cubic" data-aos-duration="2000" tabindex="0" style={{ backgroundImage: `url(${item.img})` }}>
+                                <div className="relative z-10 card_detail bg-black/60 backdrop-blur-[2px] w-full h-full flex flex-col justify-center items-center rounded-lg p-2 sm:p-4 transition-all duration-300 overflow-hidden">
+                                    <h3 className="text-xl sm:text-2xl font-bold text-white text-center underline mb-3 sm:mb-4">{item.title}</h3>
+                                    <ul className="text-gray-100 text-xs sm:text-[13px] text-center font-medium drop-shadow-md w-full px-1">
+                                        {item.description.map((des, idx) => {
                                             return (
-                                                <li className="mb-2">{des}</li>
+                                                <li key={idx} className="mb-1.5 sm:mb-2 leading-snug">{des}</li>
                                             )
                                         })}
-                                        <li></li>
                                     </ul>
                                 </div>
                             </div>
@@ -157,10 +156,10 @@ const AiandHowitsWork = () => {
                     })}
                 </article>
             </div>
-            <div className=" bg-black  pt-8 lg:pt-16 ">
+            <div className="bg-white dark:bg-black pt-8 lg:pt-16 transition-colors duration-300">
                 <div>
-                    <h2 className="2xl:text-5xl md:text-3xl  text-2xl font-semibold text-white text-center md:mb-5 mb-3 2xl:leading-[60px]" data-aos="fade-up"><span className="text-themedark fond-extrabold">How it works</span></h2>
-                    <p className="text-[#f0f0f0] text-center sm:text-base text-xs  md:mb-5 mb-3  px-5" data-aos="fade-up" > Our AI-powered company enables you to attain superior outcomes through intelligent automation.</p>
+                    <h2 className="2xl:text-5xl md:text-3xl  text-2xl font-semibold text-black dark:text-white text-center md:mb-5 mb-3 2xl:leading-[60px]" data-aos="fade-up"><span className="text-themedark fond-extrabold">How it works</span></h2>
+                    <p className="text-gray-700 dark:text-[#f0f0f0] text-center sm:text-base text-xs  md:mb-5 mb-3  px-5" data-aos="fade-up" > Our AI-powered company enables you to attain superior outcomes through intelligent automation.</p>
                     {/* <h2 className="text-3xl font-bold text-white text-center mb-2 w-full ">
                         How it works
                     </h2>
@@ -169,7 +168,7 @@ const AiandHowitsWork = () => {
                     </p> */}
                 </div>
                 <div className="2xl:flex container  ">
-                    <div className="2xl:w-[40%] lg:w-[50%] w-full m-auto " data-aos="fade-right"data-aos-duration="3000">
+                    <div className="2xl:w-[40%] lg:w-[50%] w-full m-auto " data-aos="fade-right" data-aos-duration="3000">
                         <DotLottieReact
                             src="https://lottie.host/73cf04a2-d521-4e7f-b490-6dfc5172e1cb/pokuuNkZid.json"
                             loop
@@ -178,15 +177,15 @@ const AiandHowitsWork = () => {
                     </div>
                     <section className="pt-8 lg:pt-16 2xl:w-[60%] h-full">
                         <div className=" mx-auto px-4 h-full">
-                            <div className="flex flex-col md:flex-row gap-8 text-white h-full" data-aos="fade-left" data-aos-duration={3000}>
+                            <div className="flex flex-col md:flex-row gap-8 text-black dark:text-white h-full" data-aos="fade-left" data-aos-duration={3000}>
                                 {steps.map((step, id) => (
                                     <div
                                         key={step.number}
-                                        className={`bg-themeblack rounded-lg shadow-lg p-6 text-center relative transition-all duration-500 cursor-pointer overflow-hidden   h-[350px] flex-shrink-0 ${selectStep === id ? "flex-[5]" : "flex-[1]"}`}
+                                        className={`bg-gray-100 dark:bg-themeblack rounded-lg shadow-lg p-6 text-center relative transition-all duration-500 cursor-pointer overflow-hidden   h-[350px] flex-shrink-0 ${selectStep === id ? "flex-[5]" : "flex-[1]"}`}
                                         onClick={() => { setSelectStep(id) }}
-                                        
+
                                     >
-                                        <div className=" m-auto  border-themedark text-white rounded-full  w-16 h-16  font-bold text-lg">
+                                        <div className=" m-auto  border-themedark text-black dark:text-white rounded-full  w-16 h-16  font-bold text-lg">
                                             <img
                                                 src={step.icon}
                                                 alt={step.title}
@@ -198,7 +197,7 @@ const AiandHowitsWork = () => {
                                         <div className={selectStep === id ? 'block py-[40px]' : 'hidden '}>
                                             <h3 className="font-semibold text-lg mb-2 text-themedark">{step.title}</h3>
                                             {step.description.map((line, i) => (
-                                                <p key={i} className="text-white text-sm">{line}</p>
+                                                <p key={i} className="text-black dark:text-white text-sm">{line}</p>
                                             ))}
                                         </div>
 

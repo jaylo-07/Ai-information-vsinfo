@@ -182,7 +182,7 @@ const TiltCard = ({ item, onClick }) => {
         <div
             ref={cardRef}
             onClick={onClick}
-            className="relative bg-themeblack p-4 rounded-lg shadow-md w-full mb-4 cursor-pointer transition-transform duration-300"
+            className="relative bg-white dark:bg-themeblack p-4 rounded-lg shadow-md w-full mb-4 cursor-pointer transition-transform duration-300"
             style={{ minHeight: "280px", transformStyle: "preserve-3d" }}
         >
             {/* Glow overlay */}
@@ -206,7 +206,7 @@ const TiltCard = ({ item, onClick }) => {
                             #{item.tags.join(" #")}
                         </p>
                     )}
-                    <h2 className="font-semibold text-lg mt-4 line-clamp-2 text-white">
+                    <h2 className="font-semibold text-lg mt-4 line-clamp-2 text-black dark:text-white">
                         {item.title.slice(0, 80)}
                     </h2>
                 </div>
@@ -315,16 +315,16 @@ const Stories = () => {
 
     return (
         <>
-            <div className="container bg-black text-white font-sans min-h-screen px-6 xl:py-10 py-6">
+            <div className="container bg-white dark:bg-black text-black dark:text-white font-sans min-h-screen px-6 xl:py-10 py-6 transition-colors duration-300">
                 {/* Header */}
                 <header className="flex flex-wrap justify-between items-center py-6   ">
                     <div className="flex items-center gap-4">
                         {/* <button className="text-2xl">&#9776;</button> */}
-                        <h2 className="2xl:text-5xl md:text-3xl  text-2xl font-semibold text-white text-center md:mb-5 mb-3 2xl:leading-[60px]" data-aos="fade-up">This is where we tell <span className="text-themedark fond-extrabold">stories</span></h2>
+                        <h2 className="2xl:text-5xl md:text-3xl  text-2xl font-semibold text-black dark:text-white text-center md:mb-5 mb-3 2xl:leading-[60px]" data-aos="fade-up">This is where we tell <span className="text-themedark fond-extrabold">stories</span></h2>
 
                     </div>
-                    <Link to="/contact" className='ms-[10px]'> 
-                        <button className="bg-white text-black px-4 py-2 rounded-full hover:bg-[transparent] hover:text-[white] border transition-all duration-500">Contact Us</button>
+                    <Link to="/contact" className='ms-[10px]'>
+                        <button className="bg-black dark:bg-white text-white dark:text-black px-4 py-2 rounded-full hover:bg-[transparent] hover:text-[black] dark:hover:text-[white] border transition-all duration-500">Contact Us</button>
                     </Link>
                 </header>
 
@@ -369,7 +369,7 @@ const Stories = () => {
                         <motion.div
                             key={index}
                             layoutId={`smcard-${index}`}
-                            className={` bg-themeblack p-6 g-4 w-[100%] rotate-0 mt-4`}
+                            className={` bg-gray-100 dark:bg-themeblack p-6 g-4 w-[100%] rotate-0 mt-4`}
                             onClick={() => setSelectedItem({ ...item, index })}
                             style={{ cursor: "pointer" }}
                             data-aos="fade-left"
@@ -394,7 +394,7 @@ const Stories = () => {
                                             #{item.tags.join(" #")}
                                         </p>
                                     )}
-                                    <h2 className="font-semibold text-lg mt-4">
+                                    <h2 className="font-semibold text-lg mt-4 text-black dark:text-white">
                                         {item.title}
                                     </h2>
 
@@ -417,7 +417,7 @@ const Stories = () => {
                     >
                         <motion.div
                             layoutId={`card-${selectedItem.index}`}
-                            className="bg-themeblack rounded-lg overflow-hidden shadow-lg p-6 text-white"
+                            className="bg-white dark:bg-themeblack rounded-lg overflow-hidden shadow-lg p-6 text-black dark:text-white"
                             style={{
                                 width: "400px",
                                 transformStyle: "preserve-3d",
@@ -447,12 +447,12 @@ const Stories = () => {
                                             #{selectedItem.tags.join(" #")}
                                         </p>
                                     )}
-                                    <h2 className="font-semibold text-lg mt-4">
+                                    <h2 className="font-semibold text-lg mt-4 text-black dark:text-white">
                                         {selectedItem.title}
                                     </h2>
 
                                     {selectedItem.description && (
-                                        <p className="text-gray-500 text-sm mt-2">
+                                        <p className="text-gray-700 dark:text-gray-400 text-sm mt-2">
                                             {selectedItem.description}
                                         </p>
                                     )}

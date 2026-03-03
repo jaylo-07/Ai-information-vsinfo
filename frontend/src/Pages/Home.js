@@ -12,7 +12,7 @@ const Home = () => {
       <Introduction />
       <AiandHowitsWork />
       {/* <SpecialAddress /> */}
-      <div className='flex justify-center  pt-8 lg:pt-20 '>
+      <div className='flex justify-center bg-white dark:bg-black pt-8 lg:pt-20 transition-colors duration-300'>
         <div className='2xl:w-4/5 w-full'>
           <div className="flex lg:flex-nowrap lg:flex-row flex-col-reverse flex-wrap items-center">
             <div className="lg:w-1/2 w-full px-5 lg:mt-0 mt-8">
@@ -21,10 +21,10 @@ const Home = () => {
               </div>
             </div>
             <div className="lg:w-1/2 w-full lg:px-[50px] px-5">
-              <div className='text-white'>
-                <h3 className='text-white text-[22px] sm:text-[32px] md:text-[40px] lg:text-[40px] sm:leading-[48px] sx:leading-[28px] mt-4' data-aos="fade-left">We interact with the <span className='text-themedark'>AI community</span></h3>
-                <p className=' pt-4' data-aos="fade-left">Over the course of the year through a variety of online, live, and hybrid events, either as sponsors or as hosts. </p>
-                <p className='mt-5' data-aos="fade-left">Our engineers and researchers showcase our most recent publications, research accomplishments, and product breakthroughs at these forums.</p>
+              <div className='text-black dark:text-white'>
+                <h3 className='text-black dark:text-white text-[22px] sm:text-[32px] md:text-[40px] lg:text-[40px] sm:leading-[48px] sx:leading-[28px] mt-4' data-aos="fade-left">We interact with the <span className='text-themedark'>AI community</span></h3>
+                <p className='text-gray-700 dark:text-[#f0f0f0] pt-4' data-aos="fade-left">Over the course of the year through a variety of online, live, and hybrid events, either as sponsors or as hosts. </p>
+                <p className='text-gray-700 dark:text-[#f0f0f0] mt-5' data-aos="fade-left">Our engineers and researchers showcase our most recent publications, research accomplishments, and product breakthroughs at these forums.</p>
               </div>
             </div>
           </div>

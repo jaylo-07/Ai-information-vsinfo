@@ -18,7 +18,7 @@ const CountSection = () => {
             <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5'>
                 {data.map((item, index) => {
                     return (
-                        <div className='flex bg-themeblack     text-white p-5 items-center rounded-[20px]' data-aos="fade-up">
+                        <div className='flex bg-gray-100 dark:bg-themeblack text-black dark:text-white p-5 items-center rounded-[20px]' data-aos="fade-up">
                             <div>
                                 <img src={item.icon} alt="happy client" className='h-14 w-14'></img>
                             </div>
