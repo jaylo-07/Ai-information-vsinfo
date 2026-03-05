@@ -253,10 +253,10 @@ const Home = () => {
 
     const toolsMenuItems = useMemo(
         () => [
-            { label: 'Deep Research', icon: <Search className="w-4 h-4" /> },
+            { label: 'Deep Research', icon: <Search className="w-4 h-4" />, disabled: true },
             { label: 'Create Images', icon: <ImageIcon className="w-4 h-4" /> },
-            { label: 'Canvas', icon: <LayoutPanelTop className="w-4 h-4" /> },
-            { label: 'Guided Learning', icon: <GraduationCap className="w-4 h-4" /> },
+            { label: 'Canvas', icon: <LayoutPanelTop className="w-4 h-4" />, disabled: true },
+            { label: 'Guided Learning', icon: <GraduationCap className="w-4 h-4" />, disabled: true },
         ],
         []
     );
@@ -837,15 +837,17 @@ const Home = () => {
                                         </button>
 
                                         {openMenu === 'tools' && (
-                                            <div className="absolute bottom-full right-0 mb-3 z-50 bg-white dark:bg-[#18181b] border border-gray-200 dark:border-white/10 rounded-2xl p-2 w-[220px] shadow-2xl animate-scaleIn origin-bottom-right">
+                                            <div className="absolute bottom-full right-0 mb-3 z-50 bg-white dark:bg-[#18181b] border border-gray-200 dark:border-white/10 rounded-2xl p-2 w-[240px] shadow-2xl animate-scaleIn origin-bottom-right">
                                                 {toolsMenuItems.map((item) => {
                                                     const isActive = activeTool?.label === item.label;
                                                     return (
                                                         <button
                                                             key={item.label}
                                                             type="button"
-                                                            className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-xl transition-colors text-left font-medium ${isActive ? 'bg-purple-50 dark:bg-purple-500/20 text-purple-700 dark:text-purple-300' : 'hover:bg-gray-100 dark:hover:bg-white/10 text-gray-700 dark:text-gray-200'}`}
+                                                            disabled={item.disabled}
+                                                            className={`w-full flex items-center justify-between px-3 py-2.5 rounded-xl transition-colors text-left font-medium ${item.disabled ? 'opacity-60 cursor-not-allowed' : isActive ? 'bg-purple-50 dark:bg-purple-500/20 text-purple-700 dark:text-purple-300' : 'hover:bg-gray-100 dark:hover:bg-white/10 text-gray-700 dark:text-gray-200'}`}
                                                             onClick={() => {
+                                                                if (item.disabled) return;
                                                                 const nextTool = isActive ? null : item;
                                                                 setActiveTool(nextTool);
                                                                 setOpenMenu(null);
@@ -856,8 +858,13 @@ const Home = () => {
                                                                 }
                                                             }}
                                                         >
-                                                            <span className={isActive ? 'text-purple-600 dark:text-purple-400' : 'text-gray-500 dark:text-gray-400'}>{item.icon}</span>
-                                                            <span className="text-sm">{item.label}</span>
+                                                            <div className="flex items-center gap-3">
+                                                                <span className={item.disabled ? 'text-gray-500 dark:text-gray-400' : isActive ? 'text-purple-600 dark:text-purple-400' : 'text-gray-500 dark:text-gray-400'}>{item.icon}</span>
+                                                                <span className={`text-sm whitespace-nowrap ${item.disabled ? 'text-gray-600 dark:text-gray-300' : ''}`}>{item.label}</span>
+                                                            </div>
+                                                            {item.disabled && (
+                                                                <span className="text-[9px] shrink-0 font-bold tracking-wider uppercase bg-gray-200 dark:bg-white/10 text-gray-500 dark:text-gray-400 px-1.5 py-0.5 rounded h-fit">Soon</span>
+                                                            )}
                                                         </button>
                                                     );
                                                 })}
