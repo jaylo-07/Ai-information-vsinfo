@@ -170,8 +170,7 @@ export const sendDeepResearch = createAsyncThunk(
             }
 
             // Call backend deep-research endpoint
-            const nodeApiUrl = process.env.REACT_APP_API_URL || 'http://localhost:5000/api';
-            const { data } = await axios.post(`${nodeApiUrl}/deep-research`, {
+            const { data } = await axios.post(`${BASE_URL}/deep-research`, {
                 query,
                 depth,
                 sources
@@ -499,9 +498,8 @@ export const generateImage = createAsyncThunk(
     "image/generate",
     async (prompt, { rejectWithValue }) => {
         try {
-            const nodeApiUrl = process.env.REACT_APP_API_URL || 'http://localhost:5000/api';
             const response = await axios.post(
-                `${nodeApiUrl}/generate-image`,
+                `${BASE_URL}/generate-image`,
                 { prompt },
                 { ...getConfig(), timeout: 120000 }
             );

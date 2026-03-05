@@ -1,7 +1,6 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import { detectPromptType } from "../../Utils/detectPromptType";
-
-const nodeApiUrl = process.env.REACT_APP_API_URL || 'http://localhost:5000/api';
+import { BASE_URL } from "../../Utils/baseUrl";
 
 export const sendAIRequest = createAsyncThunk(
     "ai/sendRequest",
@@ -17,7 +16,7 @@ export const sendAIRequest = createAsyncThunk(
             const type = detectPromptType(prompt);
 
             if (type === "image") {
-                const response = await fetch(`${nodeApiUrl}/generate-image`, {
+                const response = await fetch(`${BASE_URL}/generate-image`, {
                     method: "POST",
                     headers: {
                         "Content-Type": "application/json"
@@ -36,7 +35,7 @@ export const sendAIRequest = createAsyncThunk(
             }
 
             // TEXT MODEL
-            const response = await fetch(`${nodeApiUrl}/generate-text`, {
+            const response = await fetch(`${BASE_URL}/generate-text`, {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json"
