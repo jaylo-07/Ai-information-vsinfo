@@ -84,6 +84,7 @@ const Sidebar = () => {
 
   const loadPrompt = async (threadId) => {
     dispatch(fetchThreadMessages(threadId));
+    dispatch(setIsMobileSidebarOpen(false));
   }
 
   return (
@@ -305,14 +306,20 @@ const Sidebar = () => {
             )} */}
 
           <div className={`flex gap-1 mt-[40px] ${extended ? 'w-full' : 'w-10 flex-col gap-2'}`}>
-            <div onClick={() => dispatch(newChat())} className={`rounded-full cursor-pointer transition-colors group bg-black/5 dark:bg-[#1e1e1e] text-gray-700 dark:text-[#a0a09e] hover:bg-black/10 dark:hover:bg-[#252525] dark:hover:text-white ${extended ? 'w-full flex items-center gap-3 p-2.5 pl-4' : 'flex items-center justify-center w-10 h-10 px-0'}`}>
+            <div onClick={() => {
+              dispatch(newChat());
+              dispatch(setIsMobileSidebarOpen(false));
+            }} className={`rounded-full cursor-pointer transition-colors group bg-black/5 dark:bg-[#1e1e1e] text-gray-700 dark:text-[#a0a09e] hover:bg-black/10 dark:hover:bg-[#252525] dark:hover:text-white ${extended ? 'w-full flex items-center gap-3 p-2.5 pl-4' : 'flex items-center justify-center w-10 h-10 px-0'}`}>
               <Plus className="w-5 h-5 shrink-0 text-gray-900 dark:text-white/80" />
               {extended && <p className="font-medium whitespace-nowrap text-[14px] text-gray-900 dark:text-white/80">New chat</p>}
             </div>
 
             <div
               title="Temporary chat"
-              onClick={() => dispatch(setIsTemporaryChat(!isTemporaryChat))}
+              onClick={() => {
+                dispatch(setIsTemporaryChat(!isTemporaryChat));
+                dispatch(setIsMobileSidebarOpen(false));
+              }}
               className={`w-10 h-10 flex items-center justify-center flex-shrink-0 cursor-pointer rounded-full transition-colors ${isTemporaryChat ? 'bg-gray-300 dark:bg-white/20' : 'bg-black/5 dark:bg-[#1e1e1e] hover:bg-black/10 dark:hover:bg-[#252525]'}`}
             >
               <MessageSquareDashed className={`w-5 h-5 ${isTemporaryChat ? 'text-gray-900 dark:text-white' : 'text-gray-900 dark:text-white/80'}`} />
