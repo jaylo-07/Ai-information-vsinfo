@@ -6,11 +6,15 @@ import Header from './Pages/Header';
 import Home from './Pages/Home';
 import { Toaster } from 'react-hot-toast';
 
+import whiteLogo from './asset/WHITE.svg';
+import blackLogo from './asset/BLACK.svg';
+
 function App() {
   const theme = useSelector((state) => state.chat.theme);
 
   useEffect(() => {
     const root = document.documentElement;
+
     if (theme === 'Dark') {
       root.classList.add('dark');
     } else if (theme === 'Light') {
@@ -27,7 +31,20 @@ function App() {
   // Optionally, listen for OS theme changes for 'System'
   useEffect(() => {
     const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
+
+    const updateFavicon = (e) => {
+      const favicon = document.querySelector("link[rel~='icon']");
+      if (favicon) {
+        favicon.href = e.matches
+          ? `${process.env.PUBLIC_URL || ''}/favicon-dark.svg`
+          : `${process.env.PUBLIC_URL || ''}/favicon-light.svg`;
+      }
+    };
+
+    updateFavicon(mediaQuery);
+
     const handleChange = (e) => {
+      updateFavicon(e);
       if (theme === 'System') {
         const root = document.documentElement;
         if (e.matches) {
@@ -37,8 +54,20 @@ function App() {
         }
       }
     };
-    mediaQuery.addEventListener('change', handleChange);
-    return () => mediaQuery.removeEventListener('change', handleChange);
+
+    if (mediaQuery.addEventListener) {
+      mediaQuery.addEventListener('change', handleChange);
+    } else {
+      mediaQuery.addListener(handleChange);
+    }
+
+    return () => {
+      if (mediaQuery.removeEventListener) {
+        mediaQuery.removeEventListener('change', handleChange);
+      } else {
+        mediaQuery.removeListener(handleChange);
+      }
+    };
   }, [theme]);
 
   return (

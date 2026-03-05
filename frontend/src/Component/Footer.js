@@ -3,7 +3,8 @@ import { IoMdMail } from "react-icons/io";
 import { BsTwitterX, BsFillTelephoneFill } from "react-icons/bs";
 import { FaInstagram, FaYoutube, FaLinkedin, FaMapMarkerAlt } from "react-icons/fa";
 import canada from '../Asset/canada.svg';
-import logo from '../Asset/logo.svg';
+import whiteLogo from '../Asset/WHITE.svg';
+import blackLogo from '../Asset/BLACK.svg';
 import gemini from '../Asset/Footer/Gemini.svg';
 import { Link } from 'react-router-dom';
 
@@ -11,19 +12,20 @@ const Footer = () => {
   return (
     <div className="bg-gray-100 dark:bg-[#050505] text-black dark:text-white font-sans relative overflow-hidden transition-colors duration-300">
       {/* Top Gradient Border */}
-      <div className="absolute top-0 inset-x-0 h-px bg-gradient-to-r from-transparent via-[rgba(157,0,255,0.6)] to-transparent"></div>
+      <div className="hidden dark:block absolute top-0 inset-x-0 h-px bg-gradient-to-r from-transparent via-[rgba(157,0,255,0.6)] to-transparent"></div>
 
       {/* Background glow effects */}
-      <div className="absolute bottom-0 left-0 w-96 h-96 bg-themedark rounded-full mix-blend-multiply filter blur-[128px] opacity-20 pointer-events-none"></div>
-      <div className="absolute top-0 right-0 w-96 h-96 bg-[#FF00AA] rounded-full mix-blend-multiply filter blur-[128px] opacity-10 pointer-events-none"></div>
+      <div className="hidden dark:block absolute bottom-0 left-0 w-96 h-96 bg-themedark rounded-full mix-blend-multiply filter blur-[128px] opacity-20 pointer-events-none"></div>
+      <div className="hidden dark:block absolute top-0 right-0 w-96 h-96 bg-[#FF00AA] rounded-full mix-blend-multiply filter blur-[128px] opacity-10 pointer-events-none"></div>
 
       <footer className="container mx-auto pb-5 pt-16 sm:!px-6 !px-4 relative z-10">
         <div className="flex flex-col xl:flex-row justify-between gap-12 xl:gap-8">
 
           {/* Brand Column */}
           <div className="w-full xl:w-2/5 flex flex-col gap-6">
-            <div className="flex items-start gap-4">
-              <img src={logo} alt="Company Logo" className="w-24 h-auto object-contain drop-shadow-[0_0_10px_rgba(255,255,255,0.2)]" />
+            <div className="flex items-center gap-4">
+              <img src={blackLogo} alt="Company Logo" className="h-10 sm:h-12 w-auto object-contain block dark:hidden" />
+              <img src={whiteLogo} alt="Company Logo" className="h-10 sm:h-12 w-auto object-contain hidden dark:block drop-shadow-[0_0_10px_rgba(255,255,255,0.2)]" />
               <div>
                 <h2 className="text-xl sm:text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-gray-900 to-gray-500 dark:from-white dark:to-gray-400">
                   Build AI responsibly to<br />benefit humanity
@@ -31,7 +33,7 @@ const Footer = () => {
               </div>
             </div>
 
-            <p className="text-[#9aa0a6] text-sm md:text-base leading-relaxed pr-0 md:pr-10 text-center md:text-left">
+            <p className="text-[#6c7175] text-sm md:text-base leading-relaxed pr-0 md:pr-10 text-center md:text-left">
               We provide end-to-end AI solutions, including platforms, models, and strategies, optimized for cost, performance, and security.
             </p>
 
@@ -61,7 +63,7 @@ const Footer = () => {
                 Models
                 <span className="absolute -bottom-2 left-0 w-1/2 h-0.5 bg-themedark rounded-full shadow-[0_0_8px_rgba(157,0,255,0.8)]"></span>
               </h3>
-              <p className="text-sm text-[#9aa0a6] font-medium mb-6">Build with our next generation AI systems</p>
+              <p className="text-sm text-[#6c7175] font-medium mb-6">Build with our next generation AI systems</p>
               <div className="flex justify-center md:justify-start">
                 <a
                   target="_blank"
@@ -72,7 +74,7 @@ const Footer = () => {
                   <img
                     src={gemini}
                     alt="Vsinfo AI"
-                    className="w-8 h-8 rounded drop-shadow-[0_0_5px_rgba(255,255,255,0.3)] group-hover:drop-shadow-[0_0_10px_rgba(157,0,255,0.5)] transition-all"
+                    className="w-8 h-8 rounded drop-shadow-sm dark:drop-shadow-[0_0_5px_rgba(255,255,255,0.3)] group-hover:drop-shadow-[0_0_10px_rgba(157,0,255,0.5)] transition-all dark:invert-0 invert"
                   />
                   <span className="text-lg text-gray-700 dark:text-gray-300 group-hover:text-black dark:group-hover:text-white font-medium transition-colors">
                     vsinfotech AI
@@ -124,7 +126,7 @@ const Footer = () => {
 
               <div className="flex flex-col items-center md:items-start gap-5 bg-white/[0.02] border border-white/5 p-5 rounded-2xl hover:border-white/10 hover:bg-white/[0.04] transition-all duration-300">
                 <div className="flex items-center gap-3">
-                  <img src={canada} alt="Canada Flag" className="" />
+                  <img src={canada} alt="Canada Flag" className="dark:invert-0 invert" />
                   <h4 className="font-semibold text-black dark:text-white text-lg">Canada</h4>
                 </div>
 

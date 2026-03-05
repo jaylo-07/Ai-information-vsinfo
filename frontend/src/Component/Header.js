@@ -11,7 +11,11 @@ const Header = () => {
     setIsMobileMenuOpen(!isMobileMenuOpen);
   };
 
-  const [theme, setTheme] = useState(localStorage.getItem('theme') || 'dark');
+  const [theme, setTheme] = useState(() => {
+    const savedTheme = localStorage.getItem('theme');
+    if (savedTheme) return savedTheme;
+    return window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+  });
 
   useEffect(() => {
     if (theme === 'dark') {
@@ -22,6 +26,45 @@ const Header = () => {
       localStorage.setItem('theme', 'light');
     }
   }, [theme]);
+
+  // Listen for OS theme changes
+  useEffect(() => {
+    const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
+
+    const updateFavicon = (e) => {
+      const favicon = document.querySelector("link[rel~='icon']");
+      if (favicon) {
+        favicon.href = e.matches
+          ? `${process.env.PUBLIC_URL || ''}/favicon-dark.svg`
+          : `${process.env.PUBLIC_URL || ''}/favicon-light.svg`;
+      }
+    };
+
+    updateFavicon(mediaQuery);
+
+    const handleChange = (e) => {
+      updateFavicon(e);
+      // Only auto-update if they are responding to system preferences 
+      // i.e., they haven't manually pinned a theme, or they want it to match
+      setTheme(e.matches ? 'dark' : 'light');
+    };
+
+    // Add listener
+    if (mediaQuery.addEventListener) {
+      mediaQuery.addEventListener('change', handleChange);
+    } else {
+      // Fallback for older browsers
+      mediaQuery.addListener(handleChange);
+    }
+
+    return () => {
+      if (mediaQuery.removeEventListener) {
+        mediaQuery.removeEventListener('change', handleChange);
+      } else {
+        mediaQuery.removeListener(handleChange);
+      }
+    };
+  }, []);
 
   const toggleTheme = () => {
     setTheme(theme === 'dark' ? 'light' : 'dark');
@@ -34,7 +77,7 @@ const Header = () => {
   }, [location.pathname])
   return (
     <>
-      <header className="sticky shadow-lg dark:shadow-black py-4 top-0 z-50 border-b border-gray-200 dark:border-gray-800 bg-white dark:bg-[#060606] text-gray-700 dark:text-[#9aa0a6] transition-colors duration-300">
+      <header className="sticky shadow-lg dark:shadow-black py-4 top-0 z-50 dark:border-gray-800 bg-white dark:bg-[#060606] text-gray-700 dark:text-[#9aa0a6] transition-colors duration-300">
         <div className="container mx-auto flex items-center justify-between px-4 sm:px-6">
           <div className="flex items-center space-x-1 text-lg font-medium gap-10">
             <Link to="/" className='flex items-center space-x-1 text-black dark:text-[#f1f3f4]'>
