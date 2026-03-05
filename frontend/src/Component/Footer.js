@@ -73,7 +73,7 @@ const Footer = () => {
                 >
                   <img
                     src={gemini}
-                    alt="Vsinfo AI"
+                    alt="vsinfotech AI"
                     className="w-8 h-8 rounded drop-shadow-sm dark:drop-shadow-[0_0_5px_rgba(255,255,255,0.3)] group-hover:drop-shadow-[0_0_10px_rgba(157,0,255,0.5)] transition-all dark:invert-0 invert"
                   />
                   <span className="text-lg text-gray-700 dark:text-gray-300 group-hover:text-black dark:group-hover:text-white font-medium transition-colors">
@@ -154,7 +154,7 @@ const Footer = () => {
 
         {/* Bottom Copyright */}
         <div className="mt-16 pt-6 border-t border-gray-800/60 text-center gap-4 text-sm text-gray-500">
-          <p>© {new Date().getFullYear()} VsInfo AI. All rights reserved.</p>
+          <p>© {new Date().getFullYear()} Vsinfotech AI. All rights reserved.</p>
         </div>
       </footer>
     </div>
