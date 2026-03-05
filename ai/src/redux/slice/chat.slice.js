@@ -106,7 +106,7 @@ export const renameThread = createAsyncThunk(
                 return { id: threadId, title };
             }
             const response = await axios.put(`${BASE_URL}/threads/${threadId}`, { title }, getConfig());
-            return response.data;
+            return response.data.thread;
         } catch (error) {
             return rejectWithValue(error.response?.data || error.message);
         }
@@ -207,10 +207,25 @@ export const sendDeepResearch = createAsyncThunk(
     }
 );
 
+const base64ToFile = (base64String, filename) => {
+    // Split the base64 string to get the content
+    const byteString = atob(base64String);
+    const arrayBuffer = new ArrayBuffer(byteString.length);
+    const uint8Array = new Uint8Array(arrayBuffer);
+
+    for (let i = 0; i < byteString.length; i++) {
+        uint8Array[i] = byteString.charCodeAt(i);
+    }
+
+    // Create a Blob and then a File object
+    const blob = new Blob([arrayBuffer], { type: 'image/jpeg' });
+    return new File([blob], filename, { type: 'image/jpeg' });
+};
+
 // Async thunk to simulate receiving a response for a prompt
 export const sendPrompt = createAsyncThunk(
     'chat/sendPrompt',
-    async ({ prompt, imageUrl, actionType }, { rejectWithValue, getState, dispatch }) => {
+    async ({ prompt, imageUrl, actionType, image }, { rejectWithValue, getState, dispatch }) => {
         try {
             if (!prompt && !imageUrl) return;
             const state = getState();
@@ -226,7 +241,7 @@ export const sendPrompt = createAsyncThunk(
                 if (isLoggedIn) {
                     const formData = new FormData();
                     if (prompt) formData.append('message', prompt);
-                    if (imageUrl) formData.append('file', imageUrl);
+                    if (imageUrl) formData.append('file', image);
                     if (threadId) formData.append('thread_id', threadId);
 
                     const response = await axios.post(`${BASE_URL}/messages/send`, formData, getConfig());
@@ -269,11 +284,11 @@ export const sendPrompt = createAsyncThunk(
             let generatedModelImageUrl = null;
 
             // Using the new Hugging Face models via aiSlice
-            const aiResponse = await dispatch(sendAIRequest({ prompt: prompt || "", image: imageUrl })).unwrap();
+            const aiResponse = await dispatch(sendAIRequest({ prompt: prompt || "", image: image })).unwrap();
 
             if (aiResponse.type === "image") {
                 generatedModelImageUrl = aiResponse.data;
-                // responseText = "Here is the image you requested.";
+                responseText = aiResponse.text;
             } else {
                 responseText = aiResponse.data;
             }
@@ -286,6 +301,9 @@ export const sendPrompt = createAsyncThunk(
                     const responseFormData = new FormData();
                     responseFormData.append('thread_id', threadId);
                     responseFormData.append('response', responseText);
+                    if (generatedModelImageUrl) {
+                        responseFormData.append('file', generatedModelImageUrl);
+                    }
 
                     await axios.post(`${BASE_URL}/threads/${threadId}/response`, responseFormData, getConfig());
                 } else {
@@ -297,7 +315,6 @@ export const sendPrompt = createAsyncThunk(
                     });
                 }
             }
-
             return {
                 prompt: prompt,
                 response: responseText,
@@ -474,6 +491,7 @@ const chatSlice = createSlice({
                 toast.success("Chat deleted");
             })
             .addCase(renameThread.fulfilled, (state, action) => {
+                console.log(action.payload);
                 const index = state.threads.findIndex(t => t.id === action.payload.id);
                 if (index !== -1) {
                     state.threads[index] = action.payload;

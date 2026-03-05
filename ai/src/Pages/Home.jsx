@@ -205,10 +205,16 @@ const Home = () => {
         }
 
         let imageUrl = null;
+        let image = null;
         const imageAttachment = attachments.find(att => att.kind === 'photo');
-        if (imageAttachment) imageUrl = imageAttachment.base64;
+        if (imageAttachment) {
+            imageUrl = imageAttachment.base64;
+            image = imageAttachment.file;
+        }
 
-        dispatch(sendPrompt({ prompt: inputValue, imageUrl, actionType: activeTool?.label }));
+        // console.log(imageAttachment, "imageAttachment");
+
+        dispatch(sendPrompt({ prompt: inputValue, imageUrl, actionType: activeTool?.label, image }));
         setInputValue('');
         setAttachments([]);
         if (textareaRef.current) textareaRef.current.style.height = 'auto';

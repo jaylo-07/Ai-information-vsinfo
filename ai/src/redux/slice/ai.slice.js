@@ -15,51 +15,53 @@ export const sendAIRequest = createAsyncThunk(
 
             const type = detectPromptType(prompt);
 
-            if (type === "image") {
+            const formData = new FormData();
+            formData.append("prompt", prompt);
+            if (image) {
+                formData.append("image", image);
+            }
+
+            if (type === "image" || image) {
                 const response = await fetch(`${BASE_URL}/generate-image`, {
                     method: "POST",
-                    headers: {
-                        "Content-Type": "application/json"
-                    },
-                    body: JSON.stringify({ prompt, image })
+                    body: formData
                 });
 
                 if (!response.ok) {
-                    throw new Error("Image generation failed");
+                    throw new Error("Image generation failed" + response.error);
                 }
 
                 const data = await response.json();
-                const imageUrl = `data:image/png;base64,${data.image}`;
+                const imageUrl = data.image;
 
-                return { type: "image", data: imageUrl };
+                return { type: "image", data: imageUrl, text: data.text };
             }
 
             // TEXT MODEL
-            const response = await fetch(`${BASE_URL}/generate-text`, {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json"
-                },
-                body: JSON.stringify({ prompt, image })
-            });
+            if (!image) {
+                const response = await fetch(`${BASE_URL}/generate-text`, {
+                    method: "POST",
+                    body: formData
+                });
 
-            if (!response.ok) {
-                let errMessage = "Text generation failed";
-                try {
-                    const errData = await response.json();
-                    if (errData.error) errMessage = errData.error;
-                } catch (e) {
-                    // ignore
+                if (!response.ok) {
+                    let errMessage = "Text generation failed";
+                    try {
+                        const errData = await response.json();
+                        if (errData.error) errMessage = errData.error;
+                    } catch (e) {
+                        // ignore
+                    }
+                    throw new Error(errMessage);
                 }
-                throw new Error(errMessage);
+
+                const data = await response.json();
+
+                return {
+                    type: "text",
+                    data: data.generated_text || "No response"
+                };
             }
-
-            const data = await response.json();
-
-            return {
-                type: "text",
-                data: data.generated_text || "No response"
-            };
 
         } catch (error) {
             return rejectWithValue(error.message);
