@@ -27,7 +27,7 @@ const Footer = () => {
               <img src={blackLogo} alt="Company Logo" className="h-10 sm:h-12 w-auto object-contain block dark:hidden" />
               <img src={whiteLogo} alt="Company Logo" className="h-10 sm:h-12 w-auto object-contain hidden dark:block drop-shadow-[0_0_10px_rgba(255,255,255,0.2)]" />
               <div>
-                <h2 className="text-xl sm:text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-gray-900 to-gray-500 dark:from-white dark:to-gray-400">
+                <h2 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white">
                   Build AI responsibly to<br />benefit humanity
                 </h2>
               </div>
